@@ -1,0 +1,1192 @@
+
+{% extends "citizen/common.html" %}
+
+{% block title %}Citizen Dashboard | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    .citizen-home {
+        padding: 38px 0 20px;
+        background:
+            radial-gradient(
+                circle at 0% 0%,
+                rgba(23, 103, 187, .07),
+                transparent 32%
+            ),
+            var(--surface);
+    }
+
+    .citizen-container {
+        width: min(1200px, 92%);
+        margin: 0 auto;
+    }
+
+    /* PAGE HEADER */
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 22px;
+        margin-bottom: 28px;
+    }
+
+    .dashboard-eyebrow {
+        color: var(--blue-600);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    .dashboard-header h1 {
+        margin-top: 7px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(27px, 4vw, 37px);
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        line-height: 1.25;
+    }
+
+    .dashboard-header p {
+        margin-top: 9px;
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .citizen-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 14px;
+        border: 1px solid #d1e3f5;
+        border-radius: 12px;
+        background: white;
+        color: var(--blue-800);
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .citizen-tag span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    /* WELCOME BANNER */
+    .citizen-welcome {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        margin-bottom: 28px;
+        padding: 32px;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+            120deg,
+            var(--blue-950),
+            var(--blue-800)
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .citizen-welcome::after {
+        content: "";
+        position: absolute;
+        top: -110px;
+        right: 9%;
+        width: 240px;
+        height: 240px;
+        border: 34px solid rgba(255, 255, 255, .06);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+    }
+
+    .welcome-label {
+        color: #c0dcfa;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    .welcome-content h2 {
+        margin-top: 9px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(24px, 4vw, 34px);
+        font-weight: 800;
+        letter-spacing: -.8px;
+        line-height: 1.3;
+    }
+
+    .welcome-content p {
+        max-width: 570px;
+        margin-top: 10px;
+        color: rgba(255,255,255,.78);
+        font-size: 13px;
+        line-height: 1.9;
+    }
+
+    .welcome-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-top: 20px;
+        padding: 12px 17px;
+        border: 0;
+        border-radius: 9px;
+        background: var(--saffron);
+        color: #281504;
+        font-size: 12px;
+        font-weight: 800;
+        transition: transform var(--transition),
+                    background var(--transition);
+    }
+
+    .welcome-button:hover {
+        transform: translateY(-2px);
+        background: #ffad55;
+    }
+
+    .welcome-symbol {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 86px;
+        height: 86px;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 24px;
+        background: rgba(255,255,255,.09);
+        color: white;
+        font-size: 38px;
+    }
+
+    /* SECTION HEADINGS */
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin: 32px 0 17px;
+    }
+
+    .section-heading h2 {
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .section-heading p {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .section-link {
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    /* PROFILE OVERVIEW */
+    .profile-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .profile-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        min-width: 0;
+        padding: 22px 24px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(110deg, #fff, #f3f8fc);
+        box-shadow: var(--shadow-xs);
+        text-align: left;
+    }
+
+    .profile-identity {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+    }
+
+    .profile-avatar {
+        width: 82px;
+        height: 82px;
+        flex: 0 0 82px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border: 3px solid white;
+        border-radius: 22px;
+        box-shadow: 0 0 0 1px var(--border);
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 31px;
+        font-weight: 800;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .profile-card h3 {
+        overflow-wrap: anywhere;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .profile-kicker {
+        margin-bottom: 5px;
+        color: var(--blue-700);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .profile-card .profile-email {
+        margin-top: 6px;
+        overflow-wrap: anywhere;
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .profile-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 9px;
+        border: 1px solid #cfe7d2;
+        border-radius: 6px;
+        background: var(--green-light);
+        color: #176b2b;
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .profile-label span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    .profile-card-footer {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .profile-record {
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+    .profile-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 13px;
+        border: 1px solid #c8dced;
+        border-radius: 6px;
+        background: white;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+        transition: background var(--transition), border-color var(--transition);
+    }
+
+    .profile-action:hover {
+        border-color: var(--blue-700);
+        background: var(--blue-50);
+    }
+
+    /* REGISTRATION DETAILS */
+    .registration-details-card {
+        padding: 24px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .registration-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .registration-detail {
+        min-width: 0;
+        padding: 14px 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fcfdff;
+    }
+
+    .registration-detail.full {
+        grid-column: 1 / -1;
+    }
+
+    .registration-detail-label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    .registration-detail-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--blue-950);
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.7;
+    }
+
+    /* QUICK ACTIONS */
+    .services-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .service-card {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+        transition: border-color var(--transition),
+                    transform var(--transition),
+                    box-shadow var(--transition);
+    }
+
+    .service-card:hover {
+        transform: translateY(-3px);
+        border-color: #b8d3ef;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .service-icon {
+        width: 46px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 17px;
+        border-radius: 13px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 21px;
+    }
+
+    .service-card:nth-child(2) .service-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .service-card:nth-child(3) .service-icon {
+        background: var(--saffron-light);
+        color: #a45a12;
+    }
+
+    .service-card h3 {
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .service-card p {
+        flex: 1;
+        margin-top: 8px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .service-link {
+        margin-top: 17px;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    /* DOCUMENTS AND PRIVACY */
+    .information-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .information-card {
+        padding: 23px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .information-card h3 {
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .information-card > p {
+        margin-top: 7px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .document-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 17px;
+        padding: 13px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fcfdff;
+    }
+
+    .document-icon {
+        display: grid;
+        place-items: center;
+        width: 37px;
+        height: 37px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 17px;
+    }
+
+    .document-copy {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .document-copy strong {
+        display: block;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .document-copy small {
+        display: block;
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .document-status {
+        flex-shrink: 0;
+        padding: 5px 8px;
+        border-radius: 20px;
+        background: var(--green-light);
+        color: #176b2b;
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+    .privacy-card {
+        background: linear-gradient(140deg, #fff, #f5f9ff);
+    }
+
+    .privacy-symbol {
+        width: 43px;
+        height: 43px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 15px;
+        border-radius: 13px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 21px;
+    }
+
+    .privacy-card a {
+        display: inline-block;
+        margin-top: 15px;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    /* FOOTNOTE */
+    .dashboard-note {
+        margin-top: 24px;
+        padding: 16px 18px;
+        border: 1px solid #d2e4f6;
+        border-radius: 12px;
+        background: var(--blue-50);
+        color: var(--text-soft);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .dashboard-note strong {
+        color: var(--blue-900);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+        .profile-card {
+            padding: 22px;
+        }
+
+        .profile-identity {
+            align-items: flex-start;
+        }
+
+        .services-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .information-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .citizen-home {
+            padding-top: 25px;
+        }
+
+        .dashboard-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .citizen-welcome {
+            padding: 23px 20px;
+        }
+
+        .welcome-symbol {
+            width: 53px;
+            height: 53px;
+            border-radius: 15px;
+            font-size: 25px;
+        }
+
+        .welcome-content h2 {
+            font-size: 24px;
+        }
+
+        .profile-card {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .registration-details-card {
+            padding: 18px;
+        }
+
+        .registration-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .registration-detail.full {
+            grid-column: auto;
+        }
+
+        .profile-card-footer {
+            justify-content: space-between;
+            width: 100%;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .section-heading h2 {
+            font-size: 16px;
+        }
+
+        .document-row {
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .service-card {
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="citizen-home">
+    <div class="citizen-container">
+
+        <!-- PAGE HEADER -->
+        <div class="dashboard-header">
+            <div>
+                <div class="dashboard-eyebrow">
+                    Citizen engagement portal
+                </div>
+
+                <h1>My Dashboard</h1>
+
+                <p>
+                    Your account, your community, your voice.
+                    Everything starts here.
+                </p>
+            </div>
+
+            <div class="citizen-tag">
+                <span></span>
+                Citizen portal
+            </div>
+        </div>
+
+
+        <!-- WELCOME -->
+        <div class="citizen-welcome">
+            <div class="welcome-content">
+
+                <div class="welcome-label">
+                    Welcome to Demokratia.com
+                </div>
+
+                <h2>
+                    Hello, {{ citizen.name|default:"Citizen" }}!
+                </h2>
+
+                <p>
+                    Welcome to your citizen dashboard. Explore civic
+                    engagement opportunities, review your profile
+                    information, and stay connected with your community.
+                </p>
+
+                <a class="welcome-button" href="#civic-services">
+                    Explore citizen services
+                    <span aria-hidden="true">→</span>
+                </a>
+
+            </div>
+
+            <div class="welcome-symbol" aria-hidden="true">
+                ♙
+            </div>
+        </div>
+
+
+        <!-- CITIZEN PROFILE -->
+        <div class="section-heading">
+            <div>
+                <h2>My Citizen Profile</h2>
+
+                <p>
+                    Your registered identity and profile information.
+                </p>
+            </div>
+        </div>
+
+
+        {% if citizen %}
+
+        <div class="profile-layout">
+
+            <article class="profile-card">
+
+                <!-- PROFILE IDENTITY -->
+                <div class="profile-identity">
+
+                    <div class="profile-avatar">
+
+                        {% if citizen.profile_pic %}
+                            <img
+                                src="{{ citizen.profile_pic.url }}"
+                                alt="Citizen Profile"
+                            >
+                        {% else %}
+                            {{ citizen.name|first|upper }}
+                        {% endif %}
+
+                    </div>
+
+                    <div>
+
+                        <div class="profile-kicker">
+                            Registered citizen
+                        </div>
+
+                        <h3>
+                            {{ citizen.name|default:"Citizen" }}
+                        </h3>
+
+                        <p class="profile-email">
+                            {{ citizen.email|default:"Not provided" }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PROFILE FOOTER -->
+                <div class="profile-card-footer">
+
+                    <span class="profile-record">
+                        Record #{{ citizen.pk }}
+                    </span>
+
+                    <span class="profile-label">
+                        <span></span>
+                        On record
+                    </span>
+
+                    <a
+                        class="profile-action"
+                        href="{% url 'view_citizen_profile' citizen_id=citizen.pk %}"
+                    >
+                        View profile
+                        <span aria-hidden="true">→</span>
+                    </a>
+
+                </div>
+
+            </article>
+
+        </div>
+
+        {% else %}
+
+        <div class="registration-details-card">
+            <p>
+                Citizen profile not found.
+                Please contact the administrator.
+            </p>
+        </div>
+
+        {% endif %}
+
+
+        <!-- REGISTRATION DETAILS -->
+        <div class="section-heading" id="registration-details">
+
+            <div>
+                <h2>My registered information</h2>
+
+                <p>
+                    These details are based on the information you
+                    provided during citizen registration.
+                </p>
+            </div>
+
+        </div>
+
+
+        {% if citizen %}
+
+        <article class="registration-details-card">
+
+            <div class="registration-details-grid">
+
+                <!-- FULL NAME -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        Full name
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.name|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+
+                <!-- EMAIL -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        Email address
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.email|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+
+                <!-- MOBILE -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        Mobile number
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.mobile|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+
+                <!-- PIN CODE -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        PIN code
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.pincode|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+
+                <!-- ADDRESS -->
+                <div class="registration-detail full">
+
+                    <span class="registration-detail-label">
+                        Residential address
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.address|default:"Not provided"|linebreaksbr }}
+                    </span>
+
+                </div>
+
+
+                <!-- CITY -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        City / Town
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.city|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+
+                <!-- DISTRICT -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        District
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.district|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+
+                <!-- STATE -->
+                <div class="registration-detail">
+
+                    <span class="registration-detail-label">
+                        State / Union Territory
+                    </span>
+
+                    <span class="registration-detail-value">
+                        {{ citizen.state|default:"Not provided" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+        {% else %}
+
+        <div class="registration-details-card">
+            <p>
+                No citizen registration record was found for this account.
+            </p>
+        </div>
+
+        {% endif %}
+
+
+        <!-- CIVIC SERVICES -->
+        <div class="section-heading" id="civic-services">
+
+            <div>
+                <h2>Citizen services</h2>
+
+                <p>
+                    Choose an area where you would like to participate.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="services-grid">
+
+            <!-- SUBMIT FEEDBACK -->
+            <article class="service-card">
+
+                <div class="service-icon" aria-hidden="true">
+                    ✎
+                </div>
+
+                <h3>Submit feedback</h3>
+
+                <p>
+                    Share your experience and suggestions about public
+                    services and community matters.
+                </p>
+
+            </article>
+
+
+            <!-- SUGGESTIONS AND COMPLAINTS -->
+            <article class="service-card">
+
+                <div class="service-icon" aria-hidden="true">
+                    ☷
+                </div>
+
+                <h3>Suggestions & complaints</h3>
+
+                <p>
+                    Find the appropriate place to raise concerns or
+                    suggest improvements in your community.
+                </p>
+
+            </article>
+
+
+            <!-- PUBLIC SERVICES -->
+            <article class="service-card">
+
+                <div class="service-icon" aria-hidden="true">
+                    ⌂
+                </div>
+
+                <h3>Public services</h3>
+
+                <p>
+                    Discover public-service information and civic
+                    participation resources.
+                </p>
+
+            </article>
+
+
+            <!-- OFFICER ACTIVITIES -->
+            <a
+                class="service-card"
+                href="{% url 'citizen_view_officer_activity' %}"
+            >
+
+                <div class="service-icon" aria-hidden="true">
+                    ▤
+                </div>
+
+                <h3>Officer Activities</h3>
+
+                <p>
+                    View public activity reports submitted by
+                    government officers.
+                </p>
+
+                <span class="service-link">
+                    View activity reports →
+                </span>
+
+            </a>
+
+        </div>
+
+
+        <!-- DOCUMENTS AND PRIVACY -->
+        <div class="section-heading">
+
+            <div>
+                <h2>Documents and privacy</h2>
+
+                <p>
+                    Information about your submitted registration documents.
+                </p>
+            </div>
+
+        </div>
+
+
+        {% if citizen %}
+
+        <div class="information-grid">
+
+            <!-- REGISTRATION DOCUMENTS -->
+            <article class="information-card">
+
+                <h3>My registration documents</h3>
+
+                <p>
+                    Your uploaded documents and profile picture.
+                </p>
+
+
+                <!-- IDENTITY PROOF -->
+                <div class="document-row">
+
+                    <div class="document-icon">
+                        ▣
+                    </div>
+
+                    <div class="document-copy">
+
+                        <strong>Identity proof</strong>
+
+                        <small>
+                            {% if citizen.proof %}
+                                Document uploaded successfully.
+                            {% else %}
+                                No identity proof uploaded.
+                            {% endif %}
+                        </small>
+
+                    </div>
+
+                    <span class="document-status">
+                        {% if citizen.proof %}
+                            Uploaded
+                        {% else %}
+                            Pending
+                        {% endif %}
+                    </span>
+
+                </div>
+
+
+                <!-- PROFILE PICTURE -->
+                <div class="document-row">
+
+                    <div class="document-icon">
+                        ♙
+                    </div>
+
+                    <div class="document-copy">
+
+                        <strong>Profile picture</strong>
+
+                        <small>
+                            {% if citizen.profile_pic %}
+                                Profile picture uploaded successfully.
+                            {% else %}
+                                No profile picture uploaded.
+                            {% endif %}
+                        </small>
+
+                    </div>
+
+                    <span class="document-status">
+                        {% if citizen.profile_pic %}
+                            Uploaded
+                        {% else %}
+                            Pending
+                        {% endif %}
+                    </span>
+
+                </div>
+
+            </article>
+
+
+            <!-- PRIVACY -->
+            <article class="information-card privacy-card">
+
+                <div class="privacy-symbol">
+                    ♙
+                </div>
+
+                <h3>Your information is important</h3>
+
+                <p>
+                    Your registration information is associated with
+                    your citizen account. Keep your login credentials
+                    secure and contact the administrator if you notice
+                    incorrect information.
+                </p>
+
+                <a
+                    href="{% url 'view_citizen_profile' citizen_id=citizen.pk %}"
+                >
+                    View my complete profile →
+                </a>
+
+            </article>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- DASHBOARD FOOTNOTE -->
+        <div class="dashboard-note">
+
+            <strong>
+                Demokratia.com – Citizen Engagement Platform
+            </strong>
+
+            <br>
+
+            Participate in governance, share your feedback, and stay
+            connected with public-service activities in your community.
+
+        </div>
+
+
+    </div>
+</section>
+{% endblock %}

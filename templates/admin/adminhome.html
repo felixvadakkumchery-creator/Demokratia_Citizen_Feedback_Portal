@@ -1,0 +1,910 @@
+
+{% extends "admin/common.html" %}
+
+{% block title %}Admin Dashboard | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ADMIN DASHBOARD */
+    .admin-dashboard {
+        padding: 38px 0 20px;
+        background:
+            radial-gradient(ellipse at 0% 0%, rgba(23, 103, 187, .06), transparent 35%),
+            var(--surface);
+    }
+
+    .admin-container {
+        width: min(1200px, 92%);
+        margin: 0 auto;
+    }
+
+    /* PAGE HEADING */
+    .dashboard-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 22px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-eyebrow {
+        color: var(--blue-600);
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .dashboard-heading h1 {
+        margin-top: 7px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(27px, 4vw, 37px);
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        line-height: 1.25;
+    }
+
+    .dashboard-heading p {
+        margin-top: 9px;
+        color: var(--text-soft);
+        font-size: 13px;
+    }
+
+    .admin-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 15px;
+        border: 1px solid #d1e3f5;
+        border-radius: 12px;
+        background: white;
+        color: var(--blue-800);
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .admin-badge span {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    /* WELCOME BANNER */
+    .welcome-banner {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        margin-bottom: 28px;
+        padding: 30px 32px;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(120deg, var(--blue-950), var(--blue-800));
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .welcome-banner::after {
+        content: "";
+        position: absolute;
+        width: 230px;
+        height: 230px;
+        right: 7%;
+        top: -120px;
+        border: 35px solid rgba(255,255,255,.06);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .welcome-copy {
+        position: relative;
+        z-index: 1;
+        max-width: 690px;
+    }
+
+    .welcome-copy .welcome-label {
+        color: #b9d9fb;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+
+    .welcome-copy h2 {
+        margin-top: 9px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(21px, 3vw, 28px);
+        font-weight: 800;
+        letter-spacing: -.6px;
+    }
+
+    .welcome-copy p {
+        margin-top: 9px;
+        color: rgba(255,255,255,.78);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .welcome-mark {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+        width: 76px;
+        height: 76px;
+        border: 1px solid rgba(255,255,255,.28);
+        border-radius: 22px;
+        background: rgba(255,255,255,.1);
+        color: white;
+        font-size: 35px;
+    }
+
+    /* SECTION HEADINGS */
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 31px 0 17px;
+    }
+
+    .section-heading h2 {
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .section-heading p {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .section-link {
+        color: var(--blue-700);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .section-link:hover {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+    }
+
+    /* STATISTICS */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .stat-card {
+        min-width: 0;
+        padding: 21px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+        transition: transform var(--transition), box-shadow var(--transition);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .stat-label {
+        color: var(--text-soft);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .stat-icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 19px;
+    }
+
+    .stat-card:nth-child(2) .stat-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+        background: var(--saffron-light);
+        color: #a45a12;
+    }
+
+    .stat-card:nth-child(4) .stat-icon {
+        background: #f0edff;
+        color: #6650b7;
+    }
+
+    .stat-number {
+        display: block;
+        margin-top: 17px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-caption {
+        margin-top: 8px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    /* QUICK ACTIONS */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .action-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        min-width: 0;
+        padding: 21px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+        transition: border-color var(--transition), transform var(--transition);
+    }
+
+    .action-card:hover {
+        border-color: #b9d3ed;
+        transform: translateY(-2px);
+    }
+
+    .action-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 43px;
+        height: 43px;
+        border-radius: 12px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 20px;
+    }
+
+    .action-card:nth-child(2) .action-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .action-card:nth-child(3) .action-icon {
+        background: var(--saffron-light);
+        color: #a45a12;
+    }
+
+    .action-card h3 {
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .action-card p {
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .action-arrow {
+        display: inline-block;
+        margin-top: 11px;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    /* TABLE */
+    .table-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .table-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        padding: 18px 21px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .table-toolbar h3 {
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .table-toolbar p {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .table-scroll {
+        overflow-x: auto;
+    }
+
+    .citizen-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+    .citizen-table th {
+        padding: 14px 20px;
+        background: #f7faff;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+    }
+
+    .citizen-table td {
+        padding: 15px 20px;
+        border-top: 1px solid #edf0f5;
+        color: var(--text-soft);
+        font-size: 12px;
+    }
+
+    .citizen-table tbody tr:hover {
+        background: #fbfdff;
+    }
+
+    .citizen-identity {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+    }
+
+    .citizen-avatar {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        overflow: hidden;
+        border-radius: 12px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .citizen-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .citizen-name {
+        color: var(--blue-950);
+        font-weight: 800;
+    }
+
+    .citizen-email {
+        margin-top: 3px;
+        color: var(--text-muted);
+        font-size: 10px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .empty-state {
+        padding: 45px 20px;
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 12px;
+    }
+
+    .empty-state strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--blue-950);
+        font-size: 14px;
+    }
+
+    /* ADMIN NOTICE */
+    .admin-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-top: 25px;
+        padding: 18px 20px;
+        border: 1px solid #f0dfba;
+        border-radius: var(--radius-md);
+        background: #fffaf0;
+        color: #7d5b1f;
+    }
+
+    .admin-notice-icon {
+        flex-shrink: 0;
+        font-size: 22px;
+    }
+
+    .admin-notice h3 {
+        margin-bottom: 5px;
+        color: #6b4b12;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .admin-notice p {
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 950px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .admin-dashboard {
+            padding-top: 25px;
+        }
+
+        .dashboard-heading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .welcome-banner {
+            padding: 24px 20px;
+        }
+
+        .welcome-mark {
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            font-size: 25px;
+        }
+
+        .stats-grid {
+            gap: 11px;
+        }
+
+        .stat-card {
+            padding: 16px;
+        }
+
+        .stat-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 16px;
+        }
+
+        .stat-number {
+            font-size: 26px;
+        }
+
+        .section-heading {
+            align-items: flex-start;
+        }
+
+        .section-heading h2 {
+            font-size: 16px;
+        }
+
+        .table-toolbar {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .stat-card,
+        .action-card {
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="admin-dashboard">
+    <div class="admin-container">
+
+        <!-- PAGE HEADING -->
+        <div class="dashboard-heading">
+            <div>
+                <div class="dashboard-eyebrow">
+                    Demokratia administration
+                </div>
+
+                <h1>Admin Dashboard</h1>
+
+                <p>
+                    Monitor citizen registrations and manage your
+                    citizen engagement platform.
+                </p>
+            </div>
+
+            <div class="admin-badge">
+                <span></span>
+                Administration portal
+            </div>
+        </div>
+
+
+        <!-- WELCOME BANNER -->
+        <div class="welcome-banner">
+            <div class="welcome-copy">
+                <div class="welcome-label">
+                    Control centre
+                </div>
+
+                <h2>
+                    Welcome, {{ admin_name|default:"Administrator" }}!
+                </h2>
+
+                <p>
+                    Here's your overview of Demokratia.com. Review citizen
+                    profiles, monitor registrations, and access the tools
+                    you need to administer the platform.
+                </p>
+            </div>
+
+            <div class="welcome-mark" aria-hidden="true">
+                ⚙
+            </div>
+        </div>
+
+
+        <!-- PLATFORM STATISTICS -->
+        <div class="section-heading">
+            <div>
+                <h2>Platform overview</h2>
+                <p>Summary of key platform records.</p>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Total citizens</span>
+                    <span class="stat-icon" aria-hidden="true">♙</span>
+                </div>
+
+                <strong class="stat-number">
+                    {{ total_citizens|default_if_none:"0" }}
+                </strong>
+
+                <p class="stat-caption">
+                    Citizen profiles stored on the platform
+                </p>
+            </article>
+
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">New registrations</span>
+                    <span class="stat-icon" aria-hidden="true">＋</span>
+                </div>
+
+                <strong class="stat-number">
+                    {{ new_registrations|default_if_none:"0" }}
+                </strong>
+
+                <p class="stat-caption">
+                    New profiles recorded today
+                </p>
+            </article>
+
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Pending reviews</span>
+                    <span class="stat-icon" aria-hidden="true">◷</span>
+                </div>
+
+                <strong class="stat-number">
+                    {{ pending_reviews|default_if_none:"0" }}
+                </strong>
+
+                <p class="stat-caption">
+                    Records requiring administrator attention
+                </p>
+            </article>
+
+
+            <article class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Feedback records</span>
+                    <span class="stat-icon" aria-hidden="true">▤</span>
+                </div>
+
+                <strong class="stat-number">
+                    {{ total_feedback|default_if_none:"0" }}
+                </strong>
+
+                <p class="stat-caption">
+                    Feedback and complaints recorded
+                </p>
+            </article>
+
+        </div>
+
+
+        <!-- QUICK ACTIONS -->
+        <div class="section-heading">
+            <div>
+                <h2>Quick actions</h2>
+                <p>Jump to frequently used administration areas.</p>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+
+            <a href="{% url 'view_citizen' %}" class="action-card">
+                <span class="action-icon" aria-hidden="true">♙</span>
+
+                <span>
+                    <h3>View citizens</h3>
+
+                    <p>
+                        Review citizen profile information and contact details.
+                    </p>
+
+                    <span class="action-arrow">
+                        View citizen records →
+                    </span>
+                </span>
+            </a>
+        <div class="add_officer">
+            <a href="{% url 'add_officer' %}" class="action-card">
+                <span class="action-icon" aria-hidden="true">＋</span>
+
+                <span>
+                    <h3>Add officers</h3>
+
+                    <p>
+                        Add new officers to the administration team.
+                    </p>
+
+                    <span class="action-arrow">
+                        Add officer →
+                    </span>
+                </span>
+            </a>
+        </div>
+        <div class="view_officer">
+            <a href="{% url 'view_officer' %}" class="action-card">
+                <span class="action-icon" aria-hidden="true">▤</span>
+
+                <span>
+                    <h3>View officers</h3>
+
+                    <p>
+                        Review officer profile information and contact details.
+                    </p>
+
+                    <span class="action-arrow">
+                        View officer records →
+                    </span>
+                </span>
+            </a>
+        </div>
+
+        <a href="{% url 'citizen_view_officer_activity' %}" class="action-card">
+            <span class="action-icon" aria-hidden="true">▤</span>
+
+            <span>
+                <h3>View Officer Activities</h3>
+
+                <p>
+                    Review activity reports submitted by officers.
+                </p>
+
+                <span class="action-arrow">
+                    View activity reports →
+                </span>
+            </span>
+        </a>
+
+
+            <a href="#review-notice" class="action-card">
+                <span class="action-icon" aria-hidden="true">✓</span>
+
+                <span>
+                    <h3>Review submissions</h3>
+
+                    <p>
+                        Go to the administration notice about document
+                        verification and record review.
+                    </p>
+
+                    <span class="action-arrow">
+                        View review guidance →
+                    </span>
+                </span>
+            </a>
+
+
+            <a href="{% url 'index' %}" class="action-card">
+                <span class="action-icon" aria-hidden="true">⌂</span>
+
+                <span>
+                    <h3>Visit public website</h3>
+
+                    <p>
+                        Return to the main Demokratia.com homepage.
+                    </p>
+
+                    <span class="action-arrow">
+                        Open homepage →
+                    </span>
+                </span>
+            </a>
+
+        </div>
+
+
+        <!-- RECENT CITIZENS -->
+        <div class="section-heading" id="citizens">
+            <div>
+                <h2>Citizen registrations</h2>
+                <p>Recently recorded citizen profiles.</p>
+            </div>
+
+            <span class="section-link">
+                Latest records
+            </span>
+        </div>
+
+        <div class="table-card">
+
+            <div class="table-toolbar">
+                <div>
+                    <h3>Recent citizen profiles</h3>
+                    <p>
+                        Showing the records supplied by the dashboard view.
+                    </p>
+                </div>
+
+                <span class="admin-badge">
+                    {{ total_citizens|default_if_none:"0" }} citizens
+                </span>
+            </div>
+
+            <div class="table-scroll">
+                <table class="citizen-table">
+                    <thead>
+                        <tr>
+                            <th>Citizen</th>
+                            <th>Mobile number</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Record</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for citizen in recent_citizens %}
+                        <tr>
+                            <td>
+                                <div class="citizen-identity">
+                                    <div class="citizen-avatar">
+                                        {% if citizen.profile_pic %}
+                                            <img
+                                                src="{{ citizen.profile_pic.url }}"
+                                                alt="Profile picture"
+                                            >
+                                        {% else %}
+                                            {{ citizen.name|slice:":1"|upper }}
+                                        {% endif %}
+                                    </div>
+
+                                    <div>
+                                        <div class="citizen-name">
+                                            {{ citizen.name }}
+                                        </div>
+
+                                        <div class="citizen-email">
+                                            {{ citizen.email }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>{{ citizen.mobile }}</td>
+                            <td>{{ citizen.city }}</td>
+                            <td>{{ citizen.state }}</td>
+
+                            <td>
+                                <span class="status-badge">
+                                    Registered
+                                </span>
+                            </td>
+                        </tr>
+
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <strong>No citizen records to display</strong>
+                                    Citizen profiles will appear here when
+                                    the dashboard view provides them.
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+        <!-- ADMINISTRATOR NOTICE -->
+        <div class="admin-notice" id="review-notice">
+            <span class="admin-notice-icon" aria-hidden="true">ℹ</span>
+
+            <div>
+                <h3>Administrator reminder</h3>
+
+                <p>
+                    The dashboard displays summary statistics and recent
+                    records supplied by the Django view. Document approval,
+                    citizen verification, feedback management, and other
+                    administrative operations require their own backend
+                    logic and permission checks.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

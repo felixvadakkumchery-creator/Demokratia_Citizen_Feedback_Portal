@@ -1,0 +1,1201 @@
+
+
+{% extends "admin/common.html" %}
+
+{% block title %}View Officers | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    .officer-directory {
+        padding: 38px 0 25px;
+        background:
+            radial-gradient(circle at 0 0,
+                rgba(23, 103, 187, .06), transparent 34%),
+            var(--surface);
+    }
+
+    .directory-container {
+        width: min(1200px, 92%);
+        margin: 0 auto;
+    }
+
+    /* HEADER */
+    .directory-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .directory-eyebrow {
+        color: var(--blue-600);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+    }
+
+    .directory-header h1 {
+        margin-top: 8px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(27px, 4vw, 37px);
+        font-weight: 800;
+        letter-spacing: -1.1px;
+    }
+
+    .directory-header p {
+        margin-top: 8px;
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .directory-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .directory-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 42px;
+        padding: 0 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: white;
+        color: var(--blue-800);
+        font-size: 11px;
+        font-weight: 800;
+        transition: background var(--transition);
+    }
+
+    .directory-button:hover {
+        background: var(--blue-50);
+    }
+
+    .directory-button.primary {
+        border-color: var(--blue-800);
+        background: var(--blue-800);
+        color: white;
+    }
+
+    .directory-button.primary:hover {
+        background: var(--blue-900);
+    }
+
+    /* SUMMARY */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+        padding: 21px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .summary-icon {
+        display: grid;
+        place-items: center;
+        width: 45px;
+        height: 45px;
+        flex-shrink: 0;
+        border-radius: 13px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 21px;
+    }
+
+    .summary-card:nth-child(2) .summary-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .summary-card:nth-child(3) .summary-icon {
+        background: var(--saffron-light);
+        color: #a45a12;
+    }
+
+    .summary-label {
+        display: block;
+        color: var(--text-muted);
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .summary-number {
+        display: block;
+        margin-top: 5px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 27px;
+        font-weight: 800;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+
+    /* DIRECTORY PANEL */
+    .directory-panel {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .panel-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 23px 25px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .panel-heading h2 {
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .panel-heading p {
+        margin-top: 5px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .record-badge {
+        flex-shrink: 0;
+        padding: 8px 11px;
+        border: 1px solid #d5e5f5;
+        border-radius: 9px;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    /* SEARCH BAR */
+    .directory-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 17px 25px;
+        border-bottom: 1px solid var(--border);
+        background: #fcfdff;
+    }
+
+    .search-box {
+        position: relative;
+        width: min(440px, 100%);
+    }
+
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+        font-size: 16px;
+    }
+
+    .search-input {
+        width: 100%;
+        min-height: 44px;
+        padding: 11px 13px 11px 40px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        outline: none;
+        background: white;
+        color: var(--text);
+        font-size: 12px;
+        transition: border-color var(--transition),
+                    box-shadow var(--transition);
+    }
+
+    .search-input:focus {
+        border-color: var(--blue-600);
+        box-shadow: 0 0 0 3px rgba(23, 103, 187, .10);
+    }
+
+    .search-input::placeholder {
+        color: #9aa6b5;
+    }
+
+    .toolbar-note {
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    /* TABLE */
+    .table-scroll {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .officer-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .officer-table thead th {
+        padding: 15px 19px;
+        background: #f5f8fc;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+    }
+
+    .officer-table tbody td {
+        padding: 16px 19px;
+        border-top: 1px solid #edf0f5;
+        color: var(--text-soft);
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .officer-table tbody tr.officer-row:hover {
+        background: #f8fbff;
+    }
+
+    .officer-row[hidden],
+    .details-row[hidden],
+    #no-search-results[hidden] {
+        display: none;
+    }
+
+    .officer-identity {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        min-width: 220px;
+    }
+
+    .officer-avatar {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        border: 1px solid #dce7f4;
+        border-radius: 13px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .officer-name {
+        display: block;
+        max-width: 230px;
+        overflow: hidden;
+        color: var(--blue-950);
+        font-size: 12px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+    }
+
+    .officer-email {
+        display: block;
+        max-width: 230px;
+        margin-top: 4px;
+        overflow: hidden;
+        color: var(--text-muted);
+        font-size: 10px;
+        text-overflow: ellipsis;
+    }
+
+    .department-badge {
+        display: inline-block;
+        max-width: 200px;
+        overflow: hidden;
+        padding: 6px 9px;
+        border-radius: 8px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 10px;
+        font-weight: 800;
+        text-overflow: ellipsis;
+    }
+
+    .details-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 11px;
+        border: 1px solid #d4e3f4;
+        border-radius: 8px;
+        background: white;
+        color: var(--blue-800);
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .details-button:hover {
+        background: var(--blue-50);
+    }
+
+    .officer-row-actions {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .officer-action-link,
+    .officer-delete-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 9px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: white;
+        color: var(--blue-800);
+        font: inherit;
+        font-size: 10px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .officer-action-link:hover {
+        background: var(--blue-50);
+    }
+
+    .officer-delete-button {
+        border-color: #f0caca;
+        background: #fff5f5;
+        color: #a33131;
+    }
+
+    .officer-delete-button:hover {
+        background: #ffe8e8;
+    }
+
+    /* EXPANDED DETAILS */
+    .details-cell {
+        padding: 0 !important;
+        background: #f8fbff;
+        white-space: normal;
+    }
+
+    .officer-details {
+        padding: 24px;
+        border-left: 3px solid var(--blue-600);
+    }
+
+    .officer-details h3 {
+        margin-bottom: 18px;
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 19px 23px;
+    }
+
+    .detail-item {
+        min-width: 0;
+    }
+
+    .detail-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    .detail-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--blue-950);
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .detail-value a {
+        color: var(--blue-700);
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+        padding: 50px 20px;
+        color: var(--text-muted);
+        text-align: center;
+        white-space: normal;
+    }
+
+    .empty-state-icon {
+        margin-bottom: 12px;
+        font-size: 32px;
+    }
+
+    .empty-state h3 {
+        color: var(--blue-950);
+        font-size: 15px;
+    }
+
+    .empty-state p {
+        margin-top: 7px;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .directory-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 17px 25px;
+        border-top: 1px solid var(--border);
+        background: #fcfdff;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    /* SECURITY NOTICE */
+    .security-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        margin-top: 23px;
+        padding: 17px 19px;
+        border: 1px solid #d4e5f6;
+        border-radius: 13px;
+        background: var(--blue-50);
+        color: var(--text-soft);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .security-notice strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--blue-900);
+        font-size: 12px;
+    }
+
+    .security-icon {
+        flex-shrink: 0;
+        font-size: 20px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 850px) {
+        .summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .summary-card:last-child {
+            grid-column: 1 / -1;
+        }
+
+        .details-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 600px) {
+        .officer-directory {
+            padding-top: 25px;
+        }
+
+        .directory-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .directory-actions {
+            width: 100%;
+        }
+
+        .directory-button {
+            flex: 1;
+        }
+
+        .summary-grid {
+            gap: 10px;
+        }
+
+        .summary-card {
+            padding: 14px;
+            gap: 10px;
+        }
+
+        .summary-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 17px;
+        }
+
+        .summary-number {
+            font-size: 23px;
+        }
+
+        .panel-heading,
+        .directory-toolbar,
+        .directory-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .panel-heading,
+        .directory-toolbar {
+            padding: 18px;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-item.full-width {
+            grid-column: auto;
+        }
+
+        .officer-details {
+            padding: 19px;
+        }
+
+        .directory-footer {
+            padding: 16px 18px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .search-input {
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="officer-directory">
+    <div class="directory-container">
+
+        <!-- PAGE HEADER -->
+        <header class="directory-header">
+            <div>
+                <div class="directory-eyebrow">
+                    Demokratia administration
+                </div>
+
+                <h1>Officer Directory</h1>
+
+                <p>
+                    View registered government officers, their departments,
+                    contact information and assigned jurisdictions.
+                </p>
+            </div>
+
+            <div class="directory-actions">
+                <a href="{% url 'adminhome' %}" class="directory-button">
+                    ← Dashboard
+                </a>
+
+                <a href="{% url 'add_officer' %}"
+                   class="directory-button primary">
+                    + Add officer
+                </a>
+            </div>
+        </header>
+
+
+        <!-- SUMMARY -->
+        <div class="summary-grid">
+
+            <article class="summary-card">
+                <div class="summary-icon" aria-hidden="true">♙</div>
+
+                <div>
+                    <span class="summary-label">Total officers</span>
+                    <strong class="summary-number">
+                        {{ total_officers|default_if_none:"0" }}
+                    </strong>
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <div class="summary-icon" aria-hidden="true">▤</div>
+
+                <div>
+                    <span class="summary-label">Records displayed</span>
+                    <strong class="summary-number" id="visible-count">
+                        {{ officers|length }}
+                    </strong>
+                </div>
+            </article>
+
+            <article class="summary-card">
+                <div class="summary-icon" aria-hidden="true">⌕</div>
+
+                <div>
+                    <span class="summary-label">Directory</span>
+                    <strong class="summary-number">Active</strong>
+                </div>
+            </article>
+
+        </div>
+
+
+        <!-- DIRECTORY TABLE -->
+        <section class="directory-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <h2>Registered government officers</h2>
+                    <p>
+                        Search the directory and expand a record
+                        to inspect its registered details.
+                    </p>
+                </div>
+
+                <span class="record-badge">
+                    {{ officers|length }}
+                    record{{ officers|length|pluralize }}
+                </span>
+            </div>
+
+
+            <!-- SEARCH -->
+            <div class="directory-toolbar">
+                <div class="search-box">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+
+                    <input
+                        class="search-input"
+                        id="officer-search"
+                        type="search"
+                        placeholder="Search name, email, department, address, taluk or district..."
+                        aria-label="Search officers"
+                    >
+                </div>
+
+                <span class="toolbar-note">
+                    Search updates automatically.
+                </span>
+            </div>
+
+
+            <div class="table-scroll">
+                <table class="officer-table">
+
+                    <thead>
+                        <tr>
+                            <th>Officer</th>
+                            <th>Department</th>
+                            <th>Taluk</th>
+                            <th>District</th>
+                            <th>Mobile</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="officer-table-body">
+
+                        {% for officer in officers %}
+
+                        <tr
+                            class="officer-row"
+                            data-search="{{ officer.name|default_if_none:'' }} {{ officer.email|default_if_none:'' }} {{ officer.mobile|default_if_none:'' }} {{ officer.address|default_if_none:'' }} {{ officer.department|default_if_none:'' }} {{ officer.taluk|default_if_none:'' }} {{ officer.district|default_if_none:'' }} {{ officer.state|default_if_none:'' }} {{ officer.pk }} {{ officer.user.username|default_if_none:'' }}"
+                        >
+                            <td>
+                                <div class="officer-identity">
+                                    <div class="officer-avatar">
+                                        {{ officer.name|default:"O"|slice:":1"|upper }}
+                                    </div>
+
+                                    <div>
+                                        <span class="officer-name">
+                                            {{ officer.name|default:"Name unavailable" }}
+                                        </span>
+
+                                        <span class="officer-email">
+                                            {{ officer.email|default:"Email unavailable" }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="department-badge">
+                                    {{ officer.department|default:"Not assigned" }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ officer.taluk|default:"—" }}
+                            </td>
+
+                            <td>
+                                {{ officer.district|default:"—" }}
+                            </td>
+
+                            <td>
+                                {{ officer.mobile|default:"Not provided" }}
+                            </td>
+
+                            <td>
+                                <div class="officer-row-actions">
+
+                                    <button
+                                        type="button"
+                                        class="details-button"
+                                        data-target="officer-details-{{ officer.pk }}"
+                                        aria-controls="officer-details-{{ officer.pk }}"
+                                        aria-expanded="false"
+                                    >
+                                        Details
+                                    </button>
+
+                                    <a
+                                        class="officer-action-link"
+                                        href="{% url 'edit_officer' officer.pk %}"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <form
+                                        method="post"
+                                        action="{% url 'delete_officer' officer.pk %}"
+                                        onsubmit="return confirm('Delete this officer and their login account? This cannot be undone.');"
+                                    >
+                                        {% csrf_token %}
+
+                                        <button
+                                            class="officer-delete-button"
+                                            type="submit"
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
+
+
+                        <!-- EXPANDED OFFICER DETAILS -->
+                        <tr
+                            class="details-row"
+                            id="officer-details-{{ officer.pk }}"
+                            hidden
+                        >
+                            <td colspan="6" class="details-cell">
+
+                                <div class="officer-details">
+
+                                    <h3>
+                                        Officer record #{{ officer.pk }}
+                                    </h3>
+
+                                    <div class="details-grid">
+
+                                        <!-- NAME -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Full name
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.name|default:"Not provided" }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- EMAIL -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Email address
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {% if officer.email %}
+                                                    <a href="mailto:{{ officer.email }}">
+                                                        {{ officer.email }}
+                                                    </a>
+                                                {% else %}
+                                                    Not provided
+                                                {% endif %}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- MOBILE -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Mobile number
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {% if officer.mobile %}
+                                                    <a href="tel:{{ officer.mobile }}">
+                                                        {{ officer.mobile }}
+                                                    </a>
+                                                {% else %}
+                                                    Not provided
+                                                {% endif %}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- DEPARTMENT -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Department
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.department|default:"Not assigned" }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- STATE -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                State / Union Territory
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.state|default:"Not assigned" }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- DISTRICT -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                District
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.district|default:"Not assigned" }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- TALUK -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Taluk
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.taluk|default:"Not assigned" }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- ADDRESS -->
+                                        <div class="detail-item full-width">
+                                            <span class="detail-label">
+                                                Office address
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.address|default:"No address provided"|linebreaksbr }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- LOGIN USERNAME -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Account username
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.user.username|default:"Not available" }}
+                                            </span>
+                                        </div>
+
+
+                                        <!-- RECORD ID -->
+                                        <div class="detail-item">
+                                            <span class="detail-label">
+                                                Officer record ID
+                                            </span>
+
+                                            <span class="detail-value">
+                                                {{ officer.pk }}
+                                            </span>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="6">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-state-icon"
+                                         aria-hidden="true">♙</div>
+
+                                    <h3>No officers registered yet</h3>
+
+                                    <p>
+                                        Use the Add officer button to create
+                                        the first officer record.
+                                    </p>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+
+                        <!-- SEARCH EMPTY STATE -->
+                        <tr id="no-search-results" hidden>
+                            <td colspan="6">
+
+                                <div class="empty-state">
+
+                                    <div class="empty-state-icon"
+                                         aria-hidden="true">⌕</div>
+
+                                    <h3>No matching officers</h3>
+
+                                    <p>
+                                        Try searching with another name,
+                                        email, mobile number, department,
+                                        taluk or district.
+                                    </p>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            <!-- FOOTER -->
+            <div class="directory-footer">
+
+                <span>
+                    Showing
+                    <strong id="footer-visible-count">
+                        {{ officers|length }}
+                    </strong>
+                    of {{ officers|length }} loaded records
+                </span>
+
+                <span>
+                    Demokratia.com · Officer administration
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY NOTICE -->
+        <aside class="security-notice">
+
+            <span class="security-icon" aria-hidden="true">🔒</span>
+
+            <div>
+                <strong>Protect officer information</strong>
+
+                This directory displays professional contact and
+                jurisdiction details. Restrict access to authorized
+                administrators and avoid publishing private information.
+                Passwords are never displayed on this page.
+            </div>
+
+        </aside>
+
+    </div>
+</section>
+{% endblock %}
+
+
+{% block extra_js %}
+<script>
+    (function () {
+        "use strict";
+
+        const searchInput = document.getElementById("officer-search");
+
+        const officerRows = Array.from(
+            document.querySelectorAll(".officer-row")
+        );
+
+        const detailButtons = Array.from(
+            document.querySelectorAll(".details-button")
+        );
+
+        const noResults = document.getElementById("no-search-results");
+
+        const visibleCount = document.getElementById("visible-count");
+
+        const footerCount = document.getElementById(
+            "footer-visible-count"
+        );
+
+
+        // Close all expanded officer records.
+        function closeDetails() {
+
+            document.querySelectorAll(".details-row").forEach(function (row) {
+                row.hidden = true;
+            });
+
+            detailButtons.forEach(function (button) {
+
+                button.setAttribute("aria-expanded", "false");
+
+                button.innerHTML =
+                    'View details <span aria-hidden="true">⌄</span>';
+
+            });
+
+        }
+
+
+        // Search officers.
+        function filterOfficers() {
+
+            const query = searchInput.value.trim().toLowerCase();
+
+            let visible = 0;
+
+            officerRows.forEach(function (row) {
+
+                const text = (
+                    row.dataset.search || row.textContent
+                ).toLowerCase();
+
+                const matches = text.includes(query);
+
+                row.hidden = !matches;
+
+                const button = row.querySelector(".details-button");
+
+                const detailRow = button
+                    ? document.getElementById(button.dataset.target)
+                    : null;
+
+                // Close details after searching.
+                if (detailRow) {
+                    detailRow.hidden = true;
+                }
+
+                if (button) {
+
+                    button.setAttribute("aria-expanded", "false");
+
+                    button.innerHTML =
+                        'View details <span aria-hidden="true">⌄</span>';
+
+                }
+
+                if (matches) {
+                    visible += 1;
+                }
+
+            });
+
+
+            noResults.hidden =
+                visible !== 0 || officerRows.length === 0;
+
+            visibleCount.textContent = visible;
+
+            footerCount.textContent = visible;
+
+        }
+
+
+        searchInput.addEventListener("input", filterOfficers);
+
+
+        // Expand and collapse officer details.
+        detailButtons.forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                const detailRow = document.getElementById(
+                    button.dataset.target
+                );
+
+                if (!detailRow) {
+                    return;
+                }
+
+                const shouldOpen = detailRow.hidden;
+
+                // Close other officer records first.
+                closeDetails();
+
+                if (shouldOpen) {
+
+                    detailRow.hidden = false;
+
+                    button.setAttribute("aria-expanded", "true");
+
+                    button.innerHTML =
+                        'Hide details <span aria-hidden="true">⌃</span>';
+
+                }
+
+            });
+
+        });
+
+    })();
+</script>
+{% endblock %}

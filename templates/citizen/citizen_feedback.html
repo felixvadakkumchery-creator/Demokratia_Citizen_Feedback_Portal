@@ -1,0 +1,1025 @@
+
+{% extends 'citizen/common.html' %}
+
+{% block title %}Citizen Feedback | Demokratia{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-page {
+        max-width: 1100px;
+        margin: 38px auto 70px;
+        padding: 0 22px;
+        color: var(--text);
+    }
+
+    .feedback-page * {
+        box-sizing: border-box;
+    }
+
+    /* HEADER */
+
+    .feedback-header {
+        position: relative;
+        overflow: hidden;
+        padding: 38px;
+        margin-bottom: 25px;
+        border-radius: 20px;
+        color: white;
+        background:
+            radial-gradient(circle at 90% 10%, rgba(255,255,255,.13), transparent 28%),
+            linear-gradient(125deg, #071d3b, #174d80 65%, #246b9e);
+        box-shadow: 0 14px 35px rgba(7,29,59,.15);
+    }
+
+    .feedback-header .eyebrow {
+        display: inline-block;
+        padding: 7px 12px;
+        margin-bottom: 15px;
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 30px;
+        background: rgba(255,255,255,.1);
+        color: #e0edff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.3px;
+    }
+
+    .feedback-header h1 {
+        margin: 0 0 11px;
+        color: #fff;
+        font-size: clamp(25px, 4vw, 34px);
+        font-weight: 850;
+    }
+
+    .feedback-header p {
+        max-width: 680px;
+        margin: 0;
+        color: rgba(255,255,255,.8);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    /* ACTIVITY SUMMARY */
+
+    .activity-summary {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr);
+        gap: 22px;
+        padding: 21px;
+        margin-bottom: 24px;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: var(--surface);
+        box-shadow: var(--shadow-xs);
+    }
+
+    .activity-photo {
+        overflow: hidden;
+        min-height: 155px;
+        border-radius: 12px;
+        background: #edf3f9;
+    }
+
+    .activity-photo img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 155px;
+        object-fit: cover;
+    }
+
+    .photo-placeholder {
+        display: grid;
+        min-height: 155px;
+        place-items: center;
+        color: #8b9bae;
+        font-size: 35px;
+    }
+
+    .activity-information {
+        align-self: center;
+        min-width: 0;
+    }
+
+    .activity-label {
+        display: inline-block;
+        margin-bottom: 9px;
+        color: #557b9f;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    .activity-information h2 {
+        margin: 0 0 12px;
+        color: var(--blue-950);
+        font-size: 19px;
+        font-weight: 850;
+        line-height: 1.4;
+    }
+
+    .activity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px 17px;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .activity-meta span {
+        overflow-wrap: anywhere;
+    }
+
+    /* FORM CARD */
+
+    .feedback-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: 0 7px 25px rgba(15,39,70,.045);
+    }
+
+    .form-heading {
+        padding: 23px 27px;
+        border-bottom: 1px solid var(--border);
+        background: #fbfcfe;
+    }
+
+    .form-heading h2 {
+        margin: 0 0 6px;
+        color: var(--blue-950);
+        font-size: 18px;
+        font-weight: 850;
+    }
+
+    .form-heading p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .feedback-form {
+        padding: 27px;
+    }
+
+    .form-section {
+        margin-bottom: 27px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 17px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e8eef5;
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 850;
+    }
+
+    .section-number {
+        display: grid;
+        width: 27px;
+        height: 27px;
+        place-items: center;
+        border-radius: 8px;
+        background: #edf4ff;
+        color: #245782;
+        font-size: 11px;
+        font-weight: 850;
+    }
+
+    /* INPUTS */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .form-field {
+        min-width: 0;
+    }
+
+    .form-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .form-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .required {
+        color: #c24141;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        min-height: 45px;
+        padding: 12px 13px;
+        border: 1px solid #dce5ef;
+        border-radius: 9px;
+        outline: none;
+        background: #fff;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 12px;
+        transition: .2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #4384c5;
+        box-shadow: 0 0 0 3px rgba(67,132,197,.1);
+    }
+
+    .form-control::placeholder {
+        color: #9aa8b7;
+    }
+
+    textarea.form-control {
+        min-height: 115px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .field-help {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    /* STAR RATING */
+
+    .rating-panel {
+        padding: 20px;
+        border: 1px solid #e5edf5;
+        border-radius: 13px;
+        background: #f8fbff;
+    }
+
+    .rating-panel > p {
+        margin: 0 0 15px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .rating-options {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 7px;
+    }
+
+    .rating-options input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+    }
+
+    .rating-options label {
+        display: grid;
+        width: 43px;
+        height: 43px;
+        place-items: center;
+        margin: 0;
+        border: 1px solid #dce5ef;
+        border-radius: 10px;
+        background: white;
+        color: #b8c2ce;
+        font-size: 25px;
+        cursor: pointer;
+        transition: .18s ease;
+    }
+
+    .rating-options label:hover,
+    .rating-options label:hover ~ label,
+    .rating-options input:checked ~ label {
+        border-color: #f3c95b;
+        background: #fff5d9;
+        color: #e6a927;
+    }
+
+    .rating-options input:focus-visible + label {
+        outline: 3px solid rgba(67,132,197,.3);
+        outline-offset: 3px;
+    }
+
+    .rating-description {
+        min-height: 20px;
+        margin-top: 12px;
+        color: #55718d;
+        font-size: 11px;
+        font-weight: 750;
+    }
+
+    /* PRIVACY NOTE */
+
+    .privacy-note {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 15px 17px;
+        margin-top: 22px;
+        border: 1px solid #dce9f5;
+        border-radius: 11px;
+        background: #f4f9ff;
+        color: #42617e;
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .privacy-note strong {
+        color: var(--blue-950);
+    }
+
+    .privacy-icon {
+        flex-shrink: 0;
+        font-size: 19px;
+    }
+
+    /* BUTTONS */
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 22px;
+        margin-top: 26px;
+        border-top: 1px solid var(--border);
+    }
+
+    .form-actions p {
+        max-width: 390px;
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 850;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .btn-submit {
+        background: var(--blue-800);
+        color: #fff;
+        box-shadow: 0 6px 15px rgba(12,55,104,.14);
+    }
+
+    .btn-submit:hover {
+        background: var(--blue-950);
+        transform: translateY(-2px);
+    }
+
+    .btn-cancel {
+        border-color: var(--border);
+        background: #fff;
+        color: var(--blue-800);
+    }
+
+    .btn-cancel:hover {
+        background: var(--blue-50);
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        padding: 50px 25px;
+        border: 1px dashed #cbd8e6;
+        border-radius: 17px;
+        background: #fff;
+        text-align: center;
+    }
+
+    .empty-state h2 {
+        margin: 0 0 10px;
+        color: var(--blue-950);
+        font-size: 19px;
+    }
+
+    .empty-state p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 700px) {
+        .feedback-page {
+            margin-top: 22px;
+            padding: 0 14px;
+        }
+
+        .feedback-header {
+            padding: 27px 22px;
+        }
+
+        .activity-summary {
+            grid-template-columns: 1fr;
+            gap: 15px;
+            padding: 16px;
+        }
+
+        .activity-photo,
+        .activity-photo img {
+            min-height: 190px;
+            max-height: 230px;
+        }
+
+        .form-heading {
+            padding: 20px;
+        }
+
+        .feedback-form {
+            padding: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field.full {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .button-group .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .rating-options {
+            gap: 5px;
+        }
+
+        .rating-options label {
+            width: 37px;
+            height: 39px;
+            font-size: 22px;
+        }
+
+        .button-group {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .feedback-page *,
+        .feedback-page *::before,
+        .feedback-page *::after {
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="feedback-page">
+
+    <!-- PAGE HEADER -->
+
+    <header class="feedback-header">
+
+        <span class="eyebrow">
+            DEMOKRATIA · CITIZEN FEEDBACK PORTAL
+        </span>
+
+        <h1>Share Your Feedback</h1>
+
+        <p>
+            Your feedback helps improve public services, encourage
+            accountable administration and recognise the work of
+            government officers. Share your experience about this activity.
+        </p>
+
+    </header>
+
+
+    {% if activity %}
+
+        <!-- SELECTED ACTIVITY -->
+
+        <section class="activity-summary">
+
+            <div class="activity-photo">
+
+                {% if activity.image %}
+                    <img
+                        src="{{ activity.image.url }}"
+                        alt="{{ activity.name_of_activity }}"
+                    >
+                {% else %}
+                    <div class="photo-placeholder">▧</div>
+                {% endif %}
+
+            </div>
+
+            <div class="activity-information">
+
+                <span class="activity-label">
+                    Activity selected for feedback
+                </span>
+
+                <h2>{{ activity.name_of_activity }}</h2>
+
+                <div class="activity-meta">
+
+                    <span>
+                        <strong>Reference:</strong>
+                        {{ activity.reference_number }}
+                    </span>
+
+                    <span>
+                        <strong>Department:</strong>
+                        {{ activity.department }}
+                    </span>
+
+                    <span>
+                        <strong>Date:</strong>
+                        {{ activity.date|date:"d M Y" }}
+                    </span>
+
+                    <span>
+                        <strong>Location:</strong>
+                        {{ activity.map_location|default:"Not specified" }}
+                    </span>
+                    <span>
+                        <strong>Image:</strong>
+                        {{ activity.image|default:"Not specified" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FEEDBACK FORM -->
+
+        <section class="feedback-card">
+
+            <div class="form-heading">
+
+                <h2>Activity Review Form</h2>
+
+                <p>
+                    Please complete the fields below. Fields marked with
+                    an asterisk (*) are required.
+                </p>
+
+            </div>
+
+
+            <form
+                class="feedback-form"
+                method="POST"
+                action=""
+                id="citizen-feedback-form"
+            >
+
+                {% csrf_token %}
+
+                <!-- SELECTED ACTIVITY IDENTIFIER -->
+
+                <input
+                    type="hidden"
+                    name="activity_id"
+                    value="{{ activity.pk }}"
+                >
+
+
+                <!-- CITIZEN INFORMATION -->
+
+                <section class="form-section">
+
+                    <h3 class="section-title">
+                        <span class="section-number">01</span>
+                        Citizen Information
+                    </h3>
+
+                    <div class="form-grid">
+
+                        <div class="form-field">
+
+                            <label for="citizen-name">
+                                Full Name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="citizen-name"
+                                name="name"
+                                class="form-control"
+                                value="{{ citizen.name|default:'' }}"
+                                placeholder="Enter your full name"
+                                maxlength="100"
+                                autocomplete="name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-field">
+
+                            <label for="citizen-email">
+                                Email Address <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="citizen-email"
+                                name="email"
+                                class="form-control"
+                                value="{{ citizen.email|default:'' }}"
+                                placeholder="Enter your email address"
+                                autocomplete="email"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- FEEDBACK MESSAGE -->
+
+                <section class="form-section">
+
+                    <h3 class="section-title">
+                        <span class="section-number">02</span>
+                        Your Feedback
+                    </h3>
+
+                    <div class="form-grid">
+
+                        <div class="form-field full">
+
+                            <label for="feedback-message">
+                                Feedback Message
+                                <span class="required">*</span>
+                            </label>
+
+                            <textarea
+                                id="feedback-message"
+                                name="message"
+                                class="form-control"
+                                placeholder="Write a short summary of your feedback..."
+                                required
+                            ></textarea>
+
+                            <small class="field-help">
+                                Briefly describe the purpose of your feedback.
+                            </small>
+
+                        </div>
+
+
+                        <div class="form-field full">
+
+                            <label for="feedback-text">
+                                Detailed Activity Review
+                                <span class="required">*</span>
+                            </label>
+
+                            <textarea
+                                id="feedback-text"
+                                name="feedback_text"
+                                class="form-control"
+                                placeholder="Describe your experience with this activity. Was the work useful? Was the issue addressed? How did it benefit the community?"
+                                required
+                            ></textarea>
+
+                            <small class="field-help">
+                                Include details about the officer's work,
+                                service quality and the impact of the activity.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- RATING -->
+
+                <section class="form-section">
+
+                    <h3 class="section-title">
+                        <span class="section-number">03</span>
+                        Rate This Activity
+                    </h3>
+
+                    <div class="rating-panel">
+
+                        <p>
+                            How would you rate the quality and usefulness
+                            of this officer's activity?
+                        </p>
+
+                        <div
+                            class="rating-options"
+                            role="radiogroup"
+                            aria-label="Activity rating"
+                        >
+
+                            <input
+                                type="radio"
+                                name="rating"
+                                id="rating-5"
+                                value="5"
+                                required
+                            >
+                            <label for="rating-5" title="Excellent">★</label>
+
+                            <input
+                                type="radio"
+                                name="rating"
+                                id="rating-4"
+                                value="4"
+                            >
+                            <label for="rating-4" title="Very good">★</label>
+
+                            <input
+                                type="radio"
+                                name="rating"
+                                id="rating-3"
+                                value="3"
+                            >
+                            <label for="rating-3" title="Good">★</label>
+
+                            <input
+                                type="radio"
+                                name="rating"
+                                id="rating-2"
+                                value="2"
+                            >
+                            <label for="rating-2" title="Fair">★</label>
+
+                            <input
+                                type="radio"
+                                name="rating"
+                                id="rating-1"
+                                value="1"
+                            >
+                            <label for="rating-1" title="Poor">★</label>
+
+                        </div>
+
+                        <div
+                            class="rating-description"
+                            id="rating-description"
+                            aria-live="polite"
+                        >
+                            Select a rating from 1 to 5 stars.
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- IMPROVEMENT SUGGESTIONS -->
+
+                <section class="form-section">
+
+                    <h3 class="section-title">
+                        <span class="section-number">04</span>
+                        Improvement Suggestions
+                    </h3>
+
+                    <div class="form-field">
+
+                        <label for="improvement-suggestions">
+                            Suggestions (Optional)
+                        </label>
+
+                        <textarea
+                            id="improvement-suggestions"
+                            name="improvement_suggestions"
+                            class="form-control"
+                            placeholder="What could be improved? Share any suggestions that might help officers deliver better public services..."
+                        ></textarea>
+
+                        <small class="field-help">
+                            Your constructive suggestions can help improve
+                            future government activities and services.
+                        </small>
+
+                    </div>
+
+                </section>
+                <!-- IMAGE -->
+                 <section class="form-section">
+
+                    <h3 class="section-title">
+                        <span class="section-number">05</span>
+                        Upload Image (Optional)
+                    </h3>
+
+                    <div class="form-field">
+
+                        <label for="feedback-image">
+                            Edit an image (JPEG, PNG, GIF)
+                        </label>
+
+                        <input
+                            type="file"
+                            id="feedback-image"
+                            name="feedback_image"
+                            class="form-control"
+                            accept=".jpg,.jpeg,.png,.gif"
+                        >
+
+                        <small class="field-help">
+                            You can upload an image related to the activity
+                            or your feedback. Maximum file size: 15MB.
+                        </small>
+
+                    </div>
+
+
+                <!-- PRIVACY NOTE -->
+
+                <div class="privacy-note">
+
+                    <span class="privacy-icon">ⓘ</span>
+
+                    <div>
+                        <strong>Citizen feedback and accountability</strong><br>
+
+                        Your feedback will be associated with your citizen
+                        account and the selected activity. Please provide
+                        genuine and respectful feedback based on your experience.
+                    </div>
+
+                </div>
+
+
+                <!-- FORM BUTTONS -->
+
+                <div class="form-actions">
+
+                    <p>
+                        Please review your feedback before submitting.
+                        Your rating and comments help maintain transparency
+                        in public-service delivery.
+                    </p>
+
+                    <div class="button-group">
+
+                        <button
+                            type="reset"
+                            class="btn btn-cancel"
+                            id="reset-feedback"
+                        >
+                            Clear Form
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-submit"
+                        >
+                            Submit Feedback →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </section>
+
+    {% else %}
+
+        <!-- NO ACTIVITY SELECTED -->
+
+        <div class="empty-state">
+
+            <h2>No Activity Selected</h2>
+
+            <p>
+                Please return to the officer activities page and choose
+                an activity before submitting your feedback.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* STAR RATING DESCRIPTION */
+
+    const ratingInputs = document.querySelectorAll(
+        'input[name="rating"]'
+    );
+
+    const ratingDescription = document.getElementById(
+        "rating-description"
+    );
+
+    const ratingLabels = {
+        1: "Poor — The activity needs significant improvement.",
+        2: "Fair — Some improvements are needed.",
+        3: "Good — The activity meets expectations.",
+        4: "Very good — The activity was handled effectively.",
+        5: "Excellent — Outstanding public-service activity."
+    };
+
+    ratingInputs.forEach(function (input) {
+
+        input.addEventListener("change", function () {
+
+            ratingDescription.textContent =
+                ratingLabels[input.value];
+
+        });
+
+    });
+
+
+    /* RESET RATING DESCRIPTION */
+
+    const resetButton = document.getElementById("reset-feedback");
+
+    if (resetButton) {
+
+        resetButton.addEventListener("click", function () {
+
+            setTimeout(function () {
+
+                ratingDescription.textContent =
+                    "Select a rating from 1 to 5 stars.";
+
+            }, 0);
+
+        });
+
+    }
+
+});
+</script>
+
+{% endblock %}

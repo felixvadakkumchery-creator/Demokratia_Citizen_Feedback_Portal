@@ -1,0 +1,819 @@
+
+{% extends 'citizen/common.html' %}
+
+{% block title %}{% if public_view %}Officer Activities{% else %}My Activities{% endif %} | Demokratia{% endblock %}
+
+{% block extra_css %}
+<style>
+    .my-activities-page {
+        max-width: 1250px;
+        margin: 35px auto 70px;
+        padding: 0 22px;
+        color: var(--text);
+    }
+
+    /* PAGE HEADER */
+
+    .page-header {
+        background: linear-gradient(120deg, var(--blue-950), var(--blue-700));
+        color: white;
+        padding: 35px;
+        border-radius: var(--radius-xl);
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        font-size: 29px;
+        margin: 0 0 10px;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        color: rgba(255,255,255,.82);
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .header-label {
+        display: inline-block;
+        font-size: 11px;
+        letter-spacing: 1px;
+        padding: 7px 12px;
+        background: rgba(255,255,255,.13);
+        border-radius: 30px;
+        margin-bottom: 14px;
+    }
+
+    /* STATISTICS */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 26px;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--blue-50);
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .stat-card h2 {
+        color: var(--blue-950);
+        margin: 0 0 5px;
+        font-size: 17px;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-card p {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    /* TOOLBAR */
+
+    .activity-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        background: var(--surface);
+        padding: 19px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 22px;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 350px;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .search-input:focus {
+        border-color: var(--blue-600);
+    }
+
+    .filter-select {
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13px;
+    }
+
+    /* ACTIVITY CARD */
+
+    .activity-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 25px;
+        margin-bottom: 22px;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .activity-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        flex-wrap: wrap;
+        padding-bottom: 17px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .activity-title {
+        color: var(--blue-950);
+        font-size: 19px;
+        font-weight: 800;
+        margin: 0 0 10px;
+    }
+
+    .activity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 13px;
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 25px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        white-space: nowrap;
+    }
+
+    .status-completed {
+        color: #166534;
+        background: #dcfce7;
+    }
+
+    .status-ongoing {
+        color: #92400e;
+        background: #fef3c7;
+    }
+
+    .status-pending {
+        color: #9f1239;
+        background: #ffe4e6;
+    }
+
+    .activity-details {
+        padding: 18px 0;
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .activity-details p {
+        margin: 7px 0;
+        white-space: pre-line;
+    }
+
+    .activity-details strong {
+        color: var(--blue-950);
+    }
+
+    .activity-details-toggle {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+    }
+
+    .activity-details-toggle summary {
+        width: fit-content;
+        list-style: none;
+        cursor: pointer;
+    }
+
+    .activity-details-toggle summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .activity-details-toggle[open] summary {
+        margin-bottom: 12px;
+    }
+
+    .activity-image {
+        display: block;
+        max-width: 100%;
+        max-height: 340px;
+        margin-top: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        object-fit: contain;
+    }
+
+    .activity-evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+    }
+
+    .activity-evidence-grid figure {
+        min-width: 0;
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .activity-evidence-grid figcaption {
+        margin-bottom: 7px;
+        color: var(--blue-900);
+        font-weight: 800;
+    }
+
+    @media (max-width: 600px) {
+        .activity-evidence-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* BEFORE AND AFTER */
+
+    .evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin: 15px 0 22px;
+    }
+
+    .evidence-box {
+        background: var(--blue-50);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 18px;
+        min-width: 0;
+    }
+
+    .evidence-box.before {
+        border-top: 4px solid var(--saffron);
+    }
+
+    .evidence-box.after {
+        border-top: 4px solid var(--green);
+    }
+
+    .evidence-box h3 {
+        color: var(--blue-950);
+        font-size: 15px;
+        margin: 0 0 12px;
+    }
+
+    .evidence-description {
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.7;
+        white-space: pre-line;
+        margin-bottom: 14px;
+    }
+
+    .evidence-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+        gap: 10px;
+    }
+
+    .evidence-images a {
+        display: block;
+        overflow: hidden;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        background: var(--white);
+    }
+
+    .evidence-images img {
+        display: block;
+        width: 100%;
+        height: 105px;
+        object-fit: cover;
+        transition: var(--transition);
+    }
+
+    .evidence-images img:hover {
+        transform: scale(1.05);
+    }
+
+    .no-images {
+        color: var(--text-muted);
+        font-size: 12px;
+        padding: 10px 0;
+    }
+
+    /* ACTION BUTTONS */
+
+    .activity-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top: 1px solid var(--border);
+        padding-top: 19px;
+    }
+
+    .before-after-editor {
+        flex: 1 1 100%;
+    }
+
+    .before-after-editor summary {
+        width: fit-content;
+        list-style: none;
+    }
+
+    .before-after-editor summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .before-after-editor-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 13px;
+        margin-top: 14px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--blue-50);
+    }
+
+    .before-after-editor-form label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .before-after-editor-form textarea,
+    .before-after-editor-form input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: white;
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+    }
+
+    .before-after-editor-form textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .before-after-editor-form .editor-submit {
+        justify-self: start;
+        align-self: end;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 11px 17px;
+        border-radius: var(--radius-md);
+        border: none;
+        text-decoration: none;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .edit-btn {
+        background: var(--blue-800);
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background: var(--blue-950);
+    }
+
+    .delete-btn {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .delete-btn:hover {
+        background: #fecaca;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-xl);
+    }
+
+    .empty-icon {
+        font-size: 42px;
+        margin-bottom: 14px;
+    }
+
+    .empty-state h2 {
+        color: var(--blue-950);
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .empty-state a {
+        display: inline-block;
+        text-decoration: none;
+        margin-top: 15px;
+        padding: 12px 20px;
+        background: var(--blue-800);
+        color: white;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 750px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .evidence-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header {
+            padding: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 23px;
+        }
+
+        .activity-card {
+            padding: 18px;
+        }
+
+        .activity-toolbar {
+            align-items: stretch;
+        }
+
+        .search-input {
+            max-width: 100%;
+        }
+
+        .activity-actions {
+            flex-direction: column;
+        }
+
+        .activity-actions .action-btn {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="my-activities-page">
+
+    <!-- PAGE HEADER -->
+
+    <header class="page-header">
+
+        <span class="header-label">
+            {% if public_view %}DEMOCRATIA · CITIZEN PORTAL{% else %}DEMOCRATIA · OFFICER PORTAL{% endif %}
+        </span>
+
+        <h1>{% if public_view %}Officer Activities{% else %}My Activities{% endif %}</h1>
+
+        {% if public_view %}
+            <p>Browse activity reports submitted by government officers and share feedback on individual activities.</p>
+        {% else %}
+            <p>
+                Manage your official activity records, review your work
+                history, compare before-and-after evidence and maintain
+                transparent public service records.
+            </p>
+        {% endif %}
+
+    </header>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <h2>{{ total_activities|default:"0" }}</h2>
+            <p>Total Activities</p>
+        </div>
+
+        {% if not public_view %}
+            <div class="stat-card">
+                <div class="stat-icon">▤</div>
+                <h2>{{ officer.department|default:"Not assigned" }}</h2>
+                <p>Department</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⌖</div>
+                <h2>{{ officer.district|default:"Not assigned" }}</h2>
+                <p>District</p>
+            </div>
+        {% endif %}
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="activity-toolbar">
+        <input
+            type="search"
+            id="activitySearch"
+            class="search-input"
+            placeholder="Search by activity or location..."
+            aria-label="Search activities"
+        >
+    </div>
+
+
+    <!-- ACTIVITY LIST -->
+
+    <div id="activityList">
+
+        {% for activity in my_activities %}
+
+            <article
+                class="activity-card activity-item"
+                data-title="{{ activity.name_of_activity|lower }}"
+                data-location="{{ activity.map_location|lower }}"
+            >
+
+                <div class="activity-card-header">
+                    <div>
+                        <h2 class="activity-title">{{ activity.name_of_activity }}</h2>
+
+                        <div class="activity-meta">
+                            <span>📅 {{ activity.date|date:"d M Y" }}</span>
+                            <span>📍 {{ activity.map_location|default:"Location not specified" }}</span>
+                            <span>Ref: {{ activity.reference_number }}</span>
+                            <span>Duration: {{ activity.duration }}</span>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ACTIVITY DETAILS -->
+
+                <details class="activity-details-toggle">
+
+                    <summary class="action-btn edit-btn">View details</summary>
+
+                    <div class="activity-details">
+
+                        <p>{{ activity.description|default:"No report description provided."|linebreaksbr }}</p>
+
+                        {% if activity.before_description %}
+                            <p><strong>Before:</strong> {{ activity.before_description|linebreaksbr }}</p>
+                        {% endif %}
+
+                        {% if activity.after_description %}
+                            <p><strong>After:</strong> {{ activity.after_description|linebreaksbr }}</p>
+                        {% endif %}
+
+                        <p>
+                            <strong>Department:</strong> {{ activity.department }}
+                            <span aria-hidden="true"> · </span>
+                            <strong>Location:</strong>
+                            {{ activity.village }}{% if activity.taluk %}, {{ activity.taluk }}{% endif %}{% if activity.district %}, {{ activity.district }}{% endif %}{% if activity.state %}, {{ activity.state }}{% endif %}
+                        </p>
+
+                    </div>
+
+
+                    <!-- BEFORE AND AFTER IMAGES -->
+
+                    {% if activity.before_image or activity.after_image %}
+
+                        <div class="activity-evidence-grid">
+
+                            {% if activity.before_image %}
+                                <figure>
+                                    <figcaption>Before photograph</figcaption>
+
+                                    <a href="{{ activity.before_image.url }}" target="_blank" rel="noopener noreferrer">
+                                        <img
+                                            class="activity-image"
+                                            src="{{ activity.before_image.url }}"
+                                            alt="Before evidence for {{ activity.name_of_activity }}"
+                                            loading="lazy"
+                                        >
+                                    </a>
+                                </figure>
+                            {% endif %}
+
+                            {% if activity.after_image %}
+                                <figure>
+                                    <figcaption>After photograph</figcaption>
+
+                                    <a href="{{ activity.after_image.url }}" target="_blank" rel="noopener noreferrer">
+                                        <img
+                                            class="activity-image"
+                                            src="{{ activity.after_image.url }}"
+                                            alt="After evidence for {{ activity.name_of_activity }}"
+                                            loading="lazy"
+                                        >
+                                    </a>
+                                </figure>
+                            {% endif %}
+
+                        </div>
+
+                    {% elif activity.image %}
+
+                        <a href="{{ activity.image.url }}" target="_blank" rel="noopener noreferrer">
+                            <img
+                                class="activity-image"
+                                src="{{ activity.image.url }}"
+                                alt="Evidence for {{ activity.name_of_activity }}"
+                                loading="lazy"
+                            >
+                        </a>
+
+                    {% endif %}
+
+                </details>
+
+
+                <!-- CITIZEN ACTIONS -->
+
+                {% if public_view %}
+
+                    <div class="activity-actions">
+
+                        <!-- GIVE FEEDBACK BUTTON -->
+
+                        <a
+                            href="{% url 'add_citizen_feedback' %}?activity_id={{ activity.id }}"
+                            class="action-btn edit-btn"
+                        >
+                            💬 Give Feedback
+                        </a>
+
+                        {% if can_manage_activities %}
+
+                            <form
+                                method="POST"
+                                action="{% url 'delete_officeractivity' activity.pk %}"
+                                onsubmit="return confirm('Delete this activity report? This action cannot be undone.');"
+                            >
+                                {% csrf_token %}
+                            </form>
+
+                        {% endif %}
+
+                    </div>
+
+
+                {% else %}
+
+                {% endif %}
+
+            </article>
+
+        {% empty %}
+
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+
+                <h2>No Activities Found</h2>
+
+                <p>You have not submitted any activity reports yet. Your submitted activities will appear here.</p>
+
+                <a href="{% url 'add_officer_activity' %}">＋ Add New Activity</a>
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- NO SEARCH RESULTS -->
+
+    <div
+        id="noSearchResults"
+        class="empty-state"
+        style="display:none;"
+    >
+
+        <div class="empty-icon">🔍</div>
+
+        <h2>No Matching Activities</h2>
+
+        <p>
+            Try a different activity title, location or status.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ACTIVITY SEARCH */
+
+    const searchInput = document.getElementById("activitySearch");
+
+    const activityCards = document.querySelectorAll(".activity-item");
+    const noResults = document.getElementById("noSearchResults");
+
+    function filterActivities() {
+
+        const searchText = searchInput.value.toLowerCase().trim();
+
+        let visibleCount = 0;
+
+        activityCards.forEach(function (card) {
+
+            const title = card.dataset.title || "";
+            const location = card.dataset.location || "";
+
+            const matchesSearch =
+                title.includes(searchText) ||
+                location.includes(searchText);
+
+            if (matchesSearch) {
+
+                card.style.display = "";
+                visibleCount++;
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+        noResults.style.display =
+            visibleCount === 0 && activityCards.length > 0
+                ? "block"
+                : "none";
+    }
+
+    searchInput.addEventListener("input", filterActivities);
+
+});
+</script>
+
+{% endblock %}

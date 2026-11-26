@@ -1,0 +1,371 @@
+
+{% extends 'officer/common.html' %}
+
+{% block title %}Citizen Feedback | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-container {
+        max-width: 1200px;
+        margin: 35px auto;
+        padding: 0 18px;
+    }
+
+    .feedback-header {
+        background: linear-gradient(110deg, #12345a, #1969a8);
+        color: white;
+        padding: 30px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+    }
+
+    .feedback-header h1 {
+        margin: 0 0 10px;
+        font-size: 28px;
+    }
+
+    .feedback-header p {
+        margin: 0;
+        font-size: 14px;
+        opacity: .9;
+    }
+
+    .stats-card {
+        background: white;
+        border: 1px solid #dce5ef;
+        border-radius: 13px;
+        padding: 22px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 15px rgba(0,0,0,.04);
+    }
+
+    .stats-card h3 {
+        color: #64748b;
+        font-size: 14px;
+        margin: 0 0 8px;
+    }
+
+    .stats-number {
+        color: #1769aa;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .feedback-card {
+        background: white;
+        border: 1px solid #dce5ef;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 22px;
+        box-shadow: 0 5px 18px rgba(0,0,0,.04);
+    }
+
+    .feedback-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #e8edf3;
+        padding-bottom: 17px;
+        margin-bottom: 20px;
+    }
+
+    .feedback-top h3 {
+        color: #174d7d;
+        margin: 0 0 8px;
+        font-size: 19px;
+    }
+
+    .activity-label {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .feedback-date {
+        color: #718096;
+        font-size: 13px;
+    }
+
+    .citizen-info {
+        background: #f3f7fc;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 18px;
+    }
+
+    .citizen-info p {
+        margin: 6px 0;
+        color: #425466;
+        font-size: 14px;
+    }
+
+    .section-title {
+        color: #234466;
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .feedback-content {
+        color: #475569;
+        font-size: 14px;
+        line-height: 1.7;
+        margin-bottom: 18px;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+
+    .rating {
+        display: inline-block;
+        background: #fff7df;
+        color: #946200;
+        padding: 7px 13px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .suggestions {
+        background: #edf5ff;
+        border-left: 4px solid #1976b9;
+        padding: 15px;
+        border-radius: 8px;
+        color: #345674;
+        font-size: 14px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        margin-bottom: 18px;
+    }
+
+    .feedback-image {
+        margin-top: 15px;
+    }
+
+    .feedback-image img {
+        max-width: 260px;
+        max-height: 220px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #dce5ef;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .empty-state {
+        background: white;
+        text-align: center;
+        padding: 55px 20px;
+        border: 1px solid #dce5ef;
+        border-radius: 15px;
+    }
+
+    .empty-state h3 {
+        color: #234466;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #718096;
+        font-size: 14px;
+    }
+
+    .error-message {
+        background: #fff0f0;
+        color: #b42318;
+        padding: 15px;
+        border-radius: 9px;
+        margin-bottom: 20px;
+    }
+
+    @media(max-width: 600px) {
+        .feedback-header {
+            padding: 22px;
+        }
+
+        .feedback-header h1 {
+            font-size: 23px;
+        }
+
+        .feedback-card {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="feedback-container">
+
+    <!-- PAGE HEADER -->
+    <div class="feedback-header">
+        <h1>💬 Citizen Feedback</h1>
+        <p>
+            View feedback, ratings and suggestions submitted by citizens
+            regarding your activities.
+        </p>
+    </div>
+
+
+    <!-- ERROR MESSAGE -->
+    {% if error_message %}
+        <div class="error-message">
+            {{ error_message }}
+        </div>
+    {% endif %}
+
+
+    {% if not error_message %}
+
+        <!-- FEEDBACK STATISTICS -->
+        <div class="stats-card">
+            <h3>Total Citizen Feedback Received</h3>
+
+            <div class="stats-number">
+                {{ total_feedback }}
+            </div>
+        </div>
+
+
+        <!-- FEEDBACK LIST -->
+        {% if feedbacks %}
+
+            {% for feedback in feedbacks %}
+
+                <div class="feedback-card">
+
+                    <!-- ACTIVITY INFORMATION -->
+                    <div class="feedback-top">
+
+                        <div>
+                            <h3>
+                                {% if feedback.activity %}
+                                    {{ feedback.activity.name_of_activity }}
+                                {% else %}
+                                    Activity unavailable
+                                {% endif %}
+                            </h3>
+
+                            <div class="activity-label">
+                                Officer Activity Feedback
+                            </div>
+                        </div>
+
+                        <div class="feedback-date">
+                            📅 {{ feedback.timestamp|date:"d M Y, h:i A" }}
+                        </div>
+
+                    </div>
+
+
+                    <!-- CITIZEN INFORMATION -->
+                    <div class="citizen-info">
+
+                        <p>
+                            <strong>Citizen Name:</strong>
+
+                            {% if feedback.citizen %}
+                                {{ feedback.citizen.name }}
+                            {% else %}
+                                {{ feedback.name }} (Anonymous submission)
+                            {% endif %}
+                        </p>
+
+                        <p>
+                            <strong>Email:</strong>
+                            {{ feedback.email }}
+                        </p>
+
+                    </div>
+
+
+                    <!-- RATING -->
+                    <div class="section-title">
+                        Citizen Rating
+                    </div>
+
+                    <div class="rating">
+                        ⭐ {{ feedback.rating }} / 5
+                    </div>
+
+
+                    <!-- MESSAGE -->
+                    <div class="section-title">
+                        Message
+                    </div>
+
+                    <div class="feedback-content">
+                        {{ feedback.message|default:"No message provided." }}
+                    </div>
+
+
+                    <!-- FEEDBACK -->
+                    <div class="section-title">
+                        Citizen Feedback
+                    </div>
+
+                    <div class="feedback-content">
+                        {{ feedback.feedback_text|default:"No feedback provided." }}
+                    </div>
+
+
+                    <!-- IMPROVEMENT SUGGESTIONS -->
+                    {% if feedback.improvement_suggestions %}
+
+                        <div class="section-title">
+                            Improvement Suggestions
+                        </div>
+
+                        <div class="suggestions">
+                            {{ feedback.improvement_suggestions }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- FEEDBACK IMAGE -->
+                    {% if feedback.image %}
+
+                        <div class="feedback-image">
+
+                            <div class="section-title">
+                                Attached Citizen Image
+                            </div>
+
+                            <img src="{{ feedback.image.url }}"
+                                 alt="Citizen feedback attachment">
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <!-- EMPTY STATE -->
+            <div class="empty-state">
+
+                <h3>📭 No Citizen Feedback Yet</h3>
+
+                <p>
+                    Citizens have not submitted any feedback
+                    about your activities yet.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

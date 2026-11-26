@@ -1,0 +1,1103 @@
+
+
+{% extends 'officer/common.html' %}
+
+{% block title %}My Activity History | Demokratia{% endblock %}
+
+{% block extra_css %}
+<style>
+    .my-activities-page {
+        max-width: 1250px;
+        margin: 35px auto 70px;
+        padding: 0 22px;
+        color: var(--text);
+    }
+
+    /* PAGE HEADER */
+
+    .page-header {
+        background: linear-gradient(120deg, var(--blue-950), var(--blue-700));
+        color: white;
+        padding: 35px;
+        border-radius: var(--radius-xl);
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        font-size: 29px;
+        margin: 0 0 10px;
+        font-weight: 800;
+    }
+
+    .page-header p {
+        color: rgba(255,255,255,.82);
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.7;
+    }
+
+    .header-label {
+        display: inline-block;
+        font-size: 11px;
+        letter-spacing: 1px;
+        padding: 7px 12px;
+        background: rgba(255,255,255,.13);
+        border-radius: 30px;
+        margin-bottom: 14px;
+    }
+
+    /* STATISTICS */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 26px;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        box-shadow: var(--shadow-xs);
+        min-width: 0;
+    }
+
+    .stat-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--blue-50);
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .stat-card h2 {
+        color: var(--blue-950);
+        margin: 0 0 5px;
+        font-size: 17px;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-card p {
+        color: var(--text-muted);
+        font-size: 13px;
+        margin: 0;
+    }
+
+    /* SEARCH TOOLBAR */
+
+    .activity-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        background: var(--surface);
+        padding: 19px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 22px;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 450px;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+    }
+
+    .search-input:focus {
+        border-color: var(--blue-600);
+    }
+
+    .result-count {
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    /* ACTIVITY CARD */
+
+    .activity-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 25px;
+        margin-bottom: 22px;
+        box-shadow: var(--shadow-xs);
+        min-width: 0;
+    }
+
+    .activity-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        flex-wrap: wrap;
+        padding-bottom: 17px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .activity-title {
+        color: var(--blue-950);
+        font-size: 19px;
+        font-weight: 800;
+        margin: 0 0 10px;
+    }
+
+    .reference-number {
+        display: inline-block;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 800;
+        margin-bottom: 9px;
+    }
+
+    .activity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 13px;
+        color: var(--text-muted);
+        font-size: 12px;
+    }
+
+    /* ACTIVITY DETAILS */
+
+    .activity-details {
+        padding: 18px 0;
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .activity-details p {
+        margin: 7px 0;
+        white-space: pre-line;
+    }
+
+    .activity-details strong {
+        color: var(--blue-950);
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 13px;
+        margin: 17px 0;
+    }
+
+    .detail-box {
+        padding: 13px;
+        background: var(--blue-50);
+        border-radius: var(--radius-md);
+        min-width: 0;
+    }
+
+    .detail-label {
+        display: block;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+
+    .detail-value {
+        display: block;
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    /* MAIN ACTIVITY IMAGE */
+
+    .activity-image-section {
+        margin-top: 16px;
+    }
+
+    .activity-image-section h3 {
+        color: var(--blue-950);
+        font-size: 15px;
+        margin-bottom: 12px;
+    }
+
+    .activity-image {
+        display: block;
+        max-width: 100%;
+        max-height: 340px;
+        margin-top: 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        object-fit: contain;
+        background: var(--blue-50);
+    }
+
+    /* BEFORE AND AFTER */
+
+    .activity-evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 23px;
+    }
+
+    .evidence-box {
+        background: var(--blue-50);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 18px;
+        min-width: 0;
+    }
+
+    .evidence-box.before {
+        border-top: 4px solid var(--saffron);
+    }
+
+    .evidence-box.after {
+        border-top: 4px solid var(--green);
+    }
+
+    .evidence-box h3 {
+        color: var(--blue-950);
+        font-size: 15px;
+        margin: 0 0 12px;
+    }
+
+    .evidence-description {
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.7;
+        white-space: pre-line;
+        margin-bottom: 14px;
+    }
+
+    .evidence-box img {
+        display: block;
+        width: 100%;
+        max-height: 250px;
+        object-fit: contain;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        background: white;
+    }
+
+    .no-images {
+        color: var(--text-muted);
+        font-size: 12px;
+        padding: 15px;
+        text-align: center;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-md);
+    }
+
+    /* MAP LOCATION */
+
+    .map-location {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 13px;
+        background: var(--blue-50);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-top: 20px;
+    }
+
+    .map-location strong {
+        display: block;
+        color: var(--blue-950);
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+
+    .map-location span {
+        color: var(--text-soft);
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .map-link {
+        display: inline-block;
+        color: white;
+        background: var(--blue-800);
+        text-decoration: none;
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .map-link:hover {
+        background: var(--blue-950);
+    }
+
+    /* ACTION BUTTONS */
+
+    .activity-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        border-top: 1px solid var(--border);
+        padding-top: 19px;
+        margin-top: 22px;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 11px 17px;
+        border-radius: var(--radius-md);
+        border: none;
+        text-decoration: none;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .edit-btn {
+        background: var(--blue-800);
+        color: white;
+    }
+
+    .edit-btn:hover {
+        background: var(--blue-950);
+    }
+
+    .delete-btn {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .delete-btn:hover {
+        background: #fecaca;
+    }
+
+    /* BEFORE / AFTER INLINE EDITOR */
+
+    .before-after-editor {
+        flex: 1 1 100%;
+    }
+
+    .before-after-editor summary {
+        width: fit-content;
+        list-style: none;
+    }
+
+    .before-after-editor summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .before-after-editor-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 13px;
+        margin-top: 14px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--blue-50);
+    }
+
+    .before-after-editor-form label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .before-after-editor-form textarea,
+    .before-after-editor-form input {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 9px 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        background: white;
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+    }
+
+    .before-after-editor-form textarea {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .editor-submit {
+        justify-self: start;
+        align-self: end;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: var(--surface);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-xl);
+    }
+
+    .empty-icon {
+        font-size: 42px;
+        margin-bottom: 14px;
+    }
+
+    .empty-state h2 {
+        color: var(--blue-950);
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .empty-state a {
+        display: inline-block;
+        text-decoration: none;
+        margin-top: 15px;
+        padding: 12px 20px;
+        background: var(--blue-800);
+        color: white;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 750px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .details-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .activity-evidence-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header {
+            padding: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 23px;
+        }
+
+        .activity-card {
+            padding: 18px;
+        }
+
+        .activity-toolbar {
+            align-items: stretch;
+        }
+
+        .search-input {
+            max-width: 100%;
+        }
+
+        .activity-actions {
+            flex-direction: column;
+        }
+
+        .activity-actions > *,
+        .activity-actions form,
+        .activity-actions form button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="my-activities-page">
+
+    <!-- PAGE HEADER -->
+
+    <header class="page-header">
+
+        <span class="header-label">
+            DEMOKRATIA · OFFICER PORTAL
+        </span>
+
+        <h1>My Activity History</h1>
+
+        <p>
+            View and manage all your previously submitted official
+            activities. Review your activity reports, photographs,
+            before-and-after evidence and public service records.
+        </p>
+
+    </header>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <h2>{{ total_activities|default:"0" }}</h2>
+            <p>Total Activities Submitted</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">▤</div>
+            <h2>{{ officer.department|default:"Not assigned" }}</h2>
+            <p>Department</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon">⌖</div>
+            <h2>{{ officer.district|default:"Not assigned" }}</h2>
+            <p>District</p>
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH TOOLBAR -->
+
+    <div class="activity-toolbar">
+
+        <input
+            type="search"
+            id="activitySearch"
+            class="search-input"
+            placeholder="Search by reference number, activity or location..."
+            aria-label="Search activity history"
+        >
+
+        <span class="result-count">
+            Showing <strong id="visibleCount">{{ total_activities|default:"0" }}</strong>
+            activities
+        </span>
+
+    </div>
+
+
+    <!-- ACTIVITY HISTORY -->
+
+    <div id="activityList">
+
+        {% for activity in my_activities %}
+
+            <article
+                class="activity-card activity-item"
+                data-title="{{ activity.name_of_activity|lower }}"
+                data-location="{{ activity.map_location|lower }}"
+                data-reference="{{ activity.reference_number|lower }}"
+                data-department="{{ activity.department|lower }}"
+                data-district="{{ activity.district|lower }}"
+            >
+
+                <!-- ACTIVITY HEADER -->
+
+                <div class="activity-card-header">
+
+                    <div>
+
+                        <span class="reference-number">
+                            REF: {{ activity.reference_number }}
+                        </span>
+
+                        <h2 class="activity-title">
+                            {{ activity.name_of_activity }}
+                        </h2>
+
+                        <div class="activity-meta">
+
+                            <span>
+                                📅 {{ activity.date|date:"d M Y" }}
+                            </span>
+
+                            <span>
+                                📍 {{ activity.map_location|default:"Location not specified" }}
+                            </span>
+
+                            <span>
+                                ⏱️ {{ activity.duration }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIVITY DETAILS -->
+
+                <div class="activity-details">
+
+                    <div class="details-grid">
+
+                        <div class="detail-box">
+                            <span class="detail-label">Department</span>
+                            <span class="detail-value">{{ activity.department }}</span>
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">Village</span>
+                            <span class="detail-value">{{ activity.village }}</span>
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">Taluk</span>
+                            <span class="detail-value">{{ activity.taluk }}</span>
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">District</span>
+                            <span class="detail-value">{{ activity.district }}</span>
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">State</span>
+                            <span class="detail-value">{{ activity.state }}</span>
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label">Pincode</span>
+                            <span class="detail-value">{{ activity.pincode }}</span>
+                        </div>
+
+                    </div>
+
+
+                    <p>
+                        <strong>Activity Description:</strong>
+                    </p>
+
+                    <p>
+                        {{ activity.description|default:"No report description provided."|linebreaksbr }}
+                    </p>
+
+                </div>
+
+
+                <!-- MAIN ACTIVITY PHOTOGRAPH -->
+
+                {% if activity.image %}
+
+                    <div class="activity-image-section">
+
+                        <h3>🖼️ Main Activity Photograph</h3>
+
+                        <a
+                            href="{{ activity.image.url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+
+                            <img
+                                class="activity-image"
+                                src="{{ activity.image.url }}"
+                                alt="Activity evidence for {{ activity.name_of_activity }}"
+                                loading="lazy"
+                            >
+
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- BEFORE AND AFTER EVIDENCE -->
+
+                <div class="activity-evidence-grid">
+
+
+                    <!-- BEFORE -->
+
+                    <div class="evidence-box before">
+
+                        <h3>📷 Before the Activity</h3>
+
+                        <p class="evidence-description">
+                            {{ activity.before_description|default:"No before description provided." }}
+                        </p>
+
+                        {% if activity.before_image %}
+
+                            <a
+                                href="{{ activity.before_image.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+
+                                <img
+                                    src="{{ activity.before_image.url }}"
+                                    alt="Before activity evidence"
+                                    loading="lazy"
+                                >
+
+                            </a>
+
+                        {% else %}
+
+                            <div class="no-images">
+                                No before photograph uploaded.
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- AFTER -->
+
+                    <div class="evidence-box after">
+
+                        <h3>📸 After the Activity</h3>
+
+                        <p class="evidence-description">
+                            {{ activity.after_description|default:"No after description provided." }}
+                        </p>
+
+                        {% if activity.after_image %}
+
+                            <a
+                                href="{{ activity.after_image.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+
+                                <img
+                                    src="{{ activity.after_image.url }}"
+                                    alt="After activity evidence"
+                                    loading="lazy"
+                                >
+
+                            </a>
+
+                        {% else %}
+
+                            <div class="no-images">
+                                No after photograph uploaded.
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- MAP LOCATION -->
+
+                {% if activity.map_location %}
+
+                    <div class="map-location">
+
+                        <div>
+
+                            <strong>📍 Activity Location</strong>
+
+                            <span>{{ activity.map_location }}</span>
+
+                        </div>
+
+                        <a
+                            href="https://www.google.com/maps/search/?api=1&query={{ activity.map_location|urlencode }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="map-link"
+                        >
+                            View on Map →
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- EDIT AND DELETE OPTIONS -->
+
+                <div class="activity-actions">
+
+
+                    <!-- EDIT BEFORE AND AFTER -->
+
+                    <details class="before-after-editor">
+
+                        <summary class="action-btn edit-btn">
+                            ✏️ Edit Before/After Evidence
+                        </summary>
+
+                        <form
+                            class="before-after-editor-form"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            action="{% url 'edit_officeractivity' activity.pk %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <div>
+
+                                <label for="before-description-{{ activity.pk }}">
+                                    Before Description
+                                </label>
+
+                                <textarea
+                                    id="before-description-{{ activity.pk }}"
+                                    name="before_description"
+                                >{{ activity.before_description }}</textarea>
+
+                            </div>
+
+
+                            <div>
+
+                                <label for="after-description-{{ activity.pk }}">
+                                    After Description
+                                </label>
+
+                                <textarea
+                                    id="after-description-{{ activity.pk }}"
+                                    name="after_description"
+                                >{{ activity.after_description }}</textarea>
+
+                            </div>
+
+
+                            <div>
+
+                                <label for="before-image-{{ activity.pk }}">
+                                    Replace Before Photograph
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="before-image-{{ activity.pk }}"
+                                    name="before_image"
+                                    accept="image/*"
+                                >
+
+                                {% if activity.before_image %}
+                                    <small>
+                                        A photograph is already available.
+                                        Upload a new one only to replace it.
+                                    </small>
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <label for="after-image-{{ activity.pk }}">
+                                    Replace After Photograph
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="after-image-{{ activity.pk }}"
+                                    name="after_image"
+                                    accept="image/*"
+                                >
+
+                                {% if activity.after_image %}
+                                    <small>
+                                        A photograph is already available.
+                                        Upload a new one only to replace it.
+                                    </small>
+                                {% endif %}
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="action-btn edit-btn editor-submit"
+                            >
+                                Save Before/After Changes
+                            </button>
+
+                        </form>
+
+                    </details>
+
+
+                    <!-- EDIT FULL ACTIVITY -->
+
+                    <a
+                        class="action-btn edit-btn"
+                        href="{% url 'edit_officeractivity' activity.pk %}"
+                    >
+                        ✏️ Edit Activity
+                    </a>
+
+
+                    <!-- DELETE ACTIVITY -->
+
+                    <form
+                        method="POST"
+                        action="{% url 'delete_officeractivity' activity.pk %}"
+                        onsubmit="return confirm('Are you sure you want to delete this activity report? This action cannot be undone.');"
+                    >
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="action-btn delete-btn"
+                        >
+                            🗑️ Delete Activity
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </article>
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">📋</div>
+
+                <h2>No Activities Found</h2>
+
+                <p>
+                    You have not submitted any activity reports yet.
+                    Your submitted activities will appear here.
+                </p>
+
+                <a href="{% url 'add_officer_activity' %}">
+                    ＋ Add New Activity
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- SEARCH RESULTS EMPTY STATE -->
+
+    <div
+        id="noSearchResults"
+        class="empty-state"
+        style="display:none;"
+    >
+
+        <div class="empty-icon">🔍</div>
+
+        <h2>No Matching Activities</h2>
+
+        <p>
+            Try a different activity title, reference number,
+            department or location.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("activitySearch");
+
+    const activityCards = document.querySelectorAll(".activity-item");
+
+    const noResults = document.getElementById("noSearchResults");
+
+    const visibleCount = document.getElementById("visibleCount");
+
+
+    /* SEARCH ACTIVITY HISTORY */
+
+    function filterActivities() {
+
+        const searchText = searchInput.value.toLowerCase().trim();
+
+        let count = 0;
+
+        activityCards.forEach(function (card) {
+
+            const searchableFields = [
+                card.dataset.title || "",
+                card.dataset.location || "",
+                card.dataset.reference || "",
+                card.dataset.department || "",
+                card.dataset.district || ""
+            ];
+
+            const matchesSearch = searchableFields.some(function (value) {
+                return value.includes(searchText);
+            });
+
+            if (matchesSearch) {
+
+                card.style.display = "";
+                count++;
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+        visibleCount.textContent = count;
+
+        noResults.style.display =
+            count === 0 && activityCards.length > 0
+                ? "block"
+                : "none";
+
+    }
+
+
+    searchInput.addEventListener("input", filterActivities);
+
+});
+</script>
+
+{% endblock %}

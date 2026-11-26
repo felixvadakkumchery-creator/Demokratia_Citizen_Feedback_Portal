@@ -1,0 +1,1269 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Demokratia.com — A modern citizen engagement platform for feedback, suggestions, complaints and public service participation.">
+
+    <meta name="theme-color" content="#0c3768">
+
+    <title>{% block title %}Demokratia.com{% endblock %}</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           DESIGN SYSTEM
+        ========================================================= */
+
+        :root {
+            --blue-950: #071d38;
+            --blue-900: #0a2850;
+            --blue-800: #0c3768;
+            --blue-700: #124b8f;
+            --blue-600: #1767bb;
+            --blue-100: #eaf3fc;
+            --blue-50: #f5f9fe;
+
+            --navy: #0b1f38;
+
+            --saffron: #ff9933;
+            --saffron-light: #fff3e6;
+
+            --green: #138808;
+            --green-light: #edf8ec;
+
+            --text: #172536;
+            --text-soft: #536273;
+            --text-muted: #7a8797;
+
+            --white: #ffffff;
+            --surface: #f7f9fc;
+            --border: #e2e8f0;
+
+            --success: #18864b;
+            --danger: #cf3d3d;
+
+            --shadow-xs: 0 2px 5px rgba(7, 29, 56, 0.04);
+            --shadow-sm: 0 8px 22px rgba(7, 29, 56, 0.07);
+            --shadow-md: 0 16px 40px rgba(7, 29, 56, 0.10);
+            --shadow-lg: 0 24px 70px rgba(7, 29, 56, 0.15);
+
+            --radius-sm: 9px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+
+            --transition: 220ms ease;
+        }
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--surface);
+            color: var(--text);
+            font-family: "Inter", sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        ::selection {
+            background: rgba(23, 103, 187, 0.18);
+        }
+
+        /* =========================================================
+           CONTAINER
+        ========================================================= */
+
+        .container {
+            width: min(1200px, 92%);
+            margin: 0 auto;
+        }
+
+        /* =========================================================
+           ACCESSIBILITY
+        ========================================================= */
+
+        .skip-link {
+            position: fixed;
+            left: 20px;
+            top: -80px;
+            z-index: 9999;
+
+            padding: 11px 16px;
+
+            background: var(--blue-800);
+            color: white;
+
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+
+            transition: top var(--transition);
+        }
+
+        .skip-link:focus {
+            top: 20px;
+        }
+
+        /* =========================================================
+           TOP UTILITY BAR
+        ========================================================= */
+
+        .utility-bar {
+            background: var(--blue-950);
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 12px;
+        }
+
+        .utility-inner {
+            min-height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+        .utility-left,
+        .utility-right {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+        }
+
+        .utility-link {
+            transition: color var(--transition);
+        }
+
+        .utility-link:hover {
+            color: white;
+        }
+
+        .utility-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        /* =========================================================
+           TRICOLOUR LINE
+        ========================================================= */
+
+        .tricolour-line {
+            height: 3px;
+
+            background:
+                linear-gradient(
+                    to right,
+                    var(--saffron) 0%,
+                    var(--saffron) 33.33%,
+                    #ffffff 33.33%,
+                    #ffffff 66.66%,
+                    var(--green) 66.66%,
+                    var(--green) 100%
+                );
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            background: rgba(255, 255, 255, 0.92);
+
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+        }
+
+        .nav {
+            min-height: 79px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 30px;
+        }
+
+        /* =========================================================
+           BRAND
+        ========================================================= */
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+
+            min-width: 0;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            width: 52px;
+            height: 52px;
+
+            flex-shrink: 0;
+        }
+
+        .brand-logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .brand-name {
+            color: var(--blue-900);
+
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .brand-name span {
+            color: var(--blue-600);
+        }
+
+        .brand-subtitle {
+            margin-top: 3px;
+
+            color: var(--text-muted);
+
+            font-size: 10px;
+            font-weight: 600;
+
+            letter-spacing: 0.15px;
+            white-space: nowrap;
+        }
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .main-nav a {
+            padding: 9px 12px;
+
+            border-radius: 9px;
+
+            color: #4e5e70;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            transition:
+                color var(--transition),
+                background var(--transition);
+        }
+
+        .main-nav a:hover {
+            background: var(--blue-100);
+            color: var(--blue-800);
+        }
+
+        /* =========================================================
+           NAVIGATION ACTIONS AND SESSIONS
+        ========================================================= */
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .nav-session-label {
+            display: inline-flex;
+            align-items: center;
+
+            padding: 7px 9px;
+
+            border-radius: 8px;
+
+            background: var(--blue-50);
+            color: var(--blue-800);
+
+            font-size: 11px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .nav-logout-form {
+            display: inline-flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .nav-logout-button {
+            padding: 9px 12px;
+
+            border: 0;
+            border-radius: 9px;
+
+            background: transparent;
+            color: #4e5e70;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                color var(--transition),
+                background var(--transition);
+        }
+
+        .nav-logout-button:hover {
+            color: var(--blue-800);
+            background: var(--blue-100);
+        }
+
+        /* =========================================================
+           SHARED DJANGO SESSION MESSAGES
+        ========================================================= */
+
+        .site-messages {
+            width: min(1200px, 92%);
+
+            display: grid;
+            gap: 10px;
+
+            margin: 18px auto;
+        }
+
+        .site-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+
+            padding: 14px 16px;
+
+            border: 1px solid #cce8d7;
+            border-radius: 12px;
+
+            background: #edf8f1;
+            color: #176638;
+
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.65;
+
+            box-shadow: var(--shadow-sm);
+        }
+
+        .site-message-icon {
+            width: 25px;
+            height: 25px;
+
+            display: grid;
+            place-items: center;
+
+            flex-shrink: 0;
+
+            border-radius: 50%;
+
+            background: var(--green);
+            color: white;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .site-message.error {
+            border-color: #f0cccc;
+            background: #fff1f1;
+            color: #8f3030;
+        }
+
+        .site-message.error .site-message-icon {
+            background: #cf3d3d;
+        }
+
+        .site-message.warning {
+            border-color: #f1dfb5;
+            background: #fff7e9;
+            color: #80540c;
+        }
+
+        .site-message.info {
+            border-color: #d2e4f6;
+            background: var(--blue-50);
+            color: var(--blue-800);
+        }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
+
+        .btn {
+            min-height: 45px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            padding: 0 17px;
+
+            border: 1px solid transparent;
+            border-radius: 10px;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition:
+                transform var(--transition),
+                background var(--transition),
+                border-color var(--transition),
+                box-shadow var(--transition);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            color: white;
+            background: var(--blue-800);
+
+            box-shadow:
+                0 8px 18px rgba(12, 55, 104, 0.18);
+        }
+
+        .btn-primary:hover {
+            background: var(--blue-900);
+
+            box-shadow:
+                0 12px 28px rgba(12, 55, 104, 0.23);
+        }
+
+        .btn-secondary {
+            color: var(--blue-800);
+            background: white;
+            border-color: var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--blue-50);
+            border-color: #c9d8e9;
+        }
+
+        .btn-saffron {
+            color: #281504;
+            background: var(--saffron);
+
+            box-shadow:
+                0 10px 22px rgba(255, 153, 51, 0.20);
+        }
+
+        .btn-saffron:hover {
+            background: #f08a1b;
+            color: white;
+        }
+
+        /* =========================================================
+           MOBILE MENU
+        ========================================================= */
+
+        .menu-toggle {
+            display: none;
+
+            width: 42px;
+            height: 42px;
+
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            background: white;
+            color: var(--blue-800);
+
+            font-size: 20px;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        main {
+            min-height: 70vh;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .site-footer {
+            margin-top: 70px;
+            background: var(--blue-950);
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .footer-main {
+            padding: 64px 0 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.7fr 1fr 1fr 1.15fr;
+            gap: 45px;
+        }
+
+        .footer-brand {
+            max-width: 370px;
+        }
+
+        .footer-brand-top {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo {
+            width: 43px;
+            height: 43px;
+        }
+
+        .footer-logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .footer-brand-title {
+            color: white;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .footer-brand p {
+            font-size: 13px;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.62);
+        }
+
+        .footer-column h4 {
+            margin-bottom: 17px;
+
+            color: white;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .footer-column a {
+            display: block;
+
+            margin-bottom: 10px;
+
+            color: rgba(255, 255, 255, 0.62);
+
+            font-size: 12px;
+
+            transition:
+                color var(--transition),
+                transform var(--transition);
+        }
+
+        .footer-column a:hover {
+            color: white;
+            transform: translateX(2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.09);
+        }
+
+        .footer-bottom-inner {
+            min-height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.50);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 1050px) {
+            .main-nav a {
+                padding: 8px 8px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 2fr 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .utility-left {
+                display: none;
+            }
+
+            .utility-inner {
+                justify-content: center;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .main-nav {
+                position: absolute;
+
+                left: 4%;
+                right: 4%;
+                top: 81px;
+
+                display: none;
+                flex-direction: column;
+
+                padding: 10px;
+
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 16px;
+
+                box-shadow: var(--shadow-lg);
+            }
+
+            .main-nav.open {
+                display: flex;
+            }
+
+            .main-nav a {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .nav-session-label {
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .brand-subtitle {
+                display: none;
+            }
+
+            .brand-name {
+                font-size: 15px;
+            }
+
+            .brand-logo {
+                width: 46px;
+                height: 46px;
+            }
+
+            .nav {
+                gap: 8px;
+            }
+
+            .nav-session-label {
+                font-size: 9px;
+                padding: 6px 7px;
+            }
+
+            .nav-logout-button {
+                font-size: 11px;
+                padding: 8px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-bottom-inner {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                padding: 17px 0;
+            }
+        }
+
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- Accessibility -->
+    <a href="#main-content" class="skip-link">
+        Skip to main content
+    </a>
+
+    <!-- Utility bar -->
+    <div class="utility-bar">
+        <div class="container utility-inner">
+
+            <div class="utility-left">
+                <span>Citizen Engagement Platform</span>
+
+                <span class="utility-dot"></span>
+
+                <a href="{% url 'index' %}#about" class="utility-link">
+                    About Demokratia
+                </a>
+
+                <span class="utility-dot"></span>
+
+                <a href="{% url 'index' %}#how-it-works" class="utility-link">
+                    How it works
+                </a>
+            </div>
+
+            <div class="utility-right">
+                <span>🇮🇳 Public Service • Citizen Participation</span>
+                <span>English</span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tricolour-line"></div>
+
+
+    <!-- =========================================================
+         SITE HEADER
+    ========================================================== -->
+
+    <header class="site-header">
+        <div class="container nav">
+
+            <!-- BRAND -->
+
+            <a href="{% url 'index' %}" class="brand">
+
+                <div class="brand-logo">
+                    <svg
+                        viewBox="0 0 120 120"
+                        xmlns="http://www.w3.org/2000/svg"
+                        role="img"
+                        aria-label="Demokratia dove logo">
+
+                        <!-- Outer tricolour rings -->
+                        <circle
+                            cx="60" cy="60" r="53"
+                            fill="white"
+                            stroke="#FF9933"
+                            stroke-width="4"/>
+
+                        <circle
+                            cx="60" cy="60" r="47"
+                            fill="none"
+                            stroke="#ffffff"
+                            stroke-width="4"/>
+
+                        <circle
+                            cx="60" cy="60" r="41"
+                            fill="none"
+                            stroke="#138808"
+                            stroke-width="4"/>
+
+                        <!-- Dove body -->
+                        <path
+                            d="M27 68
+                               C35 59 45 55 56 56
+                               C52 48 52 39 58 30
+                               C62 38 68 43 76 45
+                               C84 47 91 43 98 37
+                               C94 48 87 56 78 61
+                               C85 65 91 72 93 80
+                               C82 76 73 71 63 69
+                               C54 76 44 81 33 78
+                               C30 75 28 71 27 68 Z"
+                            fill="#ffffff"
+                            stroke="#dae3ed"
+                            stroke-width="1"/>
+
+                        <!-- Dove wing -->
+                        <path
+                            d="M49 58
+                               C52 48 59 40 68 37
+                               C66 47 62 57 55 64
+                               C52 63 50 61 49 58 Z"
+                            fill="#e6edf5"/>
+
+                        <!-- Eye -->
+                        <circle
+                            cx="78" cy="47" r="2.1"
+                            fill="#12355b"/>
+
+                        <!-- Blue olive branch -->
+                        <path
+                            d="M59 66 C70 70 79 78 87 90"
+                            fill="none"
+                            stroke="#245ec7"
+                            stroke-width="4"
+                            stroke-linecap="round"/>
+
+                        <ellipse
+                            cx="68" cy="72"
+                            rx="4" ry="2.3"
+                            transform="rotate(30 68 72)"
+                            fill="#245ec7"/>
+
+                        <ellipse
+                            cx="74" cy="78"
+                            rx="4" ry="2.3"
+                            transform="rotate(30 74 78)"
+                            fill="#245ec7"/>
+
+                        <ellipse
+                            cx="80" cy="84"
+                            rx="4" ry="2.3"
+                            transform="rotate(30 80 84)"
+                            fill="#245ec7"/>
+
+                    </svg>
+                </div>
+
+                <div class="brand-text">
+                    <div class="brand-name">
+                        Demokratia<span>.com</span>
+                    </div>
+
+                    <div class="brand-subtitle">
+                        Citizen • Government • Democracy
+                    </div>
+                </div>
+
+            </a>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+
+                <a href="{% url 'adminhome' %}">
+                    Home
+                </a>
+
+                <a href="{% url 'view_citizen' %}">
+                    View Citizens
+                </a>
+                <a href="{% url 'view_officer' %}">
+                    View Officers
+                </a>
+                <a href="{% url 'add_officer' %}">
+                    Add Officer
+                </a>
+                <a href="{% url 'citizen_view_officer_activity' %}">
+                    View Officer Activities
+                </a>
+                <a href="{% url 'view_all_citizen_feedback' %}">
+                    View Citizen Feedback
+                </a>
+                <a href="{% url 'logout' %}">
+                    Sign Out
+                </a>
+
+            </nav>
+
+
+            <!-- ACTIONS -->
+
+            <div class="nav-actions">
+                <button
+                    type="button"
+                    class="menu-toggle"
+                    id="menuToggle"
+                    aria-label="Toggle navigation"
+                    aria-controls="mainNav"
+                    aria-expanded="false">
+                    ☰
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- =========================================================
+         MAIN
+    ========================================================== -->
+
+    <main id="main-content">
+
+        <!-- Shared messages: registration, login, logout and errors -->
+        {% if messages %}
+
+            <div class="site-messages" role="status" aria-live="polite">
+
+                {% for message in messages %}
+
+                    <div class="site-message{% if 'error' in message.tags %} error{% elif 'warning' in message.tags %} warning{% elif 'info' in message.tags %} info{% endif %}">
+
+                        <span class="site-message-icon" aria-hidden="true">
+                            {% if 'error' in message.tags %}
+                                !
+                            {% elif 'warning' in message.tags %}
+                                !
+                            {% elif 'info' in message.tags %}
+                                i
+                            {% else %}
+                                ✓
+                            {% endif %}
+                        </span>
+
+                        <span>{{ message }}</span>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================== -->
+
+    <footer class="site-footer" id="contact">
+
+        <div class="footer-main">
+            <div class="container footer-grid">
+
+                <!-- Brand -->
+
+                <div class="footer-brand">
+
+                    <div class="footer-brand-top">
+
+                        <div class="footer-logo">
+                            <svg
+                                viewBox="0 0 120 120"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true">
+
+                                <circle
+                                    cx="60" cy="60" r="53"
+                                    fill="#ffffff"
+                                    stroke="#FF9933"
+                                    stroke-width="4"/>
+
+                                <circle
+                                    cx="60" cy="60" r="47"
+                                    fill="none"
+                                    stroke="#138808"
+                                    stroke-width="4"/>
+
+                                <path
+                                    d="M27 68
+                                       C35 59 45 55 56 56
+                                       C52 48 52 39 58 30
+                                       C62 38 68 43 76 45
+                                       C84 47 91 43 98 37
+                                       C94 48 87 56 78 61
+                                       C85 65 91 72 93 80
+                                       C82 76 73 71 63 69
+                                       C54 76 44 81 33 78
+                                       C30 75 28 71 27 68 Z"
+                                    fill="#ffffff"/>
+
+                                <path
+                                    d="M59 66 C70 70 79 78 87 90"
+                                    fill="none"
+                                    stroke="#245ec7"
+                                    stroke-width="4"
+                                    stroke-linecap="round"/>
+
+                            </svg>
+                        </div>
+
+                        <div class="footer-brand-title">
+                            Demokratia.com
+                        </div>
+
+                    </div>
+
+                    <p>
+                        A modern citizen engagement platform designed to
+                        connect people with public services, government
+                        departments and opportunities to participate in
+                        better governance.
+                    </p>
+
+                </div>
+
+
+                <!-- Portal -->
+
+                <div class="footer-column">
+
+                    <h4>Portal</h4>
+
+                    <a href="{% url 'adminhome' %}">
+                        Home
+                    </a>
+
+                    <a href="{% url 'index' %}#how-it-works">
+                        How It Works
+                    </a>
+
+                    <a href="{% url 'index' %}#services">
+                        Services
+                    </a>
+
+                    <a href="{% url 'index' %}#about">
+                        About
+                    </a>
+
+                </div>
+
+
+                <!-- Citizen -->
+
+                <div class="footer-column">
+
+                    <h4>Citizen</h4>
+
+                    {% if user.is_authenticated %}
+
+
+                        <form
+                            method="post"
+                            action="{% url 'logout' %}"
+                            class="nav-logout-form">
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="nav-logout-button"
+                                style="color:rgba(255,255,255,.65);padding-left:0;">
+                                Sign Out
+                            </button>
+
+                        </form>
+
+                    {% else %}
+
+                        <a href="{% url 'register' %}">
+                            Citizen Registration
+                        </a>
+
+                        <a href="{% url 'login' %}">
+                            Citizen Login
+                        </a>
+
+                    {% endif %}
+
+                    <a href="{% url 'help' %}">
+                        Help & Support
+                    </a>
+
+                </div>
+
+
+                <!-- Information -->
+
+                <div class="footer-column">
+
+                    <h4>Information</h4>
+
+                    <a href="{% url 'privacy' %}">
+                        Privacy Policy
+                    </a>
+
+                    <a href="{% url 'terms' %}">
+                        Terms of Use
+                    </a>
+
+                    <a href="{% url 'accessibility' %}">
+                        Accessibility
+                    </a>
+
+                    <a href="{% url 'contact' %}">
+                        Contact Support
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Copyright -->
+
+        <div class="footer-bottom">
+
+            <div class="container footer-bottom-inner">
+
+                <span>
+                    © {% now "Y" %} Demokratia.com. All rights reserved.
+                </span>
+
+                <span>
+                    Built for citizen participation and better public services.
+                </span>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+        (function () {
+            "use strict";
+
+            const menuToggle =
+                document.getElementById("menuToggle");
+
+            const mainNav =
+                document.getElementById("mainNav");
+
+            if (!menuToggle || !mainNav) {
+                return;
+            }
+
+            function closeMenu() {
+                mainNav.classList.remove("open");
+
+                menuToggle.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                menuToggle.setAttribute(
+                    "aria-label",
+                    "Open navigation menu"
+                );
+
+                menuToggle.textContent = "☰";
+            }
+
+            function openMenu() {
+                mainNav.classList.add("open");
+
+                menuToggle.setAttribute(
+                    "aria-expanded",
+                    "true"
+                );
+
+                menuToggle.setAttribute(
+                    "aria-label",
+                    "Close navigation menu"
+                );
+
+                menuToggle.textContent = "✕";
+            }
+
+            menuToggle.addEventListener("click", function () {
+                if (mainNav.classList.contains("open")) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            });
+
+            mainNav.querySelectorAll("a").forEach(function (link) {
+                link.addEventListener("click", closeMenu);
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    closeMenu();
+                }
+            });
+
+            window.addEventListener("resize", function () {
+                if (window.innerWidth > 850) {
+                    closeMenu();
+                }
+            });
+        })();
+    </script>
+
+
+    {% block extra_js %}
+    {% endblock %}
+
+</body>
+</html>

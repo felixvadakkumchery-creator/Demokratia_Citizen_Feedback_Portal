@@ -1,0 +1,2739 @@
+{% extends "common.html" %}
+
+{% block title %}
+Demokratia.com | Citizen Engagement Platform
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+    /* =========================================================
+       HERO
+    ========================================================= */
+
+    .hero {
+        position: relative;
+        overflow: hidden;
+
+        padding: 84px 0 90px;
+
+        background:
+            radial-gradient(
+                circle at 10% 15%,
+                rgba(255, 153, 51, 0.09),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 88% 80%,
+                rgba(19, 136, 8, 0.07),
+                transparent 25%
+            ),
+            linear-gradient(
+                135deg,
+                #eff6fd 0%,
+                #ffffff 58%,
+                #f7f9fc 100%
+            );
+    }
+
+    .hero::before {
+        content: "";
+
+        position: absolute;
+
+        width: 460px;
+        height: 460px;
+
+        right: -180px;
+        top: -210px;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(18, 75, 143, 0.09);
+    }
+
+    .hero::after {
+        content: "";
+
+        position: absolute;
+
+        width: 260px;
+        height: 260px;
+
+        left: -130px;
+        bottom: -140px;
+
+        border-radius: 50%;
+
+        border: 1px solid rgba(255, 153, 51, 0.10);
+    }
+
+
+    .hero-grid {
+        position: relative;
+        z-index: 1;
+
+        display: grid;
+        grid-template-columns: 1.03fr 0.97fr;
+
+        align-items: center;
+
+        gap: 65px;
+    }
+
+
+    /* =========================================================
+       HERO CONTENT
+    ========================================================= */
+
+    .hero-content {
+        max-width: 690px;
+    }
+
+
+    .hero-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+
+        padding: 7px 12px;
+
+        margin-bottom: 20px;
+
+        border: 1px solid #dce7f3;
+        border-radius: 999px;
+
+        background: rgba(255, 255, 255, 0.85);
+
+        color: var(--blue-800);
+
+        font-size: 11px;
+        font-weight: 800;
+
+        box-shadow: var(--shadow-xs);
+    }
+
+
+    .hero-kicker-dot {
+        width: 7px;
+        height: 7px;
+
+        border-radius: 50%;
+
+        background: var(--green);
+
+        box-shadow:
+            0 0 0 4px rgba(19, 136, 8, 0.09);
+    }
+
+
+    .hero h1 {
+        margin-bottom: 21px;
+
+        color: var(--blue-950);
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: clamp(39px, 5vw, 67px);
+        font-weight: 800;
+
+        line-height: 1.04;
+
+        letter-spacing: -2.8px;
+    }
+
+
+    .hero h1 .blue {
+        color: var(--blue-700);
+    }
+
+
+    .hero h1 .saffron {
+        position: relative;
+        color: var(--blue-950);
+    }
+
+
+    .hero h1 .saffron::after {
+        content: "";
+
+        position: absolute;
+
+        left: 0;
+        right: 0;
+        bottom: -5px;
+
+        height: 5px;
+
+        border-radius: 99px;
+
+        background:
+            linear-gradient(
+                to right,
+                var(--saffron) 0%,
+                var(--saffron) 33%,
+                #dfe5ea 33%,
+                #dfe5ea 66%,
+                var(--green) 66%,
+                var(--green) 100%
+            );
+    }
+
+
+    .hero-description {
+        max-width: 640px;
+
+        margin-bottom: 29px;
+
+        color: var(--text-soft);
+
+        font-size: 17px;
+        line-height: 1.8;
+    }
+
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 11px;
+    }
+
+
+    .hero-trust {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+
+        gap: 14px;
+
+        margin-top: 22px;
+
+        color: var(--text-muted);
+
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+
+    .trust-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+
+    .trust-check {
+        width: 21px;
+        height: 21px;
+
+        display: grid;
+        place-items: center;
+
+        border-radius: 50%;
+
+        background: var(--green-light);
+        color: var(--green);
+
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       HERO VISUAL
+    ========================================================= */
+
+    .hero-visual {
+        position: relative;
+    }
+
+
+    .hero-image-card {
+        position: relative;
+
+        overflow: hidden;
+
+        min-height: 535px;
+
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        border-radius: 28px;
+
+        background: #dbe7f2;
+
+        box-shadow: var(--shadow-lg);
+    }
+
+
+    .hero-image-card img {
+        width: 100%;
+        height: 100%;
+
+        position: absolute;
+        inset: 0;
+
+        object-fit: cover;
+    }
+
+
+    .hero-image-overlay {
+        position: absolute;
+        inset: 0;
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(7, 29, 56, 0.02) 0%,
+                rgba(7, 29, 56, 0.05) 35%,
+                rgba(7, 29, 56, 0.84) 100%
+            );
+    }
+
+
+    .hero-image-tricolour {
+        position: absolute;
+
+        left: 0;
+        top: 0;
+
+        width: 100%;
+        height: 5px;
+
+        background:
+            linear-gradient(
+                to right,
+                var(--saffron) 0%,
+                var(--saffron) 33.33%,
+                white 33.33%,
+                white 66.66%,
+                var(--green) 66.66%,
+                var(--green) 100%
+            );
+    }
+
+
+    .hero-image-content {
+        position: absolute;
+
+        left: 25px;
+        right: 25px;
+        bottom: 25px;
+
+        color: white;
+    }
+
+
+    .hero-image-label {
+        display: inline-flex;
+
+        padding: 6px 9px;
+
+        margin-bottom: 10px;
+
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 999px;
+
+        background: rgba(255, 255, 255, 0.11);
+
+        backdrop-filter: blur(10px);
+
+        font-size: 10px;
+        font-weight: 800;
+
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+    }
+
+
+    .hero-image-content h2 {
+        margin-bottom: 8px;
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 25px;
+        line-height: 1.2;
+    }
+
+
+    .hero-image-content p {
+        max-width: 480px;
+
+        color: rgba(255, 255, 255, 0.78);
+
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+
+    /* Floating dashboard */
+
+    .floating-card {
+        position: absolute;
+
+        right: -24px;
+        top: 40px;
+
+        width: 220px;
+
+        padding: 17px;
+
+        background: rgba(255, 255, 255, 0.95);
+
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        border-radius: 16px;
+
+        box-shadow: var(--shadow-md);
+
+        backdrop-filter: blur(15px);
+    }
+
+
+    .floating-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: 14px;
+    }
+
+
+    .floating-card-title {
+        color: var(--blue-900);
+
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.65px;
+    }
+
+
+    .online {
+        color: var(--green);
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+
+    .mini-stat {
+        margin-bottom: 13px;
+    }
+
+
+    .mini-stat:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .mini-label {
+        margin-bottom: 3px;
+
+        color: var(--text-muted);
+
+        font-size: 10px;
+    }
+
+
+    .mini-value {
+        color: var(--blue-900);
+
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+
+    .mini-progress {
+        width: 100%;
+        height: 5px;
+
+        margin-top: 7px;
+
+        overflow: hidden;
+
+        border-radius: 99px;
+
+        background: #edf1f5;
+    }
+
+
+    .mini-progress span {
+        display: block;
+
+        height: 100%;
+
+        border-radius: 99px;
+
+        background: var(--blue-600);
+    }
+
+
+    /* =========================================================
+       NOTICE STRIP
+    ========================================================= */
+
+    .notice-wrap {
+        position: relative;
+        z-index: 3;
+
+        margin-top: -34px;
+    }
+
+
+    .notice {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 16px 19px;
+
+        background: white;
+
+        border: 1px solid var(--border);
+        border-radius: 16px;
+
+        box-shadow: var(--shadow-md);
+    }
+
+
+    .notice-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+
+    .notice-icon {
+        width: 40px;
+        height: 40px;
+
+        display: grid;
+        place-items: center;
+
+        flex-shrink: 0;
+
+        border-radius: 11px;
+
+        background: var(--saffron-light);
+
+        font-size: 18px;
+    }
+
+
+    .notice-title {
+        margin-bottom: 2px;
+
+        color: var(--blue-900);
+
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+
+    .notice-text {
+        color: var(--text-muted);
+
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+       STATS
+    ========================================================= */
+
+    .stats {
+        padding: 55px 0 35px;
+    }
+
+
+    .stats-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 14px;
+    }
+
+
+    .stat-card {
+        padding: 23px;
+
+        background: white;
+
+        border: 1px solid var(--border);
+        border-radius: 16px;
+
+        box-shadow: var(--shadow-xs);
+
+        transition:
+            transform var(--transition),
+            box-shadow var(--transition);
+    }
+
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-sm);
+    }
+
+
+    .stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        margin-bottom: 16px;
+    }
+
+
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+
+        display: grid;
+        place-items: center;
+
+        border-radius: 10px;
+
+        background: var(--blue-100);
+
+        color: var(--blue-800);
+
+        font-size: 15px;
+    }
+
+
+    .stat-value {
+        color: var(--blue-900);
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 28px;
+        font-weight: 800;
+
+        line-height: 1;
+    }
+
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+
+    /* =========================================================
+       SHARED SECTION
+    ========================================================= */
+
+    .section {
+        padding: 88px 0;
+    }
+
+
+    .section-header {
+        max-width: 690px;
+
+        margin-bottom: 41px;
+    }
+
+
+    .section-kicker {
+        margin-bottom: 8px;
+
+        color: var(--blue-600);
+
+        font-size: 10px;
+        font-weight: 800;
+
+        text-transform: uppercase;
+        letter-spacing: 1.15px;
+    }
+
+
+    .section-title {
+        margin-bottom: 12px;
+
+        color: var(--blue-950);
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: clamp(29px, 4vw, 43px);
+        font-weight: 800;
+
+        line-height: 1.16;
+        letter-spacing: -1.2px;
+    }
+
+
+    .section-description {
+        color: var(--text-soft);
+
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+
+    /* =========================================================
+       HOW IT WORKS
+    ========================================================= */
+
+    .steps-section {
+        background: white;
+
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+
+    .steps-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(3, 1fr);
+
+        gap: 18px;
+    }
+
+
+    .step-card {
+        position: relative;
+
+        padding: 28px;
+
+        background:
+            linear-gradient(
+                180deg,
+                #ffffff,
+                #fafcfe
+            );
+
+        border: 1px solid var(--border);
+        border-radius: 19px;
+
+        box-shadow: var(--shadow-xs);
+
+        transition:
+            transform var(--transition),
+            box-shadow var(--transition);
+    }
+
+
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+
+    .step-number {
+        width: 45px;
+        height: 45px;
+
+        display: grid;
+        place-items: center;
+
+        margin-bottom: 19px;
+
+        background: var(--blue-800);
+        color: white;
+
+        border-radius: 12px;
+
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+
+    .step-card h3 {
+        margin-bottom: 8px;
+
+        color: var(--blue-950);
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 16px;
+    }
+
+
+    .step-card p {
+        color: var(--text-soft);
+
+        font-size: 12px;
+        line-height: 1.75;
+    }
+
+
+    .step-line {
+        position: absolute;
+
+        top: 51px;
+        right: -20px;
+
+        width: 22px;
+
+        border-top: 1px dashed #b9c8d9;
+    }
+
+
+    .step-card:last-child .step-line {
+        display: none;
+    }
+
+
+    /* =========================================================
+       SERVICES
+    ========================================================= */
+
+    .services-section {
+        background: var(--surface);
+    }
+
+
+    .service-grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(4, 1fr);
+
+        gap: 17px;
+    }
+
+
+    .service-card {
+        overflow: hidden;
+
+        background: white;
+
+        border: 1px solid var(--border);
+        border-radius: 17px;
+
+        box-shadow: var(--shadow-xs);
+
+        transition:
+            transform var(--transition),
+            box-shadow var(--transition);
+    }
+
+
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+
+    .service-image {
+        position: relative;
+
+        height: 170px;
+
+        overflow: hidden;
+
+        background: #dce8f3;
+    }
+
+
+    .service-image img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: cover;
+
+        transition:
+            transform 400ms ease;
+    }
+
+
+    .service-card:hover .service-image img {
+        transform: scale(1.045);
+    }
+
+
+    .service-image::after {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background:
+            linear-gradient(
+                to top,
+                rgba(7, 29, 56, 0.30),
+                transparent 65%
+            );
+    }
+
+
+    .service-content {
+        padding: 20px;
+    }
+
+
+    .service-tag {
+        display: inline-flex;
+
+        padding: 5px 8px;
+
+        margin-bottom: 9px;
+
+        border-radius: 999px;
+
+        background: var(--blue-100);
+        color: var(--blue-800);
+
+        font-size: 9px;
+        font-weight: 800;
+
+        text-transform: uppercase;
+        letter-spacing: 0.55px;
+    }
+
+
+    .service-content h3 {
+        margin-bottom: 6px;
+
+        color: var(--blue-950);
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+
+    .service-content p {
+        min-height: 52px;
+
+        margin-bottom: 13px;
+
+        color: var(--text-soft);
+
+        font-size: 11px;
+        line-height: 1.65;
+    }
+
+
+    .service-link {
+        color: var(--blue-600);
+
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+
+    .service-link:hover {
+        color: var(--blue-900);
+    }
+
+
+    /* =========================================================
+       FEATURE / TRUST SECTION
+    ========================================================= */
+
+    .trust-section {
+        background: white;
+
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+
+    .trust-layout {
+        display: grid;
+
+        grid-template-columns:
+            1fr 1fr;
+
+        gap: 25px;
+    }
+
+
+    .trust-panel {
+        padding: 31px;
+
+        border-radius: 21px;
+
+        border: 1px solid var(--border);
+
+        background:
+            linear-gradient(
+                145deg,
+                #f9fbfe,
+                #eef5fc
+            );
+    }
+
+
+    .trust-panel h2 {
+        margin-bottom: 12px;
+
+        color: var(--blue-950);
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 29px;
+        line-height: 1.2;
+
+        letter-spacing: -0.7px;
+    }
+
+
+    .trust-panel p {
+        color: var(--text-soft);
+
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+
+    .trust-list {
+        display: grid;
+
+        gap: 11px;
+
+        margin-top: 23px;
+    }
+
+
+    .trust-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        color: #34465b;
+
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+
+    .trust-item-icon {
+        width: 26px;
+        height: 26px;
+
+        display: grid;
+        place-items: center;
+
+        flex-shrink: 0;
+
+        border-radius: 50%;
+
+        background: var(--green-light);
+        color: var(--green);
+
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+
+    .trust-dashboard {
+        padding: 27px;
+
+        border-radius: 21px;
+
+        background: var(--blue-900);
+
+        color: white;
+
+        box-shadow: var(--shadow-md);
+    }
+
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-bottom: 24px;
+    }
+
+
+    .dashboard-title {
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+
+    .dashboard-status {
+        padding: 5px 9px;
+
+        border-radius: 999px;
+
+        background: rgba(19, 136, 8, 0.18);
+
+        color: #8ee48b;
+
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+
+    .dashboard-main-stat {
+        margin-bottom: 20px;
+    }
+
+
+    .dashboard-main-label {
+        margin-bottom: 7px;
+
+        color: rgba(255, 255, 255, 0.58);
+
+        font-size: 10px;
+    }
+
+
+    .dashboard-main-value {
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 43px;
+        font-weight: 800;
+
+        line-height: 1;
+    }
+
+
+    .dashboard-list {
+        display: grid;
+
+        gap: 9px;
+    }
+
+
+    .dashboard-item {
+        padding: 13px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 10px;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.08);
+
+        border-radius: 11px;
+
+        background:
+            rgba(255, 255, 255, 0.055);
+    }
+
+
+    .dashboard-item-left {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+
+    .dashboard-icon {
+        width: 29px;
+        height: 29px;
+
+        display: grid;
+        place-items: center;
+
+        border-radius: 8px;
+
+        background: rgba(255, 255, 255, 0.09);
+
+        font-size: 11px;
+    }
+
+
+    .dashboard-item-name {
+        font-size: 10px;
+        font-weight: 700;
+    }
+
+
+    .dashboard-item-meta {
+        color: rgba(255, 255, 255, 0.45);
+
+        font-size: 8px;
+    }
+
+
+    .dashboard-item-state {
+        color: #a9e9a5;
+
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       ABOUT
+    ========================================================= */
+
+    .about-grid {
+        display: grid;
+
+        grid-template-columns:
+            0.95fr 1.05fr;
+
+        align-items: center;
+
+        gap: 60px;
+    }
+
+
+    .about-image {
+        position: relative;
+
+        min-height: 430px;
+
+        overflow: hidden;
+
+        border-radius: 23px;
+
+        box-shadow: var(--shadow-lg);
+    }
+
+
+    .about-image img {
+        width: 100%;
+        height: 100%;
+
+        position: absolute;
+        inset: 0;
+
+        object-fit: cover;
+    }
+
+
+    .about-image::after {
+        content: "";
+
+        position: absolute;
+        inset: 0;
+
+        background:
+            linear-gradient(
+                to top,
+                rgba(7, 29, 56, 0.55),
+                transparent 63%
+            );
+    }
+
+
+    .about-image-caption {
+        position: absolute;
+
+        z-index: 1;
+
+        left: 22px;
+        right: 22px;
+        bottom: 21px;
+
+        color: white;
+    }
+
+
+    .about-image-caption strong {
+        display: block;
+
+        margin-bottom: 4px;
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 17px;
+    }
+
+
+    .about-image-caption span {
+        color: rgba(255, 255, 255, 0.75);
+
+        font-size: 10px;
+    }
+
+
+    .about-content .section-header {
+        margin-bottom: 22px;
+    }
+
+
+    .about-highlight {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+        gap: 11px;
+
+        margin-top: 19px;
+    }
+
+
+    .highlight-card {
+        padding: 16px;
+
+        border: 1px solid var(--border);
+        border-radius: 13px;
+
+        background: white;
+    }
+
+
+    .highlight-card strong {
+        display: block;
+
+        margin-bottom: 3px;
+
+        color: var(--blue-900);
+
+        font-size: 12px;
+    }
+
+
+    .highlight-card span {
+        color: var(--text-muted);
+
+        font-size: 10px;
+        line-height: 1.5;
+    }
+
+
+    /* =========================================================
+       FINAL CTA
+    ========================================================= */
+
+    .cta {
+        padding: 18px 0 90px;
+    }
+
+
+    .cta-box {
+        position: relative;
+        overflow: hidden;
+
+        padding: 48px;
+
+        border-radius: 25px;
+
+        background:
+            linear-gradient(
+                135deg,
+                var(--blue-950),
+                var(--blue-800)
+            );
+
+        color: white;
+
+        box-shadow: var(--shadow-lg);
+    }
+
+
+    .cta-box::before {
+        content: "";
+
+        position: absolute;
+
+        width: 340px;
+        height: 340px;
+
+        right: -140px;
+        top: -180px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.10);
+    }
+
+
+    .cta-box::after {
+        content: "";
+
+        position: absolute;
+
+        width: 220px;
+        height: 220px;
+
+        left: -130px;
+        bottom: -130px;
+
+        border-radius: 50%;
+
+        border:
+            1px solid rgba(255, 255, 255, 0.08);
+    }
+
+
+    .cta-content {
+        position: relative;
+        z-index: 1;
+
+        max-width: 720px;
+    }
+
+
+    .cta-label {
+        display: inline-flex;
+
+        margin-bottom: 11px;
+
+        padding: 6px 9px;
+
+        border-radius: 999px;
+
+        background: rgba(255, 255, 255, 0.08);
+
+        color: rgba(255, 255, 255, 0.75);
+
+        font-size: 9px;
+        font-weight: 800;
+
+        text-transform: uppercase;
+        letter-spacing: 0.85px;
+    }
+
+
+    .cta-box h2 {
+        margin-bottom: 10px;
+
+        font-family: "Plus Jakarta Sans", sans-serif;
+
+        font-size: 34px;
+        line-height: 1.15;
+
+        letter-spacing: -0.8px;
+    }
+
+
+    .cta-box p {
+        max-width: 620px;
+
+        margin-bottom: 24px;
+
+        color: rgba(255, 255, 255, 0.70);
+
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1040px) {
+
+        .hero-grid,
+        .about-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-content {
+            max-width: 760px;
+        }
+
+        .hero-visual {
+            max-width: 750px;
+        }
+
+        .service-grid {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+    }
+
+
+    @media (max-width: 900px) {
+
+        .stats-grid {
+            grid-template-columns:
+                repeat(2, 1fr);
+        }
+
+        .trust-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .steps-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .step-line {
+            display: none;
+        }
+    }
+
+
+    @media (max-width: 650px) {
+
+        .hero {
+            padding: 63px 0 75px;
+        }
+
+        .hero h1 {
+            font-size: 41px;
+            letter-spacing: -1.8px;
+        }
+
+        .hero-description {
+            font-size: 14px;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hero-actions .btn {
+            width: 100%;
+        }
+
+        .hero-image-card {
+            min-height: 460px;
+        }
+
+        .floating-card {
+            right: 12px;
+            top: 20px;
+            width: 188px;
+        }
+
+        .notice {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .notice .btn {
+            width: 100%;
+        }
+
+        .section {
+            padding: 68px 0;
+        }
+
+        .service-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .about-image {
+            min-height: 350px;
+        }
+
+        .about-highlight {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-box {
+            padding: 32px 24px;
+        }
+
+        .cta-box h2 {
+            font-size: 28px;
+        }
+    }
+
+
+    @media (max-width: 480px) {
+
+        .stats-grid {
+            grid-template-columns:
+                1fr 1fr;
+        }
+
+        .stat-card {
+            padding: 18px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section class="hero">
+
+    <div class="container hero-grid">
+
+
+        <!-- HERO TEXT -->
+
+        <div class="hero-content">
+
+            <div class="hero-kicker">
+
+                <span class="hero-kicker-dot"></span>
+
+                A platform for citizen participation
+
+            </div>
+
+
+            <h1>
+
+                Government works
+                <span class="blue">better</span>
+                when citizens
+                <span class="saffron">speak.</span>
+
+            </h1>
+
+
+            <p class="hero-description">
+
+                Demokratia.com gives citizens a clear digital channel
+                to share feedback, suggestions, complaints and ideas
+                about public services — helping turn everyday experiences
+                into meaningful civic action.
+
+            </p>
+
+
+            <div class="hero-actions">
+
+                {% if user.is_authenticated %}
+
+                    <a href="#" class="btn btn-primary">
+                        ✦ Submit Feedback
+                    </a>
+
+                    <a href="#" class="btn btn-secondary">
+                        Track My Feedback
+                    </a>
+
+                {% else %}
+
+                    <a href="#" class="btn btn-primary">
+                        ✦ Submit Your Feedback
+                    </a>
+
+                    <a href="#how-it-works" class="btn btn-secondary">
+                        Explore the Portal
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="hero-trust">
+
+                <span class="trust-badge">
+
+                    <span class="trust-check">
+                        ✓
+                    </span>
+
+                    Citizen-focused
+
+                </span>
+
+
+                <span class="trust-badge">
+
+                    <span class="trust-check">
+                        ✓
+                    </span>
+
+                    Department-based
+
+                </span>
+
+
+                <span class="trust-badge">
+
+                    <span class="trust-check">
+                        ✓
+                    </span>
+
+                    Trackable submissions
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- HERO IMAGE -->
+
+        <div class="hero-visual">
+
+            <div class="hero-image-card">
+
+                <div class="hero-image-tricolour"></div>
+
+                <img
+                    src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1400&q=85"
+                    alt="People participating in a civic gathering">
+
+                <div class="hero-image-overlay"></div>
+
+
+                <div class="hero-image-content">
+
+                    <div class="hero-image-label">
+                        Citizen Engagement
+                    </div>
+
+                    <h2>
+                        A stronger connection between people and public service.
+                    </h2>
+
+                    <p>
+                        Share what is working, identify what needs improvement,
+                        and contribute to better public services.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Floating statistics -->
+
+            <div class="floating-card">
+
+                <div class="floating-card-header">
+
+                    <span class="floating-card-title">
+                        Portal Overview
+                    </span>
+
+                    <span class="online">
+                        ● Online
+                    </span>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-label">
+                        Feedback received
+                    </div>
+
+                    <div class="mini-value">
+                        24,680+
+                    </div>
+
+                    <div class="mini-progress">
+                        <span style="width: 84%;"></span>
+                    </div>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-label">
+                        Service areas
+                    </div>
+
+                    <div class="mini-value">
+                        18+
+                    </div>
+
+                    <div class="mini-progress">
+                        <span style="width: 67%;"></span>
+                    </div>
+
+                </div>
+
+
+                <div class="mini-stat">
+
+                    <div class="mini-label">
+                        Citizens participating
+                    </div>
+
+                    <div class="mini-value">
+                        12K+
+                    </div>
+
+                    <div class="mini-progress">
+                        <span style="width: 73%;"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     NOTICE
+========================================================= -->
+
+<section class="notice-wrap">
+
+    <div class="container">
+
+        <div class="notice">
+
+            <div class="notice-left">
+
+                <div class="notice-icon">
+                    📢
+                </div>
+
+                <div>
+
+                    <div class="notice-title">
+                        Citizen Portal Notice
+                    </div>
+
+                    <div class="notice-text">
+                        Use Demokratia.com to submit suggestions, complaints
+                        and feedback concerning public services.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <a href="#how-it-works" class="btn btn-secondary">
+                Learn how it works →
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     STATISTICS
+========================================================= -->
+
+<section class="stats">
+
+    <div class="container stats-grid">
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    💬
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                24K+
+            </div>
+
+            <div class="stat-label">
+                Feedback submissions
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    🏛
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                18+
+            </div>
+
+            <div class="stat-label">
+                Service departments
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    📈
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                92%
+            </div>
+
+            <div class="stat-label">
+                Resolution progress
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <div class="stat-icon">
+                    🌐
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                24/7
+            </div>
+
+            <div class="stat-label">
+                Digital access
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     HOW IT WORKS
+========================================================= -->
+
+<section class="section steps-section" id="how-it-works">
+
+    <div class="container">
+
+        <div class="section-header">
+
+            <div class="section-kicker">
+                Simple civic participation
+            </div>
+
+            <h2 class="section-title">
+                One message can start the conversation.
+            </h2>
+
+            <p class="section-description">
+                Demokratia.com turns citizen feedback into a structured
+                process that is easier to submit, review and follow.
+            </p>
+
+        </div>
+
+
+        <div class="steps-grid">
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    01
+                </div>
+
+                <h3>
+                    Tell us what matters
+                </h3>
+
+                <p>
+                    Submit a complaint, suggestion, appreciation or idea
+                    about a public service or civic issue.
+                </p>
+
+                <span class="step-line"></span>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    02
+                </div>
+
+                <h3>
+                    Choose the service area
+                </h3>
+
+                <p>
+                    Categorise your feedback so that it can be directed
+                    towards the appropriate government department or
+                    service area.
+                </p>
+
+                <span class="step-line"></span>
+
+            </div>
+
+
+            <div class="step-card">
+
+                <div class="step-number">
+                    03
+                </div>
+
+                <h3>
+                    Follow the progress
+                </h3>
+
+                <p>
+                    Use your reference information to keep track of
+                    your submission and its progress through the system.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     SERVICES
+========================================================= -->
+
+<section class="section services-section" id="services">
+
+    <div class="container">
+
+        <div class="section-header">
+
+            <div class="section-kicker">
+                Public service areas
+            </div>
+
+            <h2 class="section-title">
+                Find the area that matches your concern.
+            </h2>
+
+            <p class="section-description">
+                Explore common service categories and share feedback
+                with the department most closely related to the issue.
+            </p>
+
+        </div>
+
+
+        <div class="service-grid">
+
+
+            <!-- SERVICE 1 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=900&q=80"
+                        alt="People working together">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Administration
+                    </span>
+
+                    <h3>
+                        General Administration
+                    </h3>
+
+                    <p>
+                        Feedback concerning public administration,
+                        citizen services and government offices.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 2 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=900&q=80"
+                        alt="Construction and infrastructure work">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Infrastructure
+                    </span>
+
+                    <h3>
+                        Roads & Public Works
+                    </h3>
+
+                    <p>
+                        Report concerns about roads, bridges,
+                        public facilities and infrastructure.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 3 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80"
+                        alt="Healthcare professional providing service">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Healthcare
+                    </span>
+
+                    <h3>
+                        Health Services
+                    </h3>
+
+                    <p>
+                        Share experiences and suggestions relating
+                        to public healthcare and community health.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 4 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=900&q=80"
+                        alt="Students in a classroom">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Education
+                    </span>
+
+                    <h3>
+                        Education
+                    </h3>
+
+                    <p>
+                        Provide feedback about schools, colleges,
+                        learning facilities and education services.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 5 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=900&q=80"
+                        alt="Water and environmental infrastructure">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Utilities
+                    </span>
+
+                    <h3>
+                        Water & Sanitation
+                    </h3>
+
+                    <p>
+                        Share issues involving water supply,
+                        sanitation, drainage and related services.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 6 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&w=900&q=80"
+                        alt="Green environmental landscape">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Environment
+                    </span>
+
+                    <h3>
+                        Environment
+                    </h3>
+
+                    <p>
+                        Raise concerns or suggestions relating
+                        to environmental protection and sustainability.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 7 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80"
+                        alt="Modern public service office">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Citizen Services
+                    </span>
+
+                    <h3>
+                        Municipal Services
+                    </h3>
+
+                    <p>
+                        Share feedback concerning local civic services,
+                        neighbourhood facilities and public amenities.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+
+            <!-- SERVICE 8 -->
+
+            <article class="service-card">
+
+                <div class="service-image">
+
+                    <img
+                        src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80"
+                        alt="Person completing an online form">
+
+                </div>
+
+
+                <div class="service-content">
+
+                    <span class="service-tag">
+                        Other
+                    </span>
+
+                    <h3>
+                        Other Public Services
+                    </h3>
+
+                    <p>
+                        Can't find the exact category?
+                        Submit feedback about another government service.
+                    </p>
+
+                    <a href="#" class="service-link">
+                        Explore service →
+                    </a>
+
+                </div>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     TRUST / TRANSPARENCY
+========================================================= -->
+
+<section class="section trust-section">
+
+    <div class="container trust-layout">
+
+
+        <!-- LEFT -->
+
+        <div class="trust-panel" id="about">
+
+            <div class="section-kicker">
+                Designed for citizens
+            </div>
+
+            <h2>
+                Public services improve when feedback is easier to share.
+            </h2>
+
+            <p>
+                Demokratia.com is designed around a simple principle:
+                government should have a clear, accessible channel for
+                hearing from the people it serves.
+            </p>
+
+
+            <div class="trust-list">
+
+                <div class="trust-item">
+
+                    <span class="trust-item-icon">
+                        ✓
+                    </span>
+
+                    Structured citizen feedback
+
+                </div>
+
+
+                <div class="trust-item">
+
+                    <span class="trust-item-icon">
+                        ✓
+                    </span>
+
+                    Department-based categorisation
+
+                </div>
+
+
+                <div class="trust-item">
+
+                    <span class="trust-item-icon">
+                        ✓
+                    </span>
+
+                    Trackable submissions
+
+                </div>
+
+
+                <div class="trust-item">
+
+                    <span class="trust-item-icon">
+                        ✓
+                    </span>
+
+                    Responsive digital experience
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT DASHBOARD -->
+
+        <div class="trust-dashboard">
+
+            <div class="dashboard-header">
+
+                <span class="dashboard-title">
+                    Demokratia Service Overview
+                </span>
+
+                <span class="dashboard-status">
+                    SYSTEM ACTIVE
+                </span>
+
+            </div>
+
+
+            <div class="dashboard-main-stat">
+
+                <div class="dashboard-main-label">
+                    Citizen feedback currently tracked
+                </div>
+
+                <div class="dashboard-main-value">
+                    24,680
+                </div>
+
+            </div>
+
+
+            <div class="dashboard-list">
+
+
+                <div class="dashboard-item">
+
+                    <div class="dashboard-item-left">
+
+                        <div class="dashboard-icon">
+                            🏛
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-item-name">
+                                Administration
+                            </div>
+
+                            <div class="dashboard-item-meta">
+                                Service category
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-item-state">
+                        Active
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-item">
+
+                    <div class="dashboard-item-left">
+
+                        <div class="dashboard-icon">
+                            🚧
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-item-name">
+                                Infrastructure
+                            </div>
+
+                            <div class="dashboard-item-meta">
+                                Service category
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-item-state">
+                        Active
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-item">
+
+                    <div class="dashboard-item-left">
+
+                        <div class="dashboard-icon">
+                            🏥
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-item-name">
+                                Health Services
+                            </div>
+
+                            <div class="dashboard-item-meta">
+                                Service category
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-item-state">
+                        Active
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-item">
+
+                    <div class="dashboard-item-left">
+
+                        <div class="dashboard-icon">
+                            🎓
+                        </div>
+
+                        <div>
+
+                            <div class="dashboard-item-name">
+                                Education
+                            </div>
+
+                            <div class="dashboard-item-meta">
+                                Service category
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-item-state">
+                        Active
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ABOUT IMAGE
+========================================================= -->
+
+<section class="section">
+
+    <div class="container about-grid">
+
+
+        <div class="about-image">
+
+            <img
+                src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1300&q=85"
+                alt="People collaborating in a community setting">
+
+
+            <div class="about-image-caption">
+
+                <strong>
+                    Democracy is a conversation.
+                </strong>
+
+                <span>
+                    Demokratia.com — connecting citizens and public service.
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="about-content">
+
+            <div class="section-header">
+
+                <div class="section-kicker">
+                    About Demokratia.com
+                </div>
+
+                <h2 class="section-title">
+                    A digital front door for citizen feedback.
+                </h2>
+
+                <p class="section-description">
+                    From a local service problem to a broader policy
+                    suggestion, Demokratia.com provides a structured
+                    way for citizens to communicate what they experience,
+                    what they need and what they believe can be improved.
+                </p>
+
+            </div>
+
+
+            <div class="about-highlight">
+
+
+                <div class="highlight-card">
+
+                    <strong>
+                        Simple
+                    </strong>
+
+                    <span>
+                        Clear forms and straightforward categories.
+                    </span>
+
+                </div>
+
+
+                <div class="highlight-card">
+
+                    <strong>
+                        Accessible
+                    </strong>
+
+                    <span>
+                        Designed for desktop, tablet and mobile users.
+                    </span>
+
+                </div>
+
+
+                <div class="highlight-card">
+
+                    <strong>
+                        Structured
+                    </strong>
+
+                    <span>
+                        Feedback can be organised by service area.
+                    </span>
+
+                </div>
+
+
+                <div class="highlight-card">
+
+                    <strong>
+                        Transparent
+                    </strong>
+
+                    <span>
+                        Designed around traceable submissions.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FINAL CTA
+========================================================= -->
+
+<section class="cta">
+
+    <div class="container">
+
+        <div class="cta-box">
+
+            <div class="cta-content">
+
+                <div class="cta-label">
+                    Your voice belongs here
+                </div>
+
+                <h2>
+                    Have an idea, complaint or suggestion?
+                </h2>
+
+                <p>
+                    Share your experience through Demokratia.com
+                    and contribute to the ongoing improvement of
+                    public services.
+                </p>
+
+
+                {% if user.is_authenticated %}
+
+                    <a href="#" class="btn btn-saffron">
+                        Submit Feedback →
+                    </a>
+
+                {% else %}
+
+                    <a href="#" class="btn btn-saffron">
+                        Get Started →
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,380 @@
+
+
+{% block content %}
+<section class="citizen-profile-page">
+    <div class="profile-container">
+
+        <!-- PAGE HEADER -->
+        <header class="profile-header">
+            <div>
+                <div class="profile-eyebrow">
+                    Demokratia administration
+                </div>
+
+                <h1>Citizen Profile</h1>
+
+                <p>
+                    Review the registered citizen's personal information,
+                    contact details, residential address and uploaded documents.
+                </p>
+            </div>
+
+            <a href="{% url 'view_citizen' %}" class="back-button">
+                <span aria-hidden="true">←</span>
+                Back to citizen directory
+            </a>
+        </header>
+
+        <!-- PROFILE CARD -->
+        <article class="profile-card">
+
+            <div class="profile-cover">
+                <div class="tricolour-accent" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="profile-main">
+
+                <!-- CITIZEN IDENTITY -->
+                <div class="profile-identity">
+
+                    <div class="identity-left">
+
+                        <div class="profile-photo">
+                            {% if citizen.profile_pic %}
+                                <img
+                                    src="{{ citizen.profile_pic.url }}"
+                                    alt="Profile photograph of {{ citizen.name }}"
+                                >
+                            {% else %}
+                                {{ citizen.name|default:"C"|slice:":1"|upper }}
+                            {% endif %}
+                        </div>
+
+                        <div class="identity-text">
+                            <h2>
+                                {{ citizen.name|default:"Citizen" }}
+                            </h2>
+
+                            <p>
+                                {{ citizen.email|default:"Email not provided" }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="record-badge">
+                        <span aria-hidden="true"></span>
+                        Citizen record #{{ citizen.pk }}
+                    </div>
+
+                </div>
+
+                <!-- PERSONAL INFORMATION -->
+                <section class="profile-section">
+
+                    <div class="section-heading">
+                        <div class="section-icon" aria-hidden="true">
+                            ♙
+                        </div>
+
+                        <div>
+                            <h3>Personal information</h3>
+                            <p>Basic information provided during registration.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+
+                        <div class="detail-item">
+                            <span class="detail-label">Full name</span>
+                            <span class="detail-value">
+                                {{ citizen.name|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Citizen record ID</span>
+                            <span class="detail-value">
+                                #{{ citizen.pk }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Email address</span>
+                            <span class="detail-value">
+                                {% if citizen.email %}
+                                    <a href="mailto:{{ citizen.email }}">
+                                        {{ citizen.email }}
+                                    </a>
+                                {% else %}
+                                    <span class="muted-value">
+                                        Not provided
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Mobile number</span>
+                            <span class="detail-value">
+                                {% if citizen.mobile %}
+                                    <a href="tel:{{ citizen.mobile }}">
+                                        {{ citizen.mobile }}
+                                    </a>
+                                {% else %}
+                                    <span class="muted-value">
+                                        Not provided
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- RESIDENTIAL ADDRESS -->
+                <section class="profile-section">
+
+                    <div class="section-heading">
+                        <div class="section-icon" aria-hidden="true">
+                            ⌖
+                        </div>
+
+                        <div>
+                            <h3>Residential address</h3>
+                            <p>Location details submitted during registration.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Complete address</span>
+                            <span class="detail-value">
+                                {{ citizen.address|default:"Not provided"|linebreaksbr }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">City / Town</span>
+                            <span class="detail-value">
+                                {{ citizen.city|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">District</span>
+                            <span class="detail-value">
+                                {{ citizen.district|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">State / Union Territory</span>
+                            <span class="detail-value">
+                                {{ citizen.state|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">PIN code</span>
+                            <span class="detail-value">
+                                {{ citizen.pincode|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- IDENTITY INFORMATION -->
+                <section class="profile-section">
+
+                    <div class="section-heading">
+                        <div class="section-icon" aria-hidden="true">
+                            ▤
+                        </div>
+
+                        <div>
+                            <h3>Identity information</h3>
+                            <p>Identity details submitted during registration.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+
+                        <div class="detail-item">
+                            <span class="detail-label">Aadhaar number</span>
+
+                            <span class="detail-value">
+                                {% if citizen.aadhar %}
+                                    XXXX-XXXX-{{ citizen.aadhar|slice:"-4:" }}
+                                {% else %}
+                                    <span class="muted-value">
+                                        Not provided
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Identity proof</span>
+
+                            <span class="detail-value">
+                                {% if citizen.proof %}
+                                    <span class="muted-value">
+                                        Identity proof uploaded
+                                    </span>
+                                {% else %}
+                                    <span class="muted-value">
+                                        No identity proof uploaded
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- DOCUMENTS -->
+                <section class="profile-section">
+
+                    <div class="section-heading">
+                        <div class="section-icon" aria-hidden="true">
+                            ▧
+                        </div>
+
+                        <div>
+                            <h3>Uploaded documents</h3>
+                            <p>Document and photograph upload status.</p>
+                        </div>
+                    </div>
+
+                    <div class="document-grid">
+
+                        <!-- IDENTITY PROOF -->
+                        <div class="document-card">
+
+                            <div class="document-icon" aria-hidden="true">
+                                ▤
+                            </div>
+
+                            <div class="document-information">
+                                <h4>Identity / address proof</h4>
+
+                                {% if citizen.proof %}
+                                    <p>
+                                        {{ citizen.proof.name|cut:"citizen_proofs/" }}
+                                    </p>
+
+                                    <span class="document-status">
+                                        Uploaded
+                                    </span>
+                                {% else %}
+                                    <p>
+                                        No identity document is attached.
+                                    </p>
+
+                                    <span class="document-status missing">
+                                        Missing
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        <!-- PROFILE PHOTOGRAPH -->
+                        <div class="document-card">
+
+                            <div class="document-icon" aria-hidden="true">
+                                ◉
+                            </div>
+
+                            <div class="document-information">
+                                <h4>Profile photograph</h4>
+
+                                {% if citizen.profile_pic %}
+                                    <p>
+                                        {{ citizen.profile_pic.name|cut:"citizen_profile_pics/" }}
+                                    </p>
+
+                                    <span class="document-status">
+                                        Uploaded
+                                    </span>
+                                {% else %}
+                                    <p>
+                                        No profile photograph is attached.
+                                    </p>
+
+                                    <span class="document-status missing">
+                                        Missing
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- PLATFORM ACCOUNT -->
+                <section class="profile-section">
+
+                    <div class="section-heading">
+                        <div class="section-icon" aria-hidden="true">
+                            ◈
+                        </div>
+
+                        <div>
+                            <h3>Platform account</h3>
+                            <p>Login account associated with this citizen profile.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+
+                        <div class="detail-item">
+                            <span class="detail-label">Account username</span>
+                            <span class="detail-value">
+                                {{ citizen.user.username|default:"Not available" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Account role</span>
+                            <span class="detail-value">
+                                {{ citizen.user.usertype|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- PRIVACY NOTICE -->
+                <aside class="privacy-note">
+
+                    <span class="privacy-icon" aria-hidden="true">
+                        🔒
+                    </span>
+
+                    <div>
+                        <strong>Citizen information and privacy</strong>
+
+                        The Aadhaar number is partially masked to protect
+                        personal information. Uploaded identity documents
+                        should only be accessed by authorized personnel.
+                        The presence of an uploaded document does not
+                        necessarily mean that it has been verified.
+                    </div>
+
+                </aside>
+
+            </div>
+        </article>
+
+    </div>
+</section>
+{% endblock %}

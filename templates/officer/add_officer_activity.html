@@ -1,0 +1,1887 @@
+
+{% extends 'officer/common.html' %}
+
+{% block title %}Officer Activity Portal | Demokratia{% endblock %}
+
+
+{% block extra_css %}
+<style>
+    .activity-page {
+        max-width: 1250px;
+        margin: 35px auto 70px;
+        padding: 0 22px;
+        color: var(--text);
+    }
+
+    /* HEADER */
+
+    .activity-header {
+        background: linear-gradient(120deg, var(--blue-950), var(--blue-700));
+        border-radius: var(--radius-xl);
+        padding: 35px;
+        color: white;
+        margin-bottom: 25px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .activity-header::after {
+        content: "";
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        right: -70px;
+        top: -100px;
+        border: 35px solid rgba(255,255,255,0.08);
+        border-radius: 50%;
+    }
+
+    .activity-header h1 {
+        font-size: 30px;
+        margin: 0 0 10px;
+        font-weight: 800;
+    }
+
+    .activity-header p {
+        margin: 0;
+        color: rgba(255,255,255,0.8);
+        max-width: 650px;
+        line-height: 1.7;
+    }
+
+    .activity-header .header-tag {
+        display: inline-block;
+        margin-bottom: 15px;
+        padding: 6px 12px;
+        background: rgba(255,255,255,0.13);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 30px;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+    }
+
+    /* STATISTICS */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .stat-card .stat-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        background: var(--blue-50);
+        color: var(--blue-700);
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+
+    .stat-card h2 {
+        font-size: 27px;
+        margin: 0 0 5px;
+        color: var(--blue-950);
+    }
+
+    .stat-card p {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 13px;
+    }
+
+    /* OFFICER PROFILE */
+
+    .officer-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        background: var(--surface);
+        padding: 23px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        margin-bottom: 30px;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .officer-avatar {
+        width: 65px;
+        height: 65px;
+        flex-shrink: 0;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .officer-card h3 {
+        margin: 0 0 5px;
+        color: var(--blue-950);
+    }
+
+    .officer-card p {
+        margin: 3px 0;
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+    /* NAVIGATION */
+
+    .portal-navigation {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 28px 0;
+        padding: 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+    }
+
+    .portal-navigation a {
+        text-decoration: none;
+        color: var(--blue-800);
+        background: var(--blue-50);
+        border-radius: var(--radius-md);
+        padding: 11px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        transition: var(--transition);
+    }
+
+    .portal-navigation a:hover {
+        background: var(--blue-800);
+        color: white;
+    }
+
+    /* SECTIONS */
+
+    .portal-section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        padding: 28px;
+        margin-bottom: 28px;
+        box-shadow: var(--shadow-xs);
+        scroll-margin-top: 25px;
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 24px;
+        padding-bottom: 17px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .section-heading h2 {
+        margin: 0 0 7px;
+        color: var(--blue-950);
+        font-size: 21px;
+    }
+
+    .section-heading p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .section-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    /* FORM ELEMENTS */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+        min-width: 0;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--white);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13px;
+        outline: none;
+        transition: var(--transition);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 110px;
+        line-height: 1.6;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--blue-600);
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 7px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    /* BEFORE AND AFTER */
+
+    .before-after-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        margin: 25px 0;
+    }
+
+    .image-upload-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        background: var(--surface);
+        min-width: 0;
+    }
+
+    .image-upload-card.before {
+        border-top: 4px solid var(--saffron);
+    }
+
+    .image-upload-card.after {
+        border-top: 4px solid var(--green);
+    }
+
+    .image-upload-card h3 {
+        margin: 0 0 8px;
+        color: var(--blue-950);
+        font-size: 17px;
+    }
+
+    .image-upload-card > p {
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.6;
+        min-height: 40px;
+        margin-bottom: 18px;
+    }
+
+    .image-upload-input {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 14px;
+        background: var(--blue-50);
+        border: 1px dashed var(--blue-600);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .image-upload-input:hover {
+        background: var(--blue-100);
+    }
+
+    .image-count {
+        display: block;
+        margin-top: 10px;
+        color: var(--blue-700);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .image-preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    .image-preview-item {
+        min-width: 0;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+
+    .image-preview-item img {
+        width: 100%;
+        height: 105px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .image-preview-item span {
+        display: block;
+        padding: 7px;
+        color: var(--text-soft);
+        font-size: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .image-preview-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 18px;
+        color: var(--text-muted);
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-md);
+        font-size: 12px;
+    }
+
+    /* BUTTONS */
+
+    .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: var(--blue-800);
+        color: white;
+        padding: 13px 22px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 13px;
+        font-family: inherit;
+        cursor: pointer;
+        text-decoration: none;
+        transition: var(--transition);
+    }
+
+    .primary-btn:hover {
+        background: var(--blue-950);
+        transform: translateY(-1px);
+    }
+
+    .secondary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 17px;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .secondary-btn:hover {
+        background: var(--blue-100);
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
+    }
+
+    /* ACTIVITY HISTORY */
+
+    .activity-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        margin-bottom: 17px;
+        background: var(--white);
+    }
+
+    .activity-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .activity-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 14px;
+    }
+
+    .activity-card h3 {
+        color: var(--blue-950);
+        font-size: 17px;
+        margin: 0 0 7px;
+    }
+
+    .activity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        white-space: nowrap;
+    }
+
+    .activity-description {
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 14px 0;
+        white-space: pre-line;
+    }
+
+    .history-before-after {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+        margin-top: 17px;
+    }
+
+    .history-image-section {
+        background: var(--blue-50);
+        padding: 14px;
+        border-radius: var(--radius-md);
+        min-width: 0;
+    }
+
+    .history-image-section h4 {
+        color: var(--blue-900);
+        font-size: 12px;
+        margin: 0 0 12px;
+    }
+
+    .history-image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+        gap: 8px;
+    }
+
+    .history-image-grid img {
+        display: block;
+        width: 100%;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 7px;
+        background: var(--white);
+    }
+
+    .history-no-image {
+        font-size: 11px;
+        color: var(--text-muted);
+    }
+
+    /* COMPLAINTS */
+
+    .complaint-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 21px;
+        margin-bottom: 16px;
+        background: var(--white);
+    }
+
+    .complaint-card h3 {
+        margin: 0 0 9px;
+        color: var(--blue-950);
+        font-size: 16px;
+    }
+
+    .complaint-description {
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 13px 0;
+        white-space: pre-line;
+    }
+
+    .complaint-response {
+        margin-top: 17px;
+        padding: 17px;
+        background: var(--blue-50);
+        border-radius: var(--radius-md);
+    }
+
+    .complaint-response h4 {
+        color: var(--blue-900);
+        margin: 0 0 12px;
+        font-size: 13px;
+    }
+
+    /* REVIEWS */
+
+    .review-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px;
+        margin-bottom: 15px;
+        background: var(--white);
+    }
+
+    .review-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .review-header h3 {
+        color: var(--blue-950);
+        margin: 0 0 5px;
+        font-size: 14px;
+    }
+
+    .review-header p {
+        color: var(--text-muted);
+        font-size: 11px;
+        margin: 0;
+    }
+
+    .review-rating {
+        color: #d18b00;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .review-card h4 {
+        color: var(--blue-900);
+        font-size: 13px;
+        margin: 10px 0;
+    }
+
+    .review-card > p {
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0;
+        white-space: pre-line;
+    }
+
+    /* EMPTY STATE */
+
+    .empty-state {
+        padding: 35px 20px;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        color: var(--text-muted);
+        background: var(--blue-50);
+    }
+
+    .empty-state .empty-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .empty-state h3 {
+        color: var(--blue-900);
+        margin: 0 0 8px;
+        font-size: 15px;
+    }
+
+    .empty-state p {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    /* PRIVACY NOTICE */
+
+    .notice-box {
+        border-left: 4px solid var(--saffron);
+        border-radius: var(--radius-sm);
+        background: var(--blue-50);
+        padding: 15px 18px;
+        margin-top: 20px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    /* SEARCH */
+
+    .history-search {
+        width: 100%;
+        max-width: 350px;
+        box-sizing: border-box;
+        padding: 11px 13px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 12px;
+        outline: none;
+    }
+
+    .history-search:focus {
+        border-color: var(--blue-600);
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 760px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .before-after-grid,
+        .history-before-after,
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-header {
+            padding: 25px;
+        }
+
+        .activity-header h1 {
+            font-size: 23px;
+        }
+
+        .portal-section {
+            padding: 19px;
+        }
+
+        .activity-card-header,
+        .section-heading {
+            flex-direction: column;
+        }
+
+        .officer-card {
+            align-items: flex-start;
+        }
+
+        .form-actions {
+            justify-content: stretch;
+        }
+
+        .form-actions .primary-btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="activity-page">
+
+    <!-- PAGE HEADER -->
+
+    <header class="activity-header">
+
+        <span class="header-tag">
+            DEMOKRATIA · PUBLIC SERVICE PORTAL
+        </span>
+
+        <h1>Officer Activity & Public Accountability</h1>
+
+        <p>
+            Record official activities, document improvements with
+            before-and-after photographs, respond to public complaints
+            and review citizen feedback.
+        </p>
+
+    </header>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+
+            <h2>{{ total_activities|default:"0" }}</h2>
+
+            <p>Total Activities Recorded</p>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-icon">📢</div>
+
+            <h2>{{ total_complaints|default:"0" }}</h2>
+
+            <p>Complaints Received</p>
+        </div>
+
+
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+
+            <h2>{{ total_reviews|default:"0" }}</h2>
+
+            <p>Citizen Reviews</p>
+        </div>
+
+    </div>
+
+
+    <!-- OFFICER PROFILE -->
+
+    <div class="officer-card">
+
+        <div class="officer-avatar">
+            {% if officer.name %}
+                {{ officer.name|first|upper }}
+            {% else %}
+                O
+            {% endif %}
+        </div>
+
+        <div>
+            <h3>{{ officer.name|default:"Officer" }}</h3>
+
+            <p>
+                <strong>Department:</strong>
+                {{ officer.department|default:"Not specified" }}
+            </p>
+
+            <p>
+                <strong>District:</strong>
+                {{ officer.district|default:"Not specified" }}
+            </p>
+
+            <p>
+                <strong>State:</strong>
+                {{ officer.state|default:"Not specified" }}
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- PORTAL NAVIGATION -->
+
+    <nav class="portal-navigation">
+
+        <a href="#add-activity">＋ Add Activity</a>
+
+        <a href="#activity-history">▤ Activity History</a>
+
+        <a href="#complaints">⚑ Complaints</a>
+
+        <a href="#citizen-reviews">★ Citizen Reviews</a>
+
+    </nav>
+
+
+    <!-- ================================================= -->
+    <!-- 1. ADD ACTIVITY                                    -->
+    <!-- ================================================= -->
+
+    <section class="portal-section" id="add-activity">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Record a New Activity</h2>
+
+                <p>
+                    Submit an official activity report with evidence
+                    of the situation before and after the intervention.
+                </p>
+            </div>
+
+            <div class="section-number">01</div>
+
+        </div>
+
+
+        <form
+            method="POST"
+            action="{% url 'add_officer_activity' %}"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+            <input
+                type="hidden"
+                name="form_type"
+                value="activity"
+            >
+
+
+            <!-- BASIC INFORMATION -->
+
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+
+                    <label for="title">Activity Title *</label>
+
+                    <input
+                        type="text"
+                        name="title"
+                        id="title"
+                        placeholder="Example: Road repair and public safety improvement"
+                        maxlength="200"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="reference_number">Reference Number *</label>
+
+                    <input
+                        type="text"
+                        name="reference_number"
+                        id="reference_number"
+                        placeholder="Enter the official reference number"
+                        maxlength="100"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="duration">Activity Duration *</label>
+
+                    <input
+                        type="text"
+                        name="duration"
+                        id="duration"
+                        placeholder="HH:MM:SS, for example 02:30:00"
+                        pattern="[0-9]{1,3}:[0-5][0-9]:[0-5][0-9]"
+                        aria-describedby="duration-hint"
+                        required
+                    >
+
+                    <small class="form-hint" id="duration-hint">
+                        Enter the duration in hours, minutes and seconds.
+                    </small>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="activity_type">Activity Category *</label>
+
+                    <select
+                        name="activity_type"
+                        id="activity_type"
+                        required
+                    >
+
+                        <option value="">Select category</option>
+
+                        <option value="government">
+                            Government Administration
+                        </option>
+
+                        <option value="bureaucrat">
+                            Public Administration
+                        </option>
+
+                        <option value="police">
+                            Police and Public Safety
+                        </option>
+
+                        <option value="infrastructure">
+                            Infrastructure Development
+                        </option>
+
+                        <option value="welfare">
+                            Public Welfare
+                        </option>
+
+                        <option value="sanitation">
+                            Sanitation and Cleanliness
+                        </option>
+
+                        <option value="other">
+                            Other Public Service
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="activity_date">Activity Date *</label>
+
+                    <input
+                        type="date"
+                        name="activity_date"
+                        id="activity_date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="location">Activity Location *</label>
+
+                    <input
+                        type="text"
+                        name="location"
+                        id="location"
+                        placeholder="Enter locality, village, town or district"
+                        maxlength="250"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="status">Activity Status *</label>
+
+                    <select
+                        name="status"
+                        id="status"
+                        required
+                    >
+
+                        <option value="">Select status</option>
+
+                        <option value="planned">Planned</option>
+
+                        <option value="ongoing">Ongoing</option>
+
+                        <option value="completed">Completed</option>
+
+                        <option value="pending">Pending</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+            <div class="form-group">
+     
+</div>
+
+
+            <!-- BEFORE AND AFTER IMAGES -->
+
+            <div class="section-heading" style="margin-top: 25px;">
+
+                <div>
+                    <h2>Before & After Evidence</h2>
+
+                    <p>
+                        Upload one or more photographs for each stage
+                        to document the activity and its outcome.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="before-after-grid">
+
+
+                <!-- BEFORE -->
+
+                <div class="image-upload-card before">
+
+                    <h3>📷 Before the Activity</h3>
+
+                    <p>
+                        Show the original condition before the
+                        work, intervention or public service activity.
+                    </p>
+
+
+                    <div class="form-group">
+
+                        <label for="before_images">
+                            Upload Before Photographs
+                        </label>
+
+                        <input
+                            type="file"
+                            name="before_images"
+                            id="before_images"
+                            class="image-upload-input"
+                            accept="image/*"
+                            multiple
+                        >
+
+                        <small class="form-hint">
+                            You can select multiple photographs.
+                            Supported formats depend on server validation.
+                        </small>
+
+                        <span
+                            class="image-count"
+                            id="beforeImageCount"
+                        >
+                            No images selected
+                        </span>
+
+                        <div
+                            class="image-preview-grid"
+                            id="beforeImagePreview"
+                        >
+
+                            <div class="image-preview-empty">
+                                Before photographs will appear here.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="before_description">
+                            Before Description
+                        </label>
+
+                        <textarea
+                            name="before_description"
+                            id="before_description"
+                            placeholder="Describe the original situation, problem or conditions..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- AFTER -->
+
+                <div class="image-upload-card after">
+
+                    <h3>📸 After the Activity</h3>
+
+                    <p>
+                        Show the completed work, improvements and
+                        final condition after the intervention.
+                    </p>
+
+
+                    <div class="form-group">
+
+                        <label for="after_images">
+                            Upload After Photographs
+                        </label>
+
+                        <input
+                            type="file"
+                            name="after_images"
+                            id="after_images"
+                            class="image-upload-input"
+                            accept="image/*"
+                            multiple
+                        >
+
+                        <small class="form-hint">
+                            You can select multiple photographs.
+                            Supported formats depend on server validation.
+                        </small>
+
+                        <span
+                            class="image-count"
+                            id="afterImageCount"
+                        >
+                            No images selected
+                        </span>
+
+                        <div
+                            class="image-preview-grid"
+                            id="afterImagePreview"
+                        >
+
+                            <div class="image-preview-empty">
+                                After photographs will appear here.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="after_description">
+                            After Description
+                        </label>
+
+                        <textarea
+                            name="after_description"
+                            id="after_description"
+                            placeholder="Describe the completed work and improvements..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTION DETAILS -->
+
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+
+                    <label for="action_taken">
+                        Action Taken
+                    </label>
+
+                    <textarea
+                        name="action_taken"
+                        id="action_taken"
+                        placeholder="Explain the actions taken, work performed and steps completed..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="citizen_impact">
+                        Public Benefit and Citizen Impact
+                    </label>
+
+                    <textarea
+                        name="citizen_impact"
+                        id="citizen_impact"
+                        placeholder="Explain how this activity benefits citizens and the community..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="notice-box">
+
+                <strong>Public accountability notice:</strong>
+
+                Upload genuine photographs related to the reported
+                activity. Avoid including private personal information,
+                identity documents or photographs of individuals without
+                an appropriate legal basis.
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="submit" class="primary-btn">
+                    Submit Activity Report →
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 2. ACTIVITY HISTORY                                -->
+    <!-- ================================================= -->
+
+    <section class="portal-section" id="activity-history">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>My Activity History</h2>
+
+                <p>
+                    View previously submitted activities and their
+                    before-and-after evidence.
+                </p>
+            </div>
+
+            <div class="section-number">02</div>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label for="activitySearch">Search Activities</label>
+
+            <input
+                type="search"
+                id="activitySearch"
+                class="history-search"
+                placeholder="Search by activity title or location..."
+            >
+
+        </div>
+
+
+        {% for activity in my_activities %}
+
+            <article
+                class="activity-card activity-history-item"
+                data-search="{{ activity.title|lower }} {{ activity.location|lower }}"
+            >
+
+                <div class="activity-card-header">
+
+                    <div>
+
+                        <h3>{{ activity.title }}</h3>
+
+                        <div class="activity-meta">
+
+                            <span>
+                                📅 {{ activity.activity_date|date:"d M Y" }}
+                            </span>
+
+                            <span>
+                                📍 {{ activity.location }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="status-badge">
+                        {{ activity.status|title }}
+                    </span>
+
+                </div>
+
+
+                <!-- BEFORE AND AFTER DESCRIPTIONS -->
+
+                <div class="history-before-after">
+
+                    <div class="history-image-section">
+
+                        <h4>📷 BEFORE</h4>
+
+                        <p class="activity-description">
+                            {{ activity.before_description|default:"No before description provided." }}
+                        </p>
+
+
+                        <div class="history-image-grid">
+
+                            {% for photo in activity.before_images.all %}
+
+                                {% if photo.image %}
+
+                                    <a
+                                        href="{{ photo.image.url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Open before photograph"
+                                    >
+
+                                        <img
+                                            src="{{ photo.image.url }}"
+                                            alt="Before activity photograph"
+                                            loading="lazy"
+                                        >
+
+                                    </a>
+
+                                {% endif %}
+
+                            {% empty %}
+
+                                <span class="history-no-image">
+                                    No before photographs uploaded.
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="history-image-section">
+
+                        <h4>📸 AFTER</h4>
+
+                        <p class="activity-description">
+                            {{ activity.after_description|default:"No after description provided." }}
+                        </p>
+
+
+                        <div class="history-image-grid">
+
+                            {% for photo in activity.after_images.all %}
+
+                                {% if photo.image %}
+
+                                    <a
+                                        href="{{ photo.image.url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label="Open after photograph"
+                                    >
+
+                                        <img
+                                            src="{{ photo.image.url }}"
+                                            alt="After activity photograph"
+                                            loading="lazy"
+                                        >
+
+                                    </a>
+
+                                {% endif %}
+
+                            {% empty %}
+
+                                <span class="history-no-image">
+                                    No after photographs uploaded.
+                                </span>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {% if activity.action_taken %}
+
+                    <div class="activity-description">
+
+                        <strong>Action Taken:</strong>
+
+                        {{ activity.action_taken }}
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if activity.citizen_impact %}
+
+                    <div class="activity-description">
+
+                        <strong>Public Impact:</strong>
+
+                        {{ activity.citizen_impact }}
+
+                    </div>
+
+                {% endif %}
+
+            </article>
+
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">📋</div>
+
+                <h3>No Activities Recorded Yet</h3>
+
+                <p>
+                    Your submitted activity reports will appear here.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 3. COMPLAINTS PORTAL                                -->
+    <!-- ================================================= -->
+
+    <section class="portal-section" id="complaints">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Citizen Complaints Portal</h2>
+
+                <p>
+                    Review complaints made by citizens and submit
+                    official responses where you are authorised to do so.
+                </p>
+            </div>
+
+            <div class="section-number">03</div>
+
+        </div>
+
+
+        {% for complaint in complaints %}
+
+            <article class="complaint-card">
+
+                <div class="activity-card-header">
+
+                    <div>
+
+                        <h3>{{ complaint.subject }}</h3>
+
+                        <div class="activity-meta">
+
+                            <span>
+                                📅 {{ complaint.created_at|date:"d M Y, h:i A" }}
+                            </span>
+
+                            <span>
+                                Category: {{ complaint.category|title }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="status-badge">
+                        {{ complaint.status|title }}
+                    </span>
+
+                </div>
+
+
+                <p class="complaint-description">
+                    {{ complaint.description }}
+                </p>
+
+
+                {% if complaint.official_response %}
+
+                    <div class="complaint-response">
+
+                        <h4>Official Response</h4>
+
+                        <p class="activity-description">
+                            {{ complaint.official_response }}
+                        </p>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="complaint-response">
+
+                        <h4>Submit an Official Response</h4>
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'add_officer_activity' %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <input
+                                type="hidden"
+                                name="form_type"
+                                value="complaint_response"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="complaint_id"
+                                value="{{ complaint.pk }}"
+                            >
+
+
+                            <div class="form-group">
+
+                                <label for="response_{{ complaint.pk }}">
+                                    Your Response
+                                </label>
+
+                                <textarea
+                                    name="official_response"
+                                    id="response_{{ complaint.pk }}"
+                                    rows="4"
+                                    placeholder="Enter the official response, action taken or next steps..."
+                                    required
+                                ></textarea>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="primary-btn"
+                            >
+                                Submit Official Response →
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                {% endif %}
+
+            </article>
+
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">📢</div>
+
+                <h3>No Complaints Available</h3>
+
+                <p>
+                    Complaints assigned or made available to you
+                    will appear here.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+
+    <!-- ================================================= -->
+    <!-- 4. CITIZEN REVIEWS                                  -->
+    <!-- ================================================= -->
+
+    <section class="portal-section" id="citizen-reviews">
+
+        <div class="section-heading">
+
+            <div>
+                <h2>Citizen Reviews & Feedback</h2>
+
+                <p>
+                    Read public feedback about your activities and
+                    the services provided by your department.
+                </p>
+            </div>
+
+            <div class="section-number">04</div>
+
+        </div>
+
+
+        {% for review in citizen_reviews %}
+
+            <article class="review-card">
+
+                <div class="review-header">
+
+                    <div>
+
+                        <h3>
+                            {% if review.is_anonymous %}
+                                Anonymous Citizen
+                            {% else %}
+                                {{ review.display_name|default:"Citizen" }}
+                            {% endif %}
+                        </h3>
+
+                        <p>
+                            {{ review.created_at|date:"d M Y, h:i A" }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="review-rating">
+
+                        ★ {{ review.rating }}/5
+
+                    </div>
+
+                </div>
+
+
+                {% if review.subject %}
+
+                    <h4>{{ review.subject }}</h4>
+
+                {% endif %}
+
+
+                <p>{{ review.comments }}</p>
+
+            </article>
+
+
+        {% empty %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">⭐</div>
+
+                <h3>No Citizen Reviews Yet</h3>
+
+                <p>
+                    Citizen feedback and reviews will appear here
+                    when they are submitted and approved for display.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+
+    <!-- PRIVACY AND ACCOUNTABILITY NOTICE -->
+
+    <div class="notice-box">
+
+        <strong>Transparency and accountability:</strong>
+
+        Activity reports, photographs, complaint responses and citizen
+        reviews should be subject to appropriate verification and
+        moderation. Do not publish confidential government information,
+        personal records or sensitive citizen data through this portal.
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================
+       BEFORE AND AFTER IMAGE PREVIEWS
+    ========================================= */
+
+    function setupImagePreview(inputId, previewId, countId) {
+
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        const count = document.getElementById(countId);
+
+        if (!input || !preview || !count) {
+            return;
+        }
+
+        let previewUrls = [];
+
+        input.addEventListener("change", function () {
+
+            // Release old preview URLs.
+            previewUrls.forEach(function (url) {
+                URL.revokeObjectURL(url);
+            });
+
+            previewUrls = [];
+            preview.innerHTML = "";
+
+            const files = Array.from(input.files);
+
+            let validImageCount = 0;
+
+            files.forEach(function (file) {
+
+                if (!file.type.startsWith("image/")) {
+                    return;
+                }
+
+                validImageCount++;
+
+                const imageUrl = URL.createObjectURL(file);
+                previewUrls.push(imageUrl);
+
+                const item = document.createElement("div");
+                item.className = "image-preview-item";
+
+                const image = document.createElement("img");
+                image.src = imageUrl;
+                image.alt = file.name;
+
+                const filename = document.createElement("span");
+                filename.textContent = file.name;
+
+                item.appendChild(image);
+                item.appendChild(filename);
+
+                preview.appendChild(item);
+
+            });
+
+
+            if (validImageCount === 0) {
+
+                count.textContent = "No images selected";
+
+                const empty = document.createElement("div");
+                empty.className = "image-preview-empty";
+                empty.textContent = "No images selected.";
+
+                preview.appendChild(empty);
+
+            } else {
+
+                count.textContent =
+                    validImageCount + " image(s) selected";
+
+            }
+
+        });
+
+    }
+
+
+    setupImagePreview(
+        "before_images",
+        "beforeImagePreview",
+        "beforeImageCount"
+    );
+
+
+    setupImagePreview(
+        "after_images",
+        "afterImagePreview",
+        "afterImageCount"
+    );
+
+
+    /* =========================================
+       ACTIVITY HISTORY SEARCH
+    ========================================= */
+
+    const searchInput = document.getElementById("activitySearch");
+
+    if (searchInput) {
+
+        const activityCards = document.querySelectorAll(
+            ".activity-history-item"
+        );
+
+        searchInput.addEventListener("input", function () {
+
+            const searchValue = this.value.toLowerCase().trim();
+
+            activityCards.forEach(function (card) {
+
+                const searchableText =
+                    card.getAttribute("data-search") || "";
+
+                if (searchableText.includes(searchValue)) {
+
+                    card.style.display = "";
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+        });
+
+    }
+
+
+    /* =========================================
+       PREVENT ACTIVITY DATE FROM BEING IN FUTURE
+    ========================================= */
+
+    const activityDate = document.getElementById("activity_date");
+
+    if (activityDate) {
+
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        activityDate.max = year + "-" + month + "-" + day;
+
+    }
+
+});
+</script>
+
+{% endblock %}

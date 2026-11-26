@@ -1,0 +1,1765 @@
+
+
+{% extends "admin/common.html" %}
+
+{% block title %}Add Officer | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    .add-officer-page {
+        padding: 38px 0;
+        background: var(--surface);
+    }
+
+    .officer-container {
+        width: min(960px, 92%);
+        margin: 0 auto;
+    }
+
+    .page-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .eyebrow {
+        color: var(--blue-600);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+    }
+
+    .page-heading h1 {
+        margin-top: 8px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(27px, 4vw, 37px);
+        font-weight: 800;
+        letter-spacing: -1px;
+    }
+
+    .page-heading p {
+        margin-top: 8px;
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .back-button {
+        flex-shrink: 0;
+        padding: 11px 15px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: white;
+        color: var(--blue-800);
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .back-button:hover {
+        background: var(--blue-50);
+    }
+
+    .officer-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        background: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 25px 30px;
+        border-bottom: 1px solid var(--border);
+        background: var(--blue-50);
+    }
+
+    .header-icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        border-radius: 14px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 23px;
+    }
+
+    .card-header h2 {
+        color: var(--blue-950);
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+    .card-header p {
+        margin-top: 5px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    .officer-form {
+        padding: 30px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 22px;
+    }
+
+    .section-heading:not(:first-child) {
+        margin-top: 32px;
+    }
+
+    .section-number {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .section-heading h3 {
+        color: var(--blue-950);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .section-heading p {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .form-field {
+        min-width: 0;
+    }
+
+    .form-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .form-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .required {
+        color: var(--danger);
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        min-height: 47px;
+        padding: 12px 13px;
+        border: 1px solid #dce4ee;
+        border-radius: 10px;
+        outline: none;
+        background: #fcfdff;
+        color: var(--text);
+        font-size: 12px;
+        transition: border-color var(--transition),
+                    box-shadow var(--transition);
+        box-sizing: border-box;
+    }
+
+    .form-control::placeholder {
+        color: #9aa6b5;
+    }
+
+    .form-control:focus {
+        border-color: var(--blue-600);
+        background: white;
+        box-shadow: 0 0 0 4px rgba(23, 103, 187, .10);
+    }
+
+    .form-control:disabled {
+        background: #f0f3f7;
+        color: #8895a5;
+        cursor: not-allowed;
+    }
+
+    textarea.form-control {
+        min-height: 105px;
+        resize: vertical;
+    }
+
+    .password-wrap {
+        position: relative;
+    }
+
+    .password-wrap .form-control {
+        padding-right: 65px;
+    }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        padding: 5px;
+        border: 0;
+        background: transparent;
+        color: var(--blue-700);
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .field-help {
+        display: block;
+        margin-top: 7px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .error-summary {
+        margin-bottom: 25px;
+        padding: 15px 17px;
+        border: 1px solid #f0cccc;
+        border-radius: 11px;
+        background: #fff2f2;
+        color: #9c3030;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .error-summary ul {
+        margin-top: 6px;
+        padding-left: 20px;
+    }
+
+    .location-status {
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 14px;
+        padding: 13px 15px;
+        border: 1px solid #d3e4f6;
+        border-radius: 10px;
+        background: var(--blue-50);
+        color: var(--blue-800);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .location-status.error {
+        border-color: #f0cccc;
+        background: #fff2f2;
+        color: #9c3030;
+    }
+
+    .location-status.success {
+        border-color: #c6e8d0;
+        background: #effaf2;
+        color: #237342;
+    }
+
+    .security-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-top: 30px;
+        padding: 16px;
+        border: 1px solid #d3e4f6;
+        border-radius: 11px;
+        background: var(--blue-50);
+        color: var(--text-soft);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .security-note strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--blue-900);
+        font-size: 12px;
+    }
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-top: 27px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+    }
+
+    .form-actions p {
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.8;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-shrink: 0;
+        gap: 10px;
+    }
+
+    .btn-cancel,
+    .btn-submit {
+        min-height: 46px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 18px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .btn-cancel {
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--blue-800);
+    }
+
+    .btn-cancel:hover {
+        background: var(--blue-50);
+    }
+
+    .btn-submit {
+        border: 0;
+        background: var(--blue-800);
+        color: white;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background: var(--blue-900);
+    }
+
+    .btn-submit:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 650px) {
+        .page-heading {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 22px 19px;
+        }
+
+        .officer-form {
+            padding: 22px 19px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field.full {
+            grid-column: auto;
+        }
+
+        .form-actions {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .btn-cancel,
+        .btn-submit {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<section class="add-officer-page">
+
+    <div class="officer-container">
+
+        <!-- PAGE HEADING -->
+        <header class="page-heading">
+
+            <div>
+
+                <div class="eyebrow">
+                    Demokratia administration
+                </div>
+
+                <h1>Add Government Officer</h1>
+
+                <p>
+                    Create an officer account and assign the appropriate
+                    department and jurisdiction.
+                </p>
+
+            </div>
+
+            <a href="{% url 'adminhome' %}" class="back-button">
+                ← Back to dashboard
+            </a>
+
+        </header>
+
+
+        <!-- OFFICER REGISTRATION CARD -->
+        <div class="officer-card">
+
+            <div class="card-header">
+
+                <div class="header-icon" aria-hidden="true">
+                    ♙
+                </div>
+
+                <div>
+
+                    <h2>Officer registration</h2>
+
+                    <p>
+                        Enter the officer's official information.
+                        Fields marked with * are required.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- REGISTRATION FORM -->
+            <form
+                class="officer-form"
+                method="post"
+                action="{% url 'add_officer' %}"
+                id="add-officer-form"
+            >
+
+                {% csrf_token %}
+
+
+                <!-- SERVER-SIDE ERRORS -->
+                {% if errors %}
+
+                    <div class="error-summary" role="alert">
+
+                        <strong>Please correct these errors:</strong>
+
+                        <ul>
+
+                            {% for error in errors %}
+
+                                <li>{{ error }}</li>
+
+                            {% endfor %}
+
+                        </ul>
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ================================= -->
+                <!-- PERSONAL INFORMATION             -->
+                <!-- ================================= -->
+
+                <section>
+
+                    <div class="section-heading">
+
+                        <span class="section-number">01</span>
+
+                        <div>
+
+                            <h3>Personal information</h3>
+
+                            <p>
+                                Officer name and contact details.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <!-- FULL NAME -->
+                        <div class="form-field">
+
+                            <label for="name">
+                                Full name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                class="form-control"
+                                type="text"
+                                id="name"
+                                name="name"
+                                maxlength="100"
+                                value="{{ data.name|default:'' }}"
+                                placeholder="Enter full name"
+                                autocomplete="name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+                        <div class="form-field">
+
+                            <label for="email">
+                                Official email <span class="required">*</span>
+                            </label>
+
+                            <input
+                                class="form-control"
+                                type="email"
+                                id="email"
+                                name="email"
+                                maxlength="254"
+                                value="{{ data.email|default:'' }}"
+                                placeholder="officer@example.gov.in"
+                                autocomplete="email"
+                                required
+                            >
+
+                            <small class="field-help">
+                                This email will also be used as the account username.
+                            </small>
+
+                        </div>
+
+
+                        <!-- MOBILE -->
+                        <div class="form-field">
+
+                            <label for="mobile">
+                                Mobile number <span class="required">*</span>
+                            </label>
+
+                            <input
+                                class="form-control"
+                                type="tel"
+                                id="mobile"
+                                name="mobile"
+                                maxlength="10"
+                                minlength="10"
+                                pattern="[0-9]{10}"
+                                inputmode="numeric"
+                                value="{{ data.mobile|default:'' }}"
+                                placeholder="10-digit mobile number"
+                                autocomplete="tel"
+                                required
+                            >
+
+                            <small class="field-help">
+                                Enter exactly 10 digits.
+                            </small>
+
+                        </div>
+
+
+                        <!-- ADDRESS -->
+                        <div class="form-field full">
+
+                            <label for="address">
+                                Office address <span class="required">*</span>
+                            </label>
+
+                            <textarea
+                                class="form-control"
+                                id="address"
+                                name="address"
+                                placeholder="Enter official office address"
+                                required
+                            >{{ data.address|default:'' }}</textarea>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================================= -->
+                <!-- DEPARTMENT AND JURISDICTION      -->
+                <!-- ================================= -->
+
+                <section>
+
+                    <div class="section-heading">
+
+                        <span class="section-number">02</span>
+
+                        <div>
+
+                            <h3>Department and jurisdiction</h3>
+
+                            <p>
+                                Assign the officer's department and service area.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <!-- DEPARTMENT -->
+                        <div class="form-field">
+
+                            <label for="department">
+                                Department <span class="required">*</span>
+                            </label>
+
+                            <select
+                                class="form-control"
+                                id="department"
+                                name="department"
+                                required
+                            >
+
+                                <option value="">Select department</option>
+
+                                {% for option in departments %}
+
+                                    <option
+                                        value="{{ option }}"
+                                        {% if data.department == option %}selected{% endif %}
+                                    >
+                                        {{ option }}
+                                    </option>
+
+                                {% empty %}
+
+                                    <option value="Revenue"
+                                        {% if data.department == "Revenue" %}selected{% endif %}>
+                                        Revenue
+                                    </option>
+
+                                    <option value="Police"
+                                        {% if data.department == "Police" %}selected{% endif %}>
+                                        Police
+                                    </option>
+
+                                    <option value="Health"
+                                        {% if data.department == "Health" %}selected{% endif %}>
+                                        Health
+                                    </option>
+
+                                    <option value="Education"
+                                        {% if data.department == "Education" %}selected{% endif %}>
+                                        Education
+                                    </option>
+
+                                    <option value="Local Self Government"
+                                        {% if data.department == "Local Self Government" %}selected{% endif %}>
+                                        Local Self Government
+                                    </option>
+
+                                    <option value="Public Works"
+                                        {% if data.department == "Public Works" %}selected{% endif %}>
+                                        Public Works
+                                    </option>
+
+                                    <option value="Other"
+                                        {% if data.department == "Other" %}selected{% endif %}>
+                                        Other
+                                    </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- STATE -->
+                        <div class="form-field">
+
+                            <label for="state">
+                                State / Union Territory
+                                <span class="required">*</span>
+                            </label>
+
+                            <select
+                                class="form-control"
+                                id="state"
+                                name="state"
+                                data-selected="{{ data.state|default:'' }}"
+                                required
+                            >
+
+                                <option value="">Loading states...</option>
+
+                            </select>
+
+                            <input
+                                type="hidden"
+                                name="state_code"
+                                id="state_code"
+                                value="{{ data.state_code|default:'' }}"
+                            >
+
+                        </div>
+
+
+                        <!-- DISTRICT -->
+                        <div class="form-field">
+
+                            <label for="district">
+                                District
+                                <span class="required">*</span>
+                            </label>
+
+                            <select
+                                class="form-control"
+                                id="district"
+                                name="district"
+                                data-selected="{{ data.district|default:'' }}"
+                                required
+                                disabled
+                            >
+
+                                <option value="">Select State First</option>
+
+                            </select>
+
+                            <input
+                                type="hidden"
+                                name="district_code"
+                                id="district_code"
+                                value="{{ data.district_code|default:'' }}"
+                            >
+
+                        </div>
+
+
+                        <!-- TALUK -->
+                        <div class="form-field">
+
+                            <label for="taluk">
+                                Taluk / Sub-district
+                                <span class="required">*</span>
+                            </label>
+
+                            <select
+                                class="form-control"
+                                id="taluk"
+                                name="taluk"
+                                data-selected="{{ data.taluk|default:'' }}"
+                                required
+                                disabled
+                            >
+
+                                <option value="">Select District First</option>
+
+                            </select>
+
+                            <input
+                                type="hidden"
+                                name="taluk_code"
+                                id="taluk_code"
+                                value="{{ data.taluk_code|default:'' }}"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOCATION STATUS -->
+                    <div
+                        class="location-status"
+                        id="location-status"
+                        role="status"
+                        aria-live="polite"
+                    >
+
+                        <span aria-hidden="true">📍</span>
+
+                        <span>
+                            Select a State, then District and Taluk.
+                        </span>
+
+                    </div>
+
+                    <small class="field-help">
+                        Districts are loaded according to the selected State.
+                        Taluks are loaded according to the selected District.
+                    </small>
+
+                </section>
+
+
+                <!-- ================================= -->
+                <!-- ACCOUNT CREDENTIALS              -->
+                <!-- ================================= -->
+
+                <section>
+
+                    <div class="section-heading">
+
+                        <span class="section-number">03</span>
+
+                        <div>
+
+                            <h3>Account credentials</h3>
+
+                            <p>
+                                Set a password for the officer's account.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <!-- PASSWORD -->
+                        <div class="form-field">
+
+                            <label for="password">
+                                Initial password
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="password-wrap">
+
+                                <input
+                                    class="form-control"
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    minlength="12"
+                                    autocomplete="new-password"
+                                    placeholder="Create a strong password"
+                                    required
+                                >
+
+                                <button
+                                    class="password-toggle"
+                                    type="button"
+                                    data-target="password"
+                                    aria-pressed="false"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                            <small class="field-help">
+                                Use a unique password of at least 12 characters.
+                            </small>
+
+                        </div>
+
+
+                        <!-- CONFIRM PASSWORD -->
+                        <div class="form-field">
+
+                            <label for="confirm_password">
+                                Confirm password
+                                <span class="required">*</span>
+                            </label>
+
+                            <div class="password-wrap">
+
+                                <input
+                                    class="form-control"
+                                    type="password"
+                                    id="confirm_password"
+                                    name="confirm_password"
+                                    minlength="12"
+                                    autocomplete="new-password"
+                                    placeholder="Re-enter the password"
+                                    required
+                                >
+
+                                <button
+                                    class="password-toggle"
+                                    type="button"
+                                    data-target="confirm_password"
+                                    aria-pressed="false"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ================================= -->
+                <!-- SECURITY INFORMATION              -->
+                <!-- ================================= -->
+
+                <div class="security-note">
+
+                    <span aria-hidden="true">🔒</span>
+
+                    <div>
+
+                        <strong>Secure account creation</strong>
+
+                        Only authorized administrators should create officer
+                        accounts. Passwords must be hashed by Django, and
+                        officers should receive only the access permissions
+                        appropriate to their roles.
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================= -->
+                <!-- FORM ACTIONS                      -->
+                <!-- ================================= -->
+
+                <div class="form-actions">
+
+                    <p>
+                        Check all information before creating the officer account.
+                    </p>
+
+                    <div class="action-buttons">
+
+                        <a href="{% url 'adminhome' %}" class="btn-cancel">
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn-submit"
+                            id="submit-officer"
+                            disabled
+                        >
+                            Create officer →
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+(function () {
+
+    "use strict";
+
+
+    // =========================================
+    // FORM ELEMENTS
+    // =========================================
+
+    const form = document.getElementById("add-officer-form");
+
+    const submitButton = document.getElementById("submit-officer");
+
+    const password = document.getElementById("password");
+
+    const confirmation = document.getElementById("confirm_password");
+
+
+    // =========================================
+    // PASSWORD VISIBILITY
+    // =========================================
+
+    document.querySelectorAll(".password-toggle").forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const input = document.getElementById(button.dataset.target);
+
+            if (!input) return;
+
+            const show = input.type === "password";
+
+            input.type = show ? "text" : "password";
+
+            button.textContent = show ? "Hide" : "Show";
+
+            button.setAttribute("aria-pressed", String(show));
+
+        });
+
+    });
+
+
+    // =========================================
+    // LOCATION ELEMENTS
+    // =========================================
+
+    const stateSelect = document.getElementById("state");
+
+    const districtSelect = document.getElementById("district");
+
+    const talukSelect = document.getElementById("taluk");
+
+
+    const stateCode = document.getElementById("state_code");
+
+    const districtCode = document.getElementById("district_code");
+
+    const talukCode = document.getElementById("taluk_code");
+
+
+    const locationStatus = document.getElementById("location-status");
+
+
+    // =========================================
+    // LOCATION API
+    // =========================================
+
+    const API_BASE = "https://lgd-json-api.vercel.app/api";
+
+
+    let districtRequestNumber = 0;
+
+    let talukRequestNumber = 0;
+
+    let locationReady = false;
+
+
+    // =========================================
+    // STATUS MESSAGE
+    // =========================================
+
+    function showLocationStatus(message, type = "") {
+
+        locationStatus.className = "location-status";
+
+        if (type) {
+
+            locationStatus.classList.add(type);
+
+        }
+
+        locationStatus.querySelector("span:last-child").textContent = message;
+
+    }
+
+
+    // =========================================
+    // RESET DROPDOWN
+    // =========================================
+
+    function resetDropdown(select, message) {
+
+        select.replaceChildren(new Option(message, ""));
+
+        select.disabled = true;
+
+    }
+
+
+    // =========================================
+    // LOADING DROPDOWN
+    // =========================================
+
+    function loadingDropdown(select, message) {
+
+        select.replaceChildren(new Option(message, ""));
+
+        select.disabled = true;
+
+    }
+
+
+    // =========================================
+    // FETCH ALL PAGINATED LOCATION RECORDS
+    // =========================================
+
+    async function fetchLocationData(endpoint, parameters = {}) {
+
+        let allRecords = [];
+
+        let page = 1;
+
+        let totalPages = 1;
+
+
+        do {
+
+            const url = new URL(API_BASE + "/" + endpoint);
+
+            const query = {
+
+                ...parameters,
+
+                page: page,
+
+                limit: 100
+
+            };
+
+
+            Object.entries(query).forEach(function ([key, value]) {
+
+                url.searchParams.set(key, value);
+
+            });
+
+
+            const response = await fetch(url.toString(), {
+
+                method: "GET",
+
+                headers: {
+                    "Accept": "application/json"
+                }
+
+            });
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Location data could not be loaded. HTTP " + response.status
+                );
+
+            }
+
+
+            const result = await response.json();
+
+
+            if (!Array.isArray(result.data)) {
+
+                throw new Error("Invalid location data received.");
+
+            }
+
+
+            allRecords = allRecords.concat(result.data);
+
+
+            totalPages = Number(
+                result.pagination?.pages || 1
+            );
+
+
+            page++;
+
+        } while (page <= totalPages);
+
+
+        return allRecords;
+
+    }
+
+
+    // =========================================
+    // POPULATE DROPDOWN
+    // =========================================
+
+    function populateDropdown(select, records, placeholder) {
+
+        select.replaceChildren(new Option(placeholder, ""));
+
+
+        records.forEach(function (record) {
+
+            const option = new Option(
+                record.name,
+                record.name
+            );
+
+            option.dataset.code = record.code;
+
+            select.add(option);
+
+        });
+
+
+        select.disabled = records.length === 0;
+
+
+        if (records.length === 0) {
+
+            select.options[0].text = "No locations available";
+
+        }
+
+    }
+
+
+    // =========================================
+    // ENABLE SUBMIT AFTER LOCATION LOAD
+    // =========================================
+
+    function updateSubmitState() {
+
+        locationReady = Boolean(
+            stateSelect.value &&
+            districtSelect.value &&
+            talukSelect.value &&
+            stateCode.value &&
+            districtCode.value &&
+            talukCode.value
+        );
+
+        submitButton.disabled = !locationReady;
+
+    }
+
+
+    // =========================================
+    // LOAD STATES
+    // =========================================
+
+    async function loadStates() {
+
+        loadingDropdown(stateSelect, "Loading states...");
+
+        resetDropdown(districtSelect, "Select State First");
+
+        resetDropdown(talukSelect, "Select District First");
+
+
+        submitButton.disabled = true;
+
+
+        try {
+
+            const states = await fetchLocationData("states");
+
+
+            populateDropdown(
+                stateSelect,
+                states,
+                "Select State / Union Territory"
+            );
+
+
+            showLocationStatus(
+                "Select your State or Union Territory."
+            );
+
+
+            // Restore values after server-side validation errors
+
+            const selectedState = stateSelect.dataset.selected;
+
+            const selectedDistrict = districtSelect.dataset.selected;
+
+            const selectedTaluk = talukSelect.dataset.selected;
+
+
+            if (selectedState) {
+
+                stateSelect.value = selectedState;
+
+
+                const selectedOption = stateSelect.selectedOptions[0];
+
+
+                if (
+                    selectedOption &&
+                    selectedOption.dataset.code
+                ) {
+
+                    stateCode.value = selectedOption.dataset.code;
+
+
+                    await loadDistricts(
+                        stateCode.value,
+                        selectedDistrict,
+                        selectedTaluk
+                    );
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error("State loading error:", error);
+
+
+            resetDropdown(
+                stateSelect,
+                "Unable to load states"
+            );
+
+
+            showLocationStatus(
+                "Unable to load States. Check your internet connection and refresh the page.",
+                "error"
+            );
+
+            submitButton.disabled = true;
+
+        }
+
+    }
+
+
+    // =========================================
+    // LOAD DISTRICTS ACCORDING TO STATE
+    // =========================================
+
+    async function loadDistricts(
+        selectedStateCode,
+        oldDistrict = "",
+        oldTaluk = ""
+    ) {
+
+        const requestNumber = ++districtRequestNumber;
+
+
+        // Invalidate pending Taluk requests
+
+        talukRequestNumber++;
+
+
+        resetDropdown(
+            districtSelect,
+            "Loading districts..."
+        );
+
+        resetDropdown(
+            talukSelect,
+            "Select District First"
+        );
+
+
+        districtCode.value = "";
+
+        talukCode.value = "";
+
+        submitButton.disabled = true;
+
+
+        if (!selectedStateCode) {
+
+            resetDropdown(
+                districtSelect,
+                "Select State First"
+            );
+
+            showLocationStatus(
+                "Please select a State first."
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const districts = await fetchLocationData(
+                "districts",
+                {
+                    stateCode: selectedStateCode
+                }
+            );
+
+
+            // Ignore old requests
+
+            if (requestNumber !== districtRequestNumber) return;
+
+
+            populateDropdown(
+                districtSelect,
+                districts,
+                "Select District"
+            );
+
+
+            showLocationStatus(
+                "State selected successfully. Now select your District."
+            );
+
+
+            // Restore previously selected District
+
+            if (oldDistrict) {
+
+                districtSelect.value = oldDistrict;
+
+
+                const selectedOption = districtSelect.selectedOptions[0];
+
+
+                if (
+                    selectedOption &&
+                    selectedOption.dataset.code
+                ) {
+
+                    districtCode.value = selectedOption.dataset.code;
+
+
+                    await loadTaluks(
+                        districtCode.value,
+                        oldTaluk
+                    );
+
+                }
+
+            }
+
+        } catch (error) {
+
+            console.error("District loading error:", error);
+
+
+            if (requestNumber !== districtRequestNumber) return;
+
+
+            resetDropdown(
+                districtSelect,
+                "Unable to load districts"
+            );
+
+
+            showLocationStatus(
+                "Unable to load Districts. Please try again.",
+                "error"
+            );
+
+            submitButton.disabled = true;
+
+        }
+
+    }
+
+
+    // =========================================
+    // LOAD TALUKS ACCORDING TO DISTRICT
+    // =========================================
+
+    async function loadTaluks(
+        selectedDistrictCode,
+        oldTaluk = ""
+    ) {
+
+        const requestNumber = ++talukRequestNumber;
+
+
+        resetDropdown(
+            talukSelect,
+            "Loading Taluks..."
+        );
+
+
+        talukCode.value = "";
+
+        submitButton.disabled = true;
+
+
+        if (!selectedDistrictCode) {
+
+            resetDropdown(
+                talukSelect,
+                "Select District First"
+            );
+
+            return;
+
+        }
+
+
+        try {
+
+            const taluks = await fetchLocationData(
+                "subdistricts",
+                {
+                    districtCode: selectedDistrictCode
+                }
+            );
+
+
+            // Ignore outdated requests
+
+            if (requestNumber !== talukRequestNumber) return;
+
+
+            populateDropdown(
+                talukSelect,
+                taluks,
+                "Select Taluk / Sub-district"
+            );
+
+
+            showLocationStatus(
+                "District selected successfully. Now select your Taluk."
+            );
+
+
+            // Restore previously selected Taluk
+
+            if (oldTaluk) {
+
+                talukSelect.value = oldTaluk;
+
+
+                const selectedOption = talukSelect.selectedOptions[0];
+
+
+                if (
+                    selectedOption &&
+                    selectedOption.dataset.code
+                ) {
+
+                    talukCode.value = selectedOption.dataset.code;
+
+                }
+
+            }
+
+
+            updateSubmitState();
+
+        } catch (error) {
+
+            console.error("Taluk loading error:", error);
+
+
+            if (requestNumber !== talukRequestNumber) return;
+
+
+            resetDropdown(
+                talukSelect,
+                "Unable to load Taluks"
+            );
+
+
+            showLocationStatus(
+                "Unable to load Taluks. Please try again.",
+                "error"
+            );
+
+            submitButton.disabled = true;
+
+        }
+
+    }
+
+
+    // =========================================
+    // STATE CHANGE
+    // =========================================
+
+    stateSelect.addEventListener("change", async function () {
+
+        const selectedOption = stateSelect.selectedOptions[0];
+
+        const selectedCode = selectedOption?.dataset.code || "";
+
+
+        stateCode.value = selectedCode;
+
+        districtCode.value = "";
+
+        talukCode.value = "";
+
+
+        submitButton.disabled = true;
+
+
+        await loadDistricts(selectedCode);
+
+    });
+
+
+    // =========================================
+    // DISTRICT CHANGE
+    // =========================================
+
+    districtSelect.addEventListener("change", async function () {
+
+        const selectedOption = districtSelect.selectedOptions[0];
+
+        const selectedCode = selectedOption?.dataset.code || "";
+
+
+        districtCode.value = selectedCode;
+
+        talukCode.value = "";
+
+
+        submitButton.disabled = true;
+
+
+        await loadTaluks(selectedCode);
+
+    });
+
+
+    // =========================================
+    // TALUK CHANGE
+    // =========================================
+
+    talukSelect.addEventListener("change", function () {
+
+        const selectedOption = talukSelect.selectedOptions[0];
+
+        talukCode.value = selectedOption?.dataset.code || "";
+
+
+        updateSubmitState();
+
+
+        if (talukCode.value) {
+
+            showLocationStatus(
+                "State, District and Taluk selected successfully.",
+                "success"
+            );
+
+        }
+
+    });
+
+
+    // =========================================
+    // PASSWORD CONFIRMATION
+    // =========================================
+
+    confirmation.addEventListener("input", function () {
+
+        confirmation.setCustomValidity("");
+
+    });
+
+
+    password.addEventListener("input", function () {
+
+        confirmation.setCustomValidity("");
+
+    });
+
+
+    // =========================================
+    // FINAL FORM VALIDATION
+    // =========================================
+
+    form.addEventListener("submit", function (event) {
+
+
+        // Check password confirmation
+
+        if (password.value !== confirmation.value) {
+
+            event.preventDefault();
+
+            confirmation.setCustomValidity(
+                "The passwords do not match."
+            );
+
+            confirmation.reportValidity();
+
+            return;
+
+        }
+
+
+        confirmation.setCustomValidity("");
+
+
+        // Check location selection
+
+        if (
+            !stateCode.value ||
+            !districtCode.value ||
+            !talukCode.value ||
+            !locationReady
+        ) {
+
+            event.preventDefault();
+
+
+            showLocationStatus(
+                "Please select a valid State, District and Taluk before submitting.",
+                "error"
+            );
+
+
+            if (!stateCode.value) {
+
+                stateSelect.focus();
+
+            } else if (!districtCode.value) {
+
+                districtSelect.focus();
+
+            } else {
+
+                talukSelect.focus();
+
+            }
+
+            return;
+
+        }
+
+    });
+
+
+    // =========================================
+    // INITIALISE LOCATION DROPDOWNS
+    // =========================================
+
+    loadStates();
+
+
+})();
+</script>
+
+{% endblock %}

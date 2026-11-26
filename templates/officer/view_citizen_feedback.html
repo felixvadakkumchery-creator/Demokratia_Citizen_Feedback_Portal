@@ -1,0 +1,384 @@
+
+
+{% extends 'officer/common.html' %}
+
+{% block title %}Citizen Feedback | Demokratia{% endblock %}
+
+{% block extra_css %}
+<style>
+.feedback-page {
+    max-width: 1150px;
+    margin: 40px auto 70px;
+    padding: 0 22px;
+}
+
+.feedback-header {
+    padding: 35px;
+    border-radius: 18px;
+    background: linear-gradient(120deg, #071d3b, #1d5b91);
+    color: white;
+    margin-bottom: 25px;
+}
+
+.feedback-header h1 {
+    color: white;
+    margin: 0 0 10px;
+    font-size: 28px;
+}
+
+.feedback-header p {
+    color: #dceaff;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.activity-summary {
+    padding: 23px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    margin-bottom: 24px;
+}
+
+.activity-summary h2 {
+    color: var(--blue-950);
+    font-size: 19px;
+    margin: 0 0 15px;
+}
+
+.activity-summary p {
+    color: var(--text-soft);
+    font-size: 12px;
+    margin: 9px 0;
+}
+
+.feedback-stat {
+    display: inline-flex;
+    padding: 12px 18px;
+    margin-bottom: 20px;
+    border-radius: 11px;
+    background: #edf4ff;
+    color: #174b80;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.feedback-card {
+    padding: 24px;
+    margin-bottom: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(15,39,70,.04);
+}
+
+.feedback-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.citizen-name {
+    color: var(--blue-950);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.feedback-date {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.rating {
+    margin: 16px 0;
+    color: #d49b20;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+.feedback-label {
+    display: block;
+    margin: 16px 0 7px;
+    color: var(--blue-950);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.feedback-text {
+    padding: 14px;
+    background: #f7faff;
+    border: 1px solid #e6edf5;
+    border-radius: 9px;
+    color: var(--text-soft);
+    font-size: 12px;
+    line-height: 1.8;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.feedback-image {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    max-height: 320px;
+    object-fit: cover;
+    margin-top: 12px;
+    border-radius: 11px;
+    border: 1px solid var(--border);
+    cursor: zoom-in;
+    transition: .2s ease;
+}
+
+.feedback-image:hover {
+    transform: scale(1.01);
+}
+
+.no-feedback {
+    padding: 50px 22px;
+    background: var(--surface);
+    border: 1px dashed #cbd8e6;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.no-feedback .empty-icon {
+    font-size: 35px;
+    margin-bottom: 12px;
+}
+
+.no-feedback h2 {
+    color: var(--blue-950);
+    font-size: 19px;
+    margin-bottom: 9px;
+}
+
+.no-feedback p {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 12px 18px;
+    border-radius: 9px;
+    background: var(--blue-800);
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+    transition: .2s ease;
+}
+
+.back-btn:hover {
+    background: var(--blue-950);
+    color: white;
+}
+
+@media(max-width:600px) {
+    .feedback-page {
+        padding: 0 14px;
+    }
+
+    .feedback-header {
+        padding: 25px;
+    }
+
+    .feedback-header h1 {
+        font-size: 23px;
+    }
+
+    .feedback-card {
+        padding: 18px;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="feedback-page">
+
+    <header class="feedback-header">
+        <h1>Citizen Feedback</h1>
+        <p>
+            Review citizen opinions, ratings, photographs and
+            improvement suggestions for your activity.
+        </p>
+    </header>
+
+
+    <!-- SELECTED ACTIVITY -->
+
+    <section class="activity-summary">
+
+        <h2>{{ activity.name_of_activity }}</h2>
+
+        <p>
+            <strong>Reference Number:</strong>
+            {{ activity.reference_number }}
+        </p>
+
+        <p>
+            <strong>Department:</strong>
+            {{ activity.department }}
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            {{ activity.map_location|default:"Not specified" }}
+        </p>
+
+        <p>
+            <strong>Activity Date:</strong>
+            {{ activity.date|date:"d M Y" }}
+        </p>
+
+    </section>
+
+
+    <!-- FEEDBACK COUNT -->
+
+    <div class="feedback-stat">
+        Total Citizen Feedback: {{ total_feedback }}
+    </div>
+
+
+    <!-- FEEDBACK LIST -->
+
+    {% for feedback in feedbacks %}
+
+        <article class="feedback-card">
+
+            <div class="feedback-top">
+
+                <div class="citizen-name">
+                    {{ feedback.name }}
+                </div>
+
+                <div class="feedback-date">
+                    {{ feedback.timestamp|date:"d M Y, h:i A" }}
+                </div>
+
+            </div>
+
+
+            <!-- RATING -->
+
+            <div class="rating">
+
+                {% for star in "12345" %}
+
+                    {% if forloop.counter <= feedback.rating %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+
+                {% endfor %}
+
+                <span style="font-size:11px;color:#64748b;">
+                    {{ feedback.rating }}/5
+                </span>
+
+            </div>
+
+
+            <!-- CITIZEN MESSAGE -->
+
+            <span class="feedback-label">
+                Citizen Message
+            </span>
+
+            <div class="feedback-text">
+                {{ feedback.message|default:"No message provided." }}
+            </div>
+
+
+            <!-- FEEDBACK -->
+
+            <span class="feedback-label">
+                Feedback
+            </span>
+
+            <div class="feedback-text">
+                {{ feedback.feedback_text|default:"No feedback provided." }}
+            </div>
+
+
+            <!-- IMPROVEMENT SUGGESTIONS -->
+
+            {% if feedback.improvement_suggestions %}
+
+                <span class="feedback-label">
+                    Improvement Suggestions
+                </span>
+
+                <div class="feedback-text">
+                    {{ feedback.improvement_suggestions }}
+                </div>
+
+            {% endif %}
+
+
+            <!-- CITIZEN IMAGE -->
+
+            {% if feedback.image %}
+
+                <span class="feedback-label">
+                    Citizen Uploaded Photograph
+                </span>
+
+                <a href="{{ feedback.image.url }}"
+                   target="_blank"
+                   rel="noopener noreferrer">
+
+                    <img
+                        src="{{ feedback.image.url }}"
+                        class="feedback-image"
+                        alt="Citizen feedback photograph"
+                        loading="lazy"
+                    >
+
+                </a>
+
+            {% endif %}
+
+        </article>
+
+    {% empty %}
+
+        <div class="no-feedback">
+
+            <div class="empty-icon">💬</div>
+
+            <h2>No Feedback Yet</h2>
+
+            <p>
+                Citizens have not submitted feedback for this activity.
+                Their feedback will appear here when it is submitted.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+
+    <!-- BACK BUTTON -->
+
+    <a href="{% url 'view_officer_history' %}" class="back-btn">
+        ← Back to My Activities
+    </a>
+
+</div>
+
+{% endblock %}

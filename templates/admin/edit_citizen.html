@@ -1,0 +1,684 @@
+
+{% extends "admin/common.html" %}
+
+{% block title %}Edit Citizen | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-citizen-page {
+        padding: 38px 0 30px;
+        background: var(--surface);
+    }
+
+    .edit-citizen-container {
+        width: min(940px, 92%);
+        margin: 0 auto;
+    }
+
+    .edit-citizen-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .edit-citizen-eyebrow {
+        color: var(--blue-600);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .edit-citizen-header h1 {
+        margin-top: 7px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .edit-citizen-header p {
+        margin-top: 7px;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .edit-citizen-back {
+        flex-shrink: 0;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .edit-citizen-form {
+        padding: 26px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .edit-citizen-errors {
+        margin-bottom: 20px;
+        padding: 14px 17px;
+        border: 1px solid #efcaca;
+        border-radius: var(--radius-md);
+        background: #fff5f5;
+        color: #962e2e;
+        font-size: 12px;
+    }
+
+    .edit-citizen-errors ul {
+        margin: 7px 0 0;
+        padding-left: 20px;
+        line-height: 1.7;
+    }
+
+    .edit-citizen-section-title {
+        margin: 25px 0 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+        color: var(--blue-800);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .edit-citizen-section-title:first-of-type {
+        margin-top: 0;
+    }
+
+    .edit-citizen-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .edit-citizen-field {
+        min-width: 0;
+    }
+
+    .edit-citizen-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .edit-citizen-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .edit-citizen-field label span {
+        color: #d64545;
+    }
+
+    .edit-citizen-field input,
+    .edit-citizen-field select,
+    .edit-citizen-field textarea {
+        width: 100%;
+        min-height: 44px;
+        box-sizing: border-box;
+        padding: 11px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: #fcfdff;
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+    }
+
+    .edit-citizen-field textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .edit-citizen-field select:disabled {
+        background: #f0f3f7;
+        cursor: not-allowed;
+    }
+
+    .edit-citizen-field input:focus,
+    .edit-citizen-field select:focus,
+    .edit-citizen-field textarea:focus {
+        outline: none;
+        border-color: var(--blue-600);
+        box-shadow: 0 0 0 3px rgba(23, 103, 187, .08);
+    }
+
+    .edit-citizen-field small {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .edit-citizen-current-file {
+        margin-top: 9px;
+        padding: 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: #f8fbff;
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .edit-citizen-current-file a {
+        color: var(--blue-700);
+        font-weight: 800;
+        text-decoration: underline;
+    }
+
+    .edit-citizen-current-photo {
+        display: block;
+        width: 100px;
+        height: 100px;
+        margin-top: 9px;
+        border: 2px solid white;
+        border-radius: 12px;
+        object-fit: cover;
+        box-shadow: 0 0 0 1px var(--border);
+    }
+
+    .edit-citizen-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 23px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+    }
+
+    .edit-citizen-submit,
+    .edit-citizen-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 15px;
+        border-radius: var(--radius-md);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .edit-citizen-submit {
+        border: 0;
+        background: var(--blue-800);
+        color: white;
+        cursor: pointer;
+    }
+
+    .edit-citizen-submit:hover {
+        background: var(--blue-900);
+    }
+
+    .edit-citizen-cancel {
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--text-soft);
+    }
+
+    .edit-citizen-cancel:hover {
+        background: var(--blue-50);
+    }
+
+    @media (max-width: 620px) {
+        .edit-citizen-header {
+            flex-direction: column;
+        }
+
+        .edit-citizen-form {
+            padding: 18px;
+        }
+
+        .edit-citizen-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-citizen-field.full-width {
+            grid-column: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<main class="edit-citizen-page">
+    <div class="edit-citizen-container">
+
+        <!-- PAGE HEADER -->
+        <header class="edit-citizen-header">
+            <div>
+                <div class="edit-citizen-eyebrow">
+                    Citizen record #{{ citizen.pk }}
+                </div>
+
+                <h1>Edit Citizen</h1>
+
+                <p>
+                    Update the citizen's personal information,
+                    contact details, location and uploaded documents.
+                </p>
+            </div>
+
+            <a class="edit-citizen-back" href="{% url 'view_citizen' %}">
+                ← Back to Citizen Directory
+            </a>
+        </header>
+
+
+        <!-- EDIT FORM -->
+        <form
+            class="edit-citizen-form"
+            method="post"
+            enctype="multipart/form-data"
+            action="{% url 'edit_citizen' citizen.pk %}"
+        >
+
+            {% csrf_token %}
+
+            <!-- ERRORS -->
+            {% if errors %}
+                <div class="edit-citizen-errors" role="alert">
+                    <strong>Please correct the following:</strong>
+
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+
+            <!-- PERSONAL INFORMATION -->
+            <h3 class="edit-citizen-section-title">
+                Personal information
+            </h3>
+
+            <div class="edit-citizen-grid">
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-name">
+                        Full name <span>*</span>
+                    </label>
+
+                    <input
+                        id="citizen-name"
+                        type="text"
+                        name="name"
+                        minlength="2"
+                        maxlength="100"
+                        pattern="[^0-9]+"
+                        title="Name cannot contain numbers"
+                        value="{{ data.name|default:'' }}"
+                        required
+                    >
+                </div>
+
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-email">
+                        Email address <span>*</span>
+                    </label>
+
+                    <input
+                        id="citizen-email"
+                        type="email"
+                        name="email"
+                        maxlength="254"
+                        pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                        title="Enter a valid email address"
+                        value="{{ data.email|default:'' }}"
+                        required
+                    >
+                </div>
+
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-mobile">
+                        Mobile number <span>*</span>
+                    </label>
+
+                    <input
+                        id="citizen-mobile"
+                        type="tel"
+                        name="mobile"
+                        maxlength="10"
+                        inputmode="numeric"
+                        data-digits
+                        pattern="[6-9][0-9]{9}"
+                        title="Enter 10 digits starting with 6, 7, 8 or 9"
+                        value="{{ data.mobile|default:'' }}"
+                        required
+                    >
+
+                    <small>
+                        Enter a valid 10-digit Indian mobile number.
+                    </small>
+                </div>
+
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-pincode">
+                        PIN code <span>*</span>
+                    </label>
+
+                    <input
+                        id="citizen-pincode"
+                        type="text"
+                        name="pincode"
+                        maxlength="6"
+                        inputmode="numeric"
+                        data-digits
+                        pattern="[1-9][0-9]{5}"
+                        title="Enter a valid 6-digit PIN code"
+                        value="{{ data.pincode|default:'' }}"
+                        required
+                    >
+                </div>
+
+
+                <div class="edit-citizen-field full-width">
+                    <label for="citizen-address">
+                        Residential address <span>*</span>
+                    </label>
+
+                    <textarea
+                        id="citizen-address"
+                        name="address"
+                        minlength="5"
+                        required
+                    >{{ data.address|default:'' }}</textarea>
+                </div>
+
+            </div>
+
+
+            <!-- LOCATION -->
+            <h3 class="edit-citizen-section-title">
+                Location information
+            </h3>
+
+            <div class="edit-citizen-grid">
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-state">
+                        State / Union Territory <span>*</span>
+                    </label>
+
+                    <select
+                        id="citizen-state"
+                        name="state"
+                        required
+                    >
+                        <option value="">Select State</option>
+
+                        {% for s in states %}
+                            <option
+                                value="{{ s }}"
+                                {% if data.state == s %}selected{% endif %}
+                            >
+                                {{ s }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-district">
+                        District <span>*</span>
+                    </label>
+
+                    <select
+                        id="citizen-district"
+                        name="district"
+                        data-selected="{{ data.district|default:'' }}"
+                        required
+                        disabled
+                    >
+                        <option value="">Select State first</option>
+                    </select>
+                </div>
+
+
+                <div class="edit-citizen-field full-width">
+                    <label for="citizen-city">
+                        City / Town (optional)
+                    </label>
+
+                    <input
+                        id="citizen-city"
+                        type="text"
+                        name="city"
+                        maxlength="100"
+                        value="{{ data.city|default:'' }}"
+                    >
+
+                    <small>
+                        If left blank, your District can be used as the location.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <!-- IDENTITY INFORMATION -->
+            <h3 class="edit-citizen-section-title">
+                Identity information
+            </h3>
+
+            <div class="edit-citizen-grid">
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-aadhar">
+                        Aadhaar number <span>*</span>
+                    </label>
+
+                    <input
+                        id="citizen-aadhar"
+                        type="text"
+                        name="aadhar"
+                        maxlength="12"
+                        inputmode="numeric"
+                        data-digits
+                        pattern="[0-9]{12}"
+                        title="Enter a valid 12-digit Aadhaar number"
+                        autocomplete="off"
+                        value="{{ data.aadhar|default:'' }}"
+                        required
+                    >
+
+                    <small>
+                        Enter the 12-digit Aadhaar number.
+                    </small>
+                </div>
+
+
+                <div class="edit-citizen-field">
+                    <label for="citizen-proof">
+                        Replace identity / address proof
+                    </label>
+
+                    <input
+                        id="citizen-proof"
+                        type="file"
+                        name="proof"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        data-max-mb="5"
+                    >
+
+                    <small>
+                        PDF, JPG or PNG; maximum 5 MB.
+                        Leave empty to retain the existing document.
+                    </small>
+
+                    {% if citizen.proof %}
+                        <div class="edit-citizen-current-file">
+                            <strong>Current document:</strong><br>
+
+                            <a
+                                href="{{ citizen.proof.url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                View existing proof
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+
+                <div class="edit-citizen-field full-width">
+                    <label for="citizen-profile-pic">
+                        Replace profile picture
+                    </label>
+
+                    <input
+                        id="citizen-profile-pic"
+                        type="file"
+                        name="profile_pic"
+                        accept="image/jpeg,image/png,image/webp"
+                        data-max-mb="2"
+                    >
+
+                    <small>
+                        JPG, PNG or WebP; maximum 2 MB.
+                        Leave empty to retain the existing photograph.
+                    </small>
+
+                    {% if citizen.profile_pic %}
+                        <div class="edit-citizen-current-file">
+                            <strong>Current profile photograph:</strong>
+
+                            <img
+                                class="edit-citizen-current-photo"
+                                src="{{ citizen.profile_pic.url }}"
+                                alt="Current profile photograph of {{ citizen.name }}"
+                            >
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div class="edit-citizen-actions">
+
+                <button
+                    class="edit-citizen-submit"
+                    type="submit"
+                >
+                    Save changes →
+                </button>
+
+                <a
+                    class="edit-citizen-cancel"
+                    href="{% url 'view_citizen' %}"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+    </div>
+</main>
+
+
+<!-- LOCATION DATA -->
+{{ locations|json_script:"location-data" }}
+
+
+<!-- JAVASCRIPT -->
+<script>
+(function () {
+    "use strict";
+
+    const locationElement = document.getElementById("location-data");
+    const state = document.getElementById("citizen-state");
+    const district = document.getElementById("citizen-district");
+
+    let locations = {};
+
+    try {
+        locations = JSON.parse(locationElement.textContent) || {};
+    } catch (error) {
+        console.error("Unable to load location data:", error);
+        locations = {};
+    }
+
+    // Load districts according to selected state.
+    function loadDistricts(selected) {
+
+        const list = locations[state.value] || [];
+
+        district.innerHTML = "";
+
+        district.add(
+            new Option(
+                state.value ? "Select District" : "Select State first",
+                ""
+            )
+        );
+
+        list.forEach(function (name) {
+            district.add(new Option(name, name));
+        });
+
+        district.disabled = list.length === 0;
+
+        if (selected) {
+            district.value = selected;
+        }
+    }
+
+    // Load the existing district when editing.
+    state.addEventListener("change", function () {
+        loadDistricts();
+    });
+
+    if (state.value) {
+        loadDistricts(district.dataset.selected);
+    }
+
+
+    // Allow only digits in mobile, PIN and Aadhaar.
+    document.querySelectorAll("[data-digits]").forEach(function (input) {
+
+        input.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9]/g, "");
+        });
+
+    });
+
+
+    // Validate uploaded file sizes.
+    document.querySelectorAll("input[type=file][data-max-mb]").forEach(function (input) {
+
+        input.addEventListener("change", function () {
+
+            const file = this.files[0];
+            const max = Number(this.dataset.maxMb);
+
+            this.setCustomValidity(
+                file && file.size > max * 1024 * 1024
+                    ? "File must not exceed " + max + " MB."
+                    : ""
+            );
+
+            this.reportValidity();
+
+        });
+
+    });
+
+})();
+</script>
+{% endblock %}

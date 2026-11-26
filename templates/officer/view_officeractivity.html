@@ -1,0 +1,1820 @@
+
+
+{% extends base_template %}
+
+{% block title %}
+    {% if public_view %}Officer Activities{% else %}My Activities{% endif %} | Demokratia
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .my-activities-page {
+        max-width: 1320px;
+        margin: 38px auto 75px;
+        padding: 0 24px;
+        color: var(--text);
+    }
+
+    .my-activities-page * {
+        box-sizing: border-box;
+    }
+
+    /* PAGE HEADER */
+
+    .page-header {
+        position: relative;
+        overflow: hidden;
+        padding: 42px;
+        margin-bottom: 25px;
+        color: #fff;
+        border-radius: 22px;
+        background:
+            radial-gradient(circle at 90% 10%, rgba(255,255,255,.13), transparent 28%),
+            linear-gradient(125deg, #071d3b 0%, #123d70 55%, #1d5b91 100%);
+        box-shadow: 0 15px 38px rgba(7, 29, 59, .16);
+    }
+
+    .page-header::after {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        right: -95px;
+        bottom: -175px;
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 50%;
+        box-shadow:
+            0 0 0 28px rgba(255,255,255,.035),
+            0 0 0 58px rgba(255,255,255,.025);
+        pointer-events: none;
+    }
+
+    .header-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 8px 13px;
+        margin-bottom: 17px;
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 30px;
+        background: rgba(255,255,255,.09);
+        color: #dcecff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .header-label::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #67d6a0;
+        box-shadow: 0 0 0 4px rgba(103,214,160,.15);
+    }
+
+    .page-header h1 {
+        position: relative;
+        z-index: 1;
+        margin: 0 0 12px;
+        color: #fff;
+        font-size: clamp(27px, 4vw, 36px);
+        font-weight: 850;
+        letter-spacing: -.8px;
+    }
+
+    .page-header p {
+        position: relative;
+        z-index: 1;
+        max-width: 680px;
+        margin: 0;
+        color: rgba(255,255,255,.78);
+        font-size: 14px;
+        line-height: 1.8;
+    }
+
+    .header-actions {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .header-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 0 17px;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 10px;
+        color: #fff;
+        background: rgba(255,255,255,.1);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 800;
+        transition: .2s ease;
+    }
+
+    .header-action:hover {
+        color: #fff;
+        background: rgba(255,255,255,.2);
+        transform: translateY(-2px);
+    }
+
+    .header-action.primary {
+        color: #102d50;
+        border-color: #fff;
+        background: #fff;
+    }
+
+    .header-action.primary:hover {
+        color: #102d50;
+        background: #eaf3ff;
+    }
+
+    /* STATISTICS */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 17px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        position: relative;
+        min-width: 0;
+        padding: 23px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 17px;
+        background: var(--surface);
+        box-shadow: 0 4px 15px rgba(15, 39, 70, .035);
+        transition: .2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(15, 39, 70, .08);
+    }
+
+    .stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 17px;
+    }
+
+    .stat-icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        place-items: center;
+        border-radius: 13px;
+        background: #edf4ff;
+        color: #174b80;
+        font-size: 20px;
+    }
+
+    .stat-number {
+        margin: 0;
+        color: var(--blue-950);
+        font-size: clamp(20px, 2.5vw, 27px);
+        font-weight: 850;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-label {
+        margin: 5px 0 0;
+        color: var(--text-muted);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .stat-caption {
+        color: #8b9aab;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .7px;
+        text-transform: uppercase;
+    }
+
+    /* TOOLBAR */
+
+    .activity-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+        padding: 18px 20px;
+        margin-bottom: 22px;
+        border: 1px solid var(--border);
+        border-radius: 15px;
+        background: var(--surface);
+    }
+
+    .toolbar-heading h2 {
+        margin: 0 0 4px;
+        color: var(--blue-950);
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .toolbar-heading p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .search-wrap {
+        position: relative;
+        width: min(100%, 370px);
+    }
+
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 14px;
+        color: #8292a5;
+        font-size: 15px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .search-input {
+        width: 100%;
+        min-height: 44px;
+        padding: 11px 14px 11px 40px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        outline: none;
+        background: #fff;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 12px;
+        transition: .2s ease;
+    }
+
+    .search-input:focus {
+        border-color: #4384c5;
+        box-shadow: 0 0 0 3px rgba(67,132,197,.1);
+    }
+
+    /* ACTIVITY CARD */
+
+    .activity-card {
+        overflow: hidden;
+        margin-bottom: 23px;
+        border: 1px solid var(--border);
+        border-radius: 19px;
+        background: var(--surface);
+        box-shadow: 0 5px 18px rgba(15, 39, 70, .045);
+        transition: .2s ease;
+    }
+
+    .activity-card:hover {
+        border-color: #c8d8e9;
+        box-shadow: 0 13px 30px rgba(15, 39, 70, .075);
+    }
+
+    .activity-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 25px 26px 20px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .activity-heading {
+        min-width: 0;
+    }
+
+    .activity-reference {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 10px;
+        color: #64809d;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+    .activity-title {
+        margin: 0 0 12px;
+        color: var(--blue-950);
+        font-size: 20px;
+        font-weight: 850;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .activity-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px 17px;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .activity-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .activity-tag {
+        flex-shrink: 0;
+        padding: 8px 12px;
+        border: 1px solid #dce8f5;
+        border-radius: 30px;
+        background: #f0f6fd;
+        color: #245782;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    /* ACTIVITY DETAILS */
+
+    .activity-card-details {
+        border-top: 1px solid #edf1f6;
+    }
+
+    .activity-details-toggle {
+        display: inline-flex;
+        align-items: center;
+        min-height: 36px;
+        padding: 0 12px;
+        margin: 14px 26px 0;
+        border: 1px solid #d5e3f2;
+        border-radius: 8px;
+        background: #edf4fc;
+        color: #174b80;
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    .activity-details-toggle::-webkit-details-marker {
+        display: none;
+    }
+
+    .activity-details-toggle:hover {
+        background: #dceafa;
+    }
+
+    .activity-body {
+        padding: 23px 26px 25px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 13px;
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 850;
+    }
+
+    .section-heading .heading-icon {
+        display: grid;
+        width: 29px;
+        height: 29px;
+        place-items: center;
+        border-radius: 9px;
+        background: #edf4ff;
+        color: #245782;
+        font-size: 13px;
+    }
+
+    .activity-description {
+        padding: 16px 18px;
+        border: 1px solid #e6edf5;
+        border-radius: 12px;
+        background: #f9fbfe;
+        color: var(--text-soft);
+        font-size: 12px;
+        line-height: 1.85;
+        white-space: pre-line;
+    }
+
+    .activity-description p {
+        margin: 0;
+    }
+
+    .activity-information {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 17px;
+    }
+
+    .info-item {
+        min-width: 0;
+        padding: 13px 14px;
+        border: 1px solid #e8eef5;
+        border-radius: 11px;
+        background: #fff;
+    }
+
+    .info-label {
+        display: block;
+        margin-bottom: 6px;
+        color: #8493a4;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        display: block;
+        color: var(--blue-950);
+        font-size: 12px;
+        font-weight: 750;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    /* IMAGE GALLERY */
+
+    .gallery-section {
+        margin-top: 27px;
+    }
+
+    .gallery-intro {
+        margin: -5px 0 15px;
+        color: var(--text-muted);
+        font-size: 11px;
+        line-height: 1.6;
+    }
+
+    .main-image-card {
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #f5f8fc;
+    }
+
+    .main-image-link,
+    .evidence-image-link {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        cursor: zoom-in;
+    }
+
+    .main-image-link img {
+        display: block;
+        width: 100%;
+        max-height: 440px;
+        object-fit: cover;
+        transition: transform .35s ease;
+    }
+
+    .main-image-link:hover img,
+    .evidence-image-link:hover img {
+        transform: scale(1.035);
+    }
+
+    .image-caption {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 15px;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .zoom-hint {
+        color: #8292a5;
+        font-size: 10px;
+        font-weight: 600;
+    }
+
+    .evidence-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px;
+        margin-top: 17px;
+    }
+
+    .evidence-box {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: #fff;
+    }
+
+    .evidence-box.before {
+        border-top: 4px solid #d99b36;
+    }
+
+    .evidence-box.after {
+        border-top: 4px solid #26966a;
+    }
+
+    .evidence-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 15px 16px 11px;
+    }
+
+    .evidence-header h3 {
+        margin: 0;
+        color: var(--blue-950);
+        font-size: 13px;
+        font-weight: 850;
+    }
+
+    .evidence-label {
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .before .evidence-label {
+        background: #fff5df;
+        color: #93600e;
+    }
+
+    .after .evidence-label {
+        background: #e7f8ef;
+        color: #16734c;
+    }
+
+    .evidence-description {
+        padding: 0 16px 14px;
+        color: var(--text-soft);
+        font-size: 11px;
+        line-height: 1.75;
+        white-space: pre-line;
+    }
+
+    .evidence-image-link {
+        margin: 0 13px 13px;
+        border-radius: 10px;
+        background: #f2f5f9;
+    }
+
+    .evidence-image-link img {
+        display: block;
+        width: 100%;
+        height: 230px;
+        object-fit: cover;
+        transition: transform .35s ease;
+    }
+
+    .no-image {
+        display: grid;
+        min-height: 125px;
+        place-items: center;
+        margin: 0 13px 13px;
+        padding: 20px;
+        border: 1px dashed #d7e0e9;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #91a0af;
+        font-size: 11px;
+        text-align: center;
+    }
+
+    .no-image span {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 24px;
+    }
+
+    /* LOCATION */
+
+    .location-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border: 1px solid #e3ebf4;
+        border-radius: 11px;
+        background: #f7faff;
+    }
+
+    .location-text {
+        min-width: 0;
+        color: var(--text-soft);
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+    }
+
+    .location-text strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--blue-950);
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    .map-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        flex-shrink: 0;
+        padding: 9px 13px;
+        border: 1px solid #d5e4f4;
+        border-radius: 9px;
+        background: #fff;
+        color: #245782;
+        text-decoration: none;
+        font-size: 10px;
+        font-weight: 800;
+        transition: .2s ease;
+    }
+
+    .map-link:hover {
+        border-color: #9ebcdd;
+        background: #edf5ff;
+    }
+
+    /* ACTIONS */
+
+    .activity-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        padding: 18px 26px;
+        border-top: 1px solid var(--border);
+        background: #fbfcfe;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 40px;
+        padding: 0 15px;
+        border: 1px solid transparent;
+        border-radius: 9px;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: 800;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .edit-btn {
+        border-color: #d5e3f2;
+        background: #edf4fc;
+        color: #174b80;
+    }
+
+    .edit-btn:hover {
+        border-color: #aac4e0;
+        background: #dceafa;
+    }
+
+    /* VIEW FEEDBACK BUTTON */
+
+    .feedback-btn {
+        border-color: #cfe9df;
+        background: #eaf8f1;
+        color: #176b4b;
+    }
+
+    .feedback-btn:hover {
+        border-color: #a8d8c3;
+        background: #d9f1e5;
+        color: #10583c;
+    }
+
+    .delete-btn {
+        border-color: #f2d5d5;
+        background: #fff0f0;
+        color: #a12e2e;
+    }
+
+    .delete-btn:hover {
+        border-color: #e9bcbc;
+        background: #ffe2e2;
+    }
+
+    .before-after-editor {
+        flex: 1 1 100%;
+    }
+
+    .before-after-editor summary {
+        display: inline-flex;
+        list-style: none;
+    }
+
+    .before-after-editor summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .before-after-editor-form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f7faff;
+    }
+
+    .editor-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--blue-950);
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    .editor-field textarea,
+    .editor-field input {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #dce5ef;
+        border-radius: 8px;
+        outline: none;
+        background: #fff;
+        color: var(--text);
+        font-family: inherit;
+        font-size: 11px;
+    }
+
+    .editor-field textarea {
+        min-height: 95px;
+        resize: vertical;
+    }
+
+    .editor-field textarea:focus,
+    .editor-field input:focus {
+        border-color: #4384c5;
+        box-shadow: 0 0 0 3px rgba(67,132,197,.09);
+    }
+
+    .editor-submit {
+        justify-self: start;
+        align-self: end;
+    }
+
+    .editor-note {
+        grid-column: 1 / -1;
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.6;
+    }
+
+    .delete-form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    /* EMPTY STATES */
+
+    .empty-state {
+        padding: 55px 25px;
+        border: 1px dashed #cbd8e6;
+        border-radius: 18px;
+        background: var(--surface);
+        text-align: center;
+    }
+
+    .empty-icon {
+        display: grid;
+        width: 65px;
+        height: 65px;
+        place-items: center;
+        margin: 0 auto 17px;
+        border-radius: 19px;
+        background: #edf4ff;
+        color: #245782;
+        font-size: 28px;
+    }
+
+    .empty-state h2 {
+        margin: 0 0 9px;
+        color: var(--blue-950);
+        font-size: 19px;
+        font-weight: 850;
+    }
+
+    .empty-state p {
+        max-width: 470px;
+        margin: 0 auto;
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .empty-state a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 42px;
+        margin-top: 19px;
+        padding: 0 17px;
+        border-radius: 9px;
+        background: var(--blue-800);
+        color: #fff;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .empty-state a:hover {
+        background: var(--blue-950);
+    }
+
+    /* LIGHTBOX */
+
+    .image-lightbox {
+        position: fixed;
+        z-index: 99999;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 25px;
+        background: rgba(4, 13, 27, .92);
+        backdrop-filter: blur(7px);
+    }
+
+    .image-lightbox.active {
+        display: flex;
+    }
+
+    .lightbox-content {
+        position: relative;
+        width: min(100%, 1050px);
+        max-height: 92vh;
+        text-align: center;
+    }
+
+    .lightbox-image {
+        display: block;
+        max-width: 100%;
+        max-height: 82vh;
+        margin: 0 auto;
+        border-radius: 10px;
+        object-fit: contain;
+        box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+
+    .lightbox-caption {
+        margin-top: 13px;
+        color: rgba(255,255,255,.85);
+        font-size: 12px;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: -17px;
+        right: -17px;
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid rgba(255,255,255,.25);
+        border-radius: 50%;
+        background: #fff;
+        color: #102d50;
+        font-size: 22px;
+        cursor: pointer;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 850px) {
+        .activity-information {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 650px) {
+        .my-activities-page {
+            margin-top: 22px;
+            padding: 0 14px;
+        }
+
+        .page-header {
+            padding: 27px 22px;
+            border-radius: 17px;
+        }
+
+        .page-header h1 {
+            font-size: 26px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 11px;
+        }
+
+        .stat-card {
+            padding: 17px;
+        }
+
+        .stat-top {
+            margin-bottom: 10px;
+        }
+
+        .activity-toolbar {
+            align-items: stretch;
+            padding: 15px;
+        }
+
+        .search-wrap {
+            width: 100%;
+        }
+
+        .activity-card-header {
+            padding: 20px 18px 17px;
+        }
+
+        .activity-title {
+            font-size: 17px;
+        }
+
+        .activity-body {
+            padding: 19px 17px;
+        }
+
+        .activity-information {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .evidence-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .evidence-image-link img {
+            height: 220px;
+        }
+
+        .activity-actions {
+            padding: 16px 17px;
+        }
+
+        .activity-actions > .action-btn,
+        .activity-actions > .delete-form,
+        .activity-actions > .delete-form .action-btn {
+            width: 100%;
+        }
+
+        .before-after-editor-form {
+            grid-template-columns: 1fr;
+        }
+
+        .editor-note {
+            grid-column: auto;
+        }
+
+        .location-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .map-link {
+            width: 100%;
+        }
+
+        .lightbox-close {
+            top: -48px;
+            right: 0;
+        }
+    }
+
+    @media (max-width: 390px) {
+        .activity-information {
+            grid-template-columns: 1fr;
+        }
+
+        .activity-meta {
+            flex-direction: column;
+            gap: 7px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .my-activities-page *,
+        .my-activities-page *::before,
+        .my-activities-page *::after {
+            scroll-behavior: auto !important;
+            transition-duration: .01ms !important;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="my-activities-page">
+
+    <!-- PAGE HEADER -->
+
+    <header class="page-header">
+
+        <span class="header-label">
+            DEMOKRATIA · OFFICER PORTAL
+        </span>
+
+        <h1>
+            {% if public_view %}
+                Officer Activities
+            {% else %}
+                My Activities
+            {% endif %}
+        </h1>
+
+        {% if public_view %}
+            <p>
+                Explore official activity reports and the work carried out
+                by public-service officers.
+            </p>
+        {% else %}
+            <p>
+                Your official activity record. Review your work, maintain
+                transparent reports, compare before-and-after evidence
+                and manage your submitted activities.
+            </p>
+
+            <div class="header-actions">
+                <a href="{% url 'add_officer_activity' %}"
+                   class="header-action primary">
+                    ＋ Add New Activity
+                </a>
+            </div>
+        {% endif %}
+
+    </header>
+
+
+    <!-- STATISTICS -->
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-top">
+                <span class="stat-caption">Activity records</span>
+                <span class="stat-icon">▤</span>
+            </div>
+
+            <h2 class="stat-number">
+                {{ total_activities|default:"0" }}
+            </h2>
+
+            <p class="stat-label">Total Activities</p>
+        </div>
+
+        {% if not public_view %}
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-caption">Service information</span>
+                    <span class="stat-icon">▥</span>
+                </div>
+
+                <h2 class="stat-number">
+                    {{ officer.department|default:"Not assigned" }}
+                </h2>
+
+                <p class="stat-label">Department</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-caption">Jurisdiction</span>
+                    <span class="stat-icon">⌖</span>
+                </div>
+
+                <h2 class="stat-number">
+                    {{ officer.district|default:"Not assigned" }}
+                </h2>
+
+                <p class="stat-label">District</p>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- SEARCH TOOLBAR -->
+
+    <section class="activity-toolbar">
+
+        <div class="toolbar-heading">
+            <h2>Activity register</h2>
+            <p>Search your reports by activity name or location.</p>
+        </div>
+
+        <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+
+            <input
+                type="search"
+                id="activitySearch"
+                class="search-input"
+                placeholder="Search activities, reference or location..."
+                aria-label="Search activities"
+            >
+        </div>
+
+    </section>
+
+
+    <!-- ACTIVITY LIST -->
+
+    <div id="activityList">
+
+        {% for activity in my_activities %}
+
+            <article
+                class="activity-card activity-item"
+                data-search="
+                    {{ activity.name_of_activity|lower }}
+                    {{ activity.map_location|lower }}
+                    {{ activity.reference_number|lower }}
+                    {{ activity.department|lower }}
+                    {{ activity.village|lower }}
+                    {{ activity.taluk|lower }}
+                    {{ activity.district|lower }}
+                    {{ activity.state|lower }}
+                "
+            >
+
+                <!-- ACTIVITY HEADER -->
+
+                <header class="activity-card-header">
+
+                    <div class="activity-heading">
+
+                        <span class="activity-reference">
+                            RECORD REFERENCE · {{ activity.reference_number }}
+                        </span>
+
+                        <h2 class="activity-title">
+                            {{ activity.name_of_activity }}
+                        </h2>
+
+                        <div class="activity-meta">
+
+                            <span>
+                                ◷ {{ activity.date|date:"d M Y" }}
+                            </span>
+
+                            <span>
+                                ◉ {{ activity.department }}
+                            </span>
+
+                            <span>
+                                ⏱ {{ activity.duration }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <span class="activity-tag">
+                        Activity report
+                    </span>
+
+                </header>
+
+
+                <!-- ACTIVITY BODY -->
+
+                <details class="activity-card-details">
+                    <summary class="activity-details-toggle">Details</summary>
+                    <div class="activity-body">
+
+                    <!-- DESCRIPTION -->
+
+                    <section>
+
+                        <h3 class="section-heading">
+                            <span class="heading-icon">▤</span>
+                            Activity overview
+                        </h3>
+
+                        <div class="activity-description">
+                            {% if activity.description %}
+                                {{ activity.description|linebreaksbr }}
+                            {% else %}
+                                No activity description provided.
+                            {% endif %}
+                        </div>
+
+                    </section>
+
+
+                    <!-- LOCATION AND OFFICIAL DETAILS -->
+
+                    <section class="activity-information">
+
+                        <div class="info-item">
+                            <span class="info-label">Department</span>
+                            <span class="info-value">
+                                {{ activity.department|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Village</span>
+                            <span class="info-value">
+                                {{ activity.village|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Taluk</span>
+                            <span class="info-value">
+                                {{ activity.taluk|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">District</span>
+                            <span class="info-value">
+                                {{ activity.district|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">State</span>
+                            <span class="info-value">
+                                {{ activity.state|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">PIN code</span>
+                            <span class="info-value">
+                                {{ activity.pincode|default:"Not specified" }}
+                            </span>
+                        </div>
+
+                    </section>
+
+
+                    <!-- PHOTOGRAPH GALLERY -->
+
+                    <section class="gallery-section">
+
+                        <h3 class="section-heading">
+                            <span class="heading-icon">▧</span>
+                            Photographic documentation
+                        </h3>
+
+                        <p class="gallery-intro">
+                            Photographs uploaded with this activity report.
+                            Select an image to view it in a larger preview.
+                        </p>
+
+
+                        <!-- MAIN ACTIVITY IMAGE -->
+
+                        {% if activity.image %}
+
+                            <div class="main-image-card">
+
+                                <a
+                                    href="{{ activity.image.url }}"
+                                    class="main-image-link lightbox-trigger"
+                                    data-caption="Activity photograph — {{ activity.name_of_activity }}"
+                                >
+                                    <img
+                                        src="{{ activity.image.url }}"
+                                        alt="Activity photograph for {{ activity.name_of_activity }}"
+                                        loading="lazy"
+                                    >
+                                </a>
+
+                                <div class="image-caption">
+                                    <span>Main activity photograph</span>
+                                    <span class="zoom-hint">Click to enlarge ↗</span>
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- BEFORE AND AFTER -->
+
+                        <div class="evidence-grid">
+
+                            <!-- BEFORE -->
+
+                            <div class="evidence-box before">
+
+                                <div class="evidence-header">
+                                    <h3>Before the activity</h3>
+                                    <span class="evidence-label">Before</span>
+                                </div>
+
+                                {% if activity.before_description %}
+                                    <div class="evidence-description">
+                                        {{ activity.before_description|linebreaksbr }}
+                                    </div>
+                                {% else %}
+                                    <div class="evidence-description">
+                                        No before-activity description provided.
+                                    </div>
+                                {% endif %}
+
+                                {% if activity.before_photos %}
+                                    {% for photo in activity.before_photos %}
+                                        <a
+                                            href="{{ photo.image.url }}"
+                                            class="evidence-image-link lightbox-trigger"
+                                            data-caption="Before photograph — {{ activity.name_of_activity }}"
+                                        >
+                                            <img
+                                                src="{{ photo.image.url }}"
+                                                alt="Before photograph for {{ activity.name_of_activity }}"
+                                                loading="lazy"
+                                            >
+                                        </a>
+                                    {% endfor %}
+                                {% elif activity.before_image %}
+                                    <a
+                                        href="{{ activity.before_image.url }}"
+                                        class="evidence-image-link lightbox-trigger"
+                                        data-caption="Before photograph — {{ activity.name_of_activity }}"
+                                    >
+                                        <img
+                                            src="{{ activity.before_image.url }}"
+                                            alt="Before photograph for {{ activity.name_of_activity }}"
+                                            loading="lazy"
+                                        >
+                                    </a>
+
+                                {% else %}
+
+                                    <div class="no-image">
+                                        <div>
+                                            <span>▧</span>
+                                            No before photograph uploaded
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+
+                            <!-- AFTER -->
+
+                            <div class="evidence-box after">
+
+                                <div class="evidence-header">
+                                    <h3>After the activity</h3>
+                                    <span class="evidence-label">After</span>
+                                </div>
+
+                                {% if activity.after_description %}
+                                    <div class="evidence-description">
+                                        {{ activity.after_description|linebreaksbr }}
+                                    </div>
+                                {% else %}
+                                    <div class="evidence-description">
+                                        No after-activity description provided.
+                                    </div>
+                                {% endif %}
+
+                                {% if activity.after_photos %}
+                                    {% for photo in activity.after_photos %}
+                                        <a
+                                            href="{{ photo.image.url }}"
+                                            class="evidence-image-link lightbox-trigger"
+                                            data-caption="After photograph — {{ activity.name_of_activity }}"
+                                        >
+                                            <img
+                                                src="{{ photo.image.url }}"
+                                                alt="After photograph for {{ activity.name_of_activity }}"
+                                                loading="lazy"
+                                            >
+                                        </a>
+                                    {% endfor %}
+                                {% elif activity.after_image %}
+                                    <a
+                                        href="{{ activity.after_image.url }}"
+                                        class="evidence-image-link lightbox-trigger"
+                                        data-caption="After photograph — {{ activity.name_of_activity }}"
+                                    >
+                                        <img
+                                            src="{{ activity.after_image.url }}"
+                                            alt="After photograph for {{ activity.name_of_activity }}"
+                                            loading="lazy"
+                                        >
+                                    </a>
+
+                                {% else %}
+
+                                    <div class="no-image">
+                                        <div>
+                                            <span>▧</span>
+                                            No after photograph uploaded
+                                        </div>
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- MAP LOCATION -->
+
+                    <div class="location-row">
+
+                        <div class="location-text">
+                            <strong>Activity location</strong>
+
+                            {{ activity.map_location|default:"Location not specified" }}
+                        </div>
+
+                        {% if activity.map_location %}
+                            <a
+                                class="map-link"
+                                href="https://www.google.com/maps/search/?api=1&query={{ activity.map_location|urlencode }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                ⌖ View on map
+                            </a>
+                        {% endif %}
+
+                    </div>
+
+                    </div>
+                </details>
+
+
+                <!-- EDIT AND DELETE ACTIONS -->
+
+                {% if not public_view %}
+
+                    <footer class="activity-actions">
+
+                        <!-- BEFORE / AFTER EDITOR -->
+
+                        <details class="before-after-editor">
+
+                            <summary class="action-btn edit-btn">
+                                ✎ Edit Before / After Evidence
+                            </summary>
+
+                            <form
+                                class="before-after-editor-form"
+                                method="POST"
+                                enctype="multipart/form-data"
+                                action="{% url 'edit_officeractivity' activity.pk %}"
+                            >
+
+                                {% csrf_token %}
+
+                                <div class="editor-field">
+                                    <label for="before-description-{{ activity.pk }}">
+                                        Before description
+                                    </label>
+
+                                    <textarea
+                                        id="before-description-{{ activity.pk }}"
+                                        name="before_description"
+                                    >{{ activity.before_description }}</textarea>
+                                </div>
+
+                                <div class="editor-field">
+                                    <label for="after-description-{{ activity.pk }}">
+                                        After description
+                                    </label>
+
+                                    <textarea
+                                        id="after-description-{{ activity.pk }}"
+                                        name="after_description"
+                                    >{{ activity.after_description }}</textarea>
+                                </div>
+
+                                <div class="editor-field">
+                                    <label for="before-image-{{ activity.pk }}">
+                                        Replace before photograph
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        id="before-image-{{ activity.pk }}"
+                                        name="before_image"
+                                        accept="image/*"
+                                    >
+                                </div>
+
+                                <div class="editor-field">
+                                    <label for="after-image-{{ activity.pk }}">
+                                        Replace after photograph
+                                    </label>
+
+                                    <input
+                                        type="file"
+                                        id="after-image-{{ activity.pk }}"
+                                        name="after_image"
+                                        accept="image/*"
+                                    >
+                                </div>
+
+                                <p class="editor-note">
+                                    Leave the image fields empty if you do not
+                                    want to replace the existing photographs.
+                                    Your edit view must handle these POST fields
+                                    and uploaded files.
+                                </p>
+
+                                <button
+                                    type="submit"
+                                    class="action-btn edit-btn editor-submit"
+                                >
+                                    Save Evidence Changes
+                                </button>
+
+                            </form>
+
+                        </details>
+
+
+                        <!-- VIEW CITIZEN FEEDBACK -->
+<a href="{% url 'add_citizen_feedback' %}?activity_id={{ activity.id }}"
+   class="action-btn edit-btn">
+    💬 Give Feedback
+</a>
+
+
+                        <!-- FULL ACTIVITY EDIT -->
+
+                        <a
+                            class="action-btn edit-btn"
+                            href="{% url 'edit_officeractivity' activity.pk %}"
+                        >
+                            ✎ Edit Activity
+                        </a>
+
+
+                        <!-- DELETE -->
+
+                        <form
+                            class="delete-form"
+                            method="POST"
+                            action="{% url 'delete_officeractivity' activity.pk %}"
+                            onsubmit="return confirm('Are you sure you want to delete this activity report? This action cannot be undone.');"
+                        >
+
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="action-btn delete-btn"
+                            >
+                                🗑 Delete Activity
+                            </button>
+
+                        </form>
+
+                    </footer>
+
+                {% endif %}
+
+            </article>
+
+        {% empty %}
+
+            <!-- NO ACTIVITIES -->
+
+            <div class="empty-state">
+
+                <div class="empty-icon">▤</div>
+
+                <h2>No Activity Records Yet</h2>
+
+                <p>
+                    {% if public_view %}
+                        There are currently no activity reports available
+                        to display.
+                    {% else %}
+                        You have not submitted any activity reports yet.
+                        Once you add an activity, your official records and
+                        uploaded photographs will appear here.
+                    {% endif %}
+                </p>
+
+                {% if not public_view %}
+                    <a href="{% url 'add_officer_activity' %}">
+                        ＋ Add Your First Activity
+                    </a>
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- SEARCH EMPTY STATE -->
+
+    <div
+        id="noSearchResults"
+        class="empty-state"
+        style="display: none;"
+    >
+
+        <div class="empty-icon">⌕</div>
+
+        <h2>No Matching Activities</h2>
+
+        <p>
+            We could not find an activity matching your search.
+            Try another activity name, reference number or location.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- IMAGE LIGHTBOX -->
+
+<div
+    class="image-lightbox"
+    id="imageLightbox"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Photograph preview"
+    aria-hidden="true"
+>
+
+    <div class="lightbox-content">
+
+        <button
+            type="button"
+            class="lightbox-close"
+            id="lightboxClose"
+            aria-label="Close image preview"
+        >
+            ×
+        </button>
+
+        <img
+            src=""
+            alt="Expanded activity photograph"
+            class="lightbox-image"
+            id="lightboxImage"
+        >
+
+        <p class="lightbox-caption" id="lightboxCaption"></p>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ACTIVITY SEARCH */
+
+    const searchInput = document.getElementById("activitySearch");
+    const activityCards = document.querySelectorAll(".activity-item");
+    const noResults = document.getElementById("noSearchResults");
+
+    if (searchInput && noResults) {
+
+        function filterActivities() {
+
+            const searchText = searchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            activityCards.forEach(function (card) {
+
+                const searchableText =
+                    (card.dataset.search || "").toLowerCase();
+
+                const matches = searchableText.includes(searchText);
+
+                card.style.display = matches ? "" : "none";
+
+                if (matches) {
+                    visibleCount++;
+                }
+
+            });
+
+            noResults.style.display =
+                visibleCount === 0 && activityCards.length > 0
+                    ? "block"
+                    : "none";
+        }
+
+        searchInput.addEventListener("input", filterActivities);
+    }
+
+
+    /* IMAGE LIGHTBOX */
+
+    const lightbox = document.getElementById("imageLightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const lightboxCaption = document.getElementById("lightboxCaption");
+    const closeButton = document.getElementById("lightboxClose");
+
+    const imageLinks = document.querySelectorAll(".lightbox-trigger");
+
+    function closeLightbox() {
+
+        lightbox.classList.remove("active");
+        lightbox.setAttribute("aria-hidden", "true");
+        lightboxImage.src = "";
+        document.body.style.overflow = "";
+
+    }
+
+    imageLinks.forEach(function (link) {
+
+        link.addEventListener("click", function (event) {
+
+            event.preventDefault();
+
+            lightboxImage.src = link.href;
+            lightboxImage.alt =
+                link.querySelector("img")?.alt || "Activity photograph";
+
+            lightboxCaption.textContent =
+                link.dataset.caption || "Activity photograph";
+
+            lightbox.classList.add("active");
+            lightbox.setAttribute("aria-hidden", "false");
+
+            document.body.style.overflow = "hidden";
+
+            closeButton.focus();
+
+        });
+
+    });
+
+    closeButton.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", function (event) {
+
+        if (event.target === lightbox) {
+            closeLightbox();
+        }
+
+    });
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape" && lightbox.classList.contains("active")) {
+            closeLightbox();
+        }
+
+    });
+
+});
+</script>
+
+{% endblock %}

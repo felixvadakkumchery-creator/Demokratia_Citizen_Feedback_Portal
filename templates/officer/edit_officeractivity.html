@@ -1,0 +1,335 @@
+{% extends base_template|default:'officer/common.html' %}
+
+{% block title %}Edit Activity | Demokratia{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-activity-page {
+        width: min(940px, 92%);
+        margin: 38px auto 60px;
+        color: var(--text);
+    }
+
+    .edit-page-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 22px;
+    }
+
+    .edit-page-header h1 {
+        margin-top: 6px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .edit-page-header p {
+        margin-top: 7px;
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .edit-eyebrow {
+        color: var(--blue-700);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .edit-back-link {
+        flex-shrink: 0;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .edit-form {
+        padding: 25px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .edit-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .edit-field {
+        min-width: 0;
+    }
+
+    .edit-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .edit-field label {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .edit-field input,
+    .edit-field textarea {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: #fcfdff;
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+    }
+
+    .edit-field input:focus,
+    .edit-field textarea:focus {
+        border-color: var(--blue-600);
+        outline: 2px solid rgba(37, 99, 235, .12);
+    }
+
+    .edit-field textarea {
+        min-height: 140px;
+        resize: vertical;
+        line-height: 1.7;
+    }
+
+    .edit-field small {
+        display: block;
+        margin-top: 6px;
+        color: var(--text-muted);
+        font-size: 10px;
+    }
+
+    .edit-section-title {
+        grid-column: 1 / -1;
+        margin-top: 6px;
+        padding-top: 17px;
+        border-top: 1px solid var(--border);
+        color: var(--blue-900);
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .edit-evidence-preview {
+        display: block;
+        max-width: 100%;
+        max-height: 180px;
+        margin-top: 9px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        object-fit: contain;
+    }
+
+    .edit-form-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border);
+    }
+
+    .edit-submit,
+    .edit-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 15px;
+        border-radius: var(--radius-md);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .edit-submit {
+        border: 0;
+        background: var(--blue-800);
+        color: white;
+        cursor: pointer;
+    }
+
+    .edit-cancel {
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--text-soft);
+    }
+
+    @media (max-width: 620px) {
+        .edit-page-header {
+            flex-direction: column;
+        }
+
+        .edit-form {
+            padding: 18px;
+        }
+
+        .edit-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-field.full-width {
+            grid-column: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="edit-activity-page">
+    <header class="edit-page-header">
+        <div>
+            <div class="edit-eyebrow">Officer portal · Report {{ activity.reference_number }}</div>
+            <h1>Edit Activity</h1>
+            <p>Update this report and save the changes to your activity history.</p>
+        </div>
+        <a class="edit-back-link" href="{% url activity_list_url_name %}">Back to activities</a>
+    </header>
+
+    <form
+        class="edit-form"
+        method="POST"
+        enctype="multipart/form-data"
+        action="{% url 'edit_officeractivity' activity.pk %}"
+    >
+        {% csrf_token %}
+
+        <div class="edit-form-grid">
+            <div class="edit-field">
+                <label for="name_of_activity">Activity name</label>
+                <input
+                    type="text"
+                    id="name_of_activity"
+                    name="name_of_activity"
+                    value="{{ activity.name_of_activity }}"
+                    maxlength="100"
+                    required
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="reference_number">Reference number</label>
+                <input
+                    type="text"
+                    id="reference_number"
+                    name="reference_number"
+                    value="{{ activity.reference_number }}"
+                    maxlength="100"
+                    required
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="duration">Duration</label>
+                <input
+                    type="text"
+                    id="duration"
+                    name="duration"
+                    value="{{ activity.duration }}"
+                    placeholder="HH:MM:SS"
+                    required
+                >
+                <small>Enter hours, minutes and seconds.</small>
+            </div>
+
+            <div class="edit-field">
+                <label for="map_location">Map location</label>
+                <input
+                    type="text"
+                    id="map_location"
+                    name="map_location"
+                    value="{{ activity.map_location }}"
+                >
+            </div>
+
+            <div class="edit-field">
+                <label for="village">Village / locality</label>
+                <input type="text" id="village" name="village" value="{{ activity.village }}">
+            </div>
+
+            <div class="edit-field">
+                <label for="taluk">Taluk</label>
+                <input type="text" id="taluk" name="taluk" value="{{ activity.taluk }}">
+            </div>
+
+            <div class="edit-field">
+                <label for="district">District</label>
+                <input type="text" id="district" name="district" value="{{ activity.district }}">
+            </div>
+
+            <div class="edit-field">
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" value="{{ activity.state }}">
+            </div>
+
+            <div class="edit-field">
+                <label for="pincode">PIN code</label>
+                <input type="text" id="pincode" name="pincode" value="{{ activity.pincode }}" maxlength="6">
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="description">Report details</label>
+                <textarea id="description" name="description">{{ activity.description }}</textarea>
+            </div>
+
+            <h2 class="edit-section-title">Before the activity</h2>
+
+            <div class="edit-field full-width">
+                <label for="before_description">Before description</label>
+                <textarea id="before_description" name="before_description">{{ activity.before_description }}</textarea>
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="before_image">Before photograph</label>
+                <input type="file" id="before_image" name="before_image" accept="image/*">
+                {% if activity.before_image %}
+                    <a href="{{ activity.before_image.url }}" target="_blank" rel="noopener noreferrer">
+                        <img class="edit-evidence-preview" src="{{ activity.before_image.url }}" alt="Current before photograph">
+                    </a>
+                    <small>Choose a new file only to replace this photograph.</small>
+                {% endif %}
+            </div>
+
+            <h2 class="edit-section-title">After the activity</h2>
+
+            <div class="edit-field full-width">
+                <label for="after_description">After description</label>
+                <textarea id="after_description" name="after_description">{{ activity.after_description }}</textarea>
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="after_image">After photograph</label>
+                <input type="file" id="after_image" name="after_image" accept="image/*">
+                {% if activity.after_image %}
+                    <a href="{{ activity.after_image.url }}" target="_blank" rel="noopener noreferrer">
+                        <img class="edit-evidence-preview" src="{{ activity.after_image.url }}" alt="Current after photograph">
+                    </a>
+                    <small>Choose a new file only to replace this photograph.</small>
+                {% endif %}
+            </div>
+
+            <div class="edit-field full-width">
+                <label for="image">Additional evidence image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                {% if activity.image %}
+                    <small>A general evidence image is already attached.</small>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="edit-form-actions">
+            <button type="submit" class="edit-submit">Save changes</button>
+            <a class="edit-cancel" href="{% url activity_list_url_name %}">Cancel</a>
+        </div>
+    </form>
+</main>
+{% endblock %}

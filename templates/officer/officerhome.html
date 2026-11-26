@@ -1,0 +1,969 @@
+
+{% extends "officer/common.html" %}
+
+{% block title %}Officer Dashboard | Demokratia.com{% endblock %}
+
+{% block extra_css %}
+<style>
+    .officer-home {
+        padding: 38px 0 24px;
+        background:
+            radial-gradient(
+                circle at 0 0,
+                rgba(23, 103, 187, .07),
+                transparent 34%
+            ),
+            var(--surface);
+    }
+
+    .officer-container {
+        width: min(1200px, 92%);
+        margin: 0 auto;
+    }
+
+    /* PAGE HEADER */
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .dashboard-eyebrow {
+        color: var(--blue-600);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+    }
+
+    .dashboard-header h1 {
+        margin-top: 8px;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(27px, 4vw, 38px);
+        font-weight: 800;
+        letter-spacing: -1.2px;
+        line-height: 1.25;
+    }
+
+    .dashboard-header p {
+        margin-top: 9px;
+        color: var(--text-soft);
+        font-size: 13px;
+        line-height: 1.8;
+    }
+
+    .officer-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 15px;
+        border: 1px solid #d4e4f5;
+        border-radius: 11px;
+        background: white;
+        color: var(--blue-800);
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .badge-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    /* WELCOME BANNER */
+    .welcome-banner {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 28px;
+        padding: 32px;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(
+            115deg,
+            var(--blue-950),
+            var(--blue-800)
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+    }
+
+    .welcome-banner::after {
+        content: "";
+        position: absolute;
+        top: -120px;
+        right: 8%;
+        width: 250px;
+        height: 250px;
+        border: 35px solid rgba(255,255,255,.06);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+        max-width: 700px;
+    }
+
+    .welcome-label {
+        color: #c0dcfa;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.3px;
+        text-transform: uppercase;
+    }
+
+    .welcome-content h2 {
+        margin-top: 10px;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: clamp(24px, 4vw, 34px);
+        font-weight: 800;
+        letter-spacing: -.8px;
+        line-height: 1.3;
+    }
+
+    .welcome-content p {
+        max-width: 600px;
+        margin-top: 10px;
+        color: rgba(255,255,255,.78);
+        font-size: 13px;
+        line-height: 1.9;
+    }
+
+    .welcome-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 21px;
+    }
+
+    .welcome-primary,
+    .welcome-secondary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 43px;
+        padding: 0 15px;
+        border-radius: 9px;
+        font-size: 11px;
+        font-weight: 800;
+        transition: background var(--transition),
+                    transform var(--transition);
+    }
+
+    .welcome-primary {
+        background: var(--saffron);
+        color: #281504;
+    }
+
+    .welcome-primary:hover {
+        background: #ffad55;
+        transform: translateY(-1px);
+    }
+
+    .welcome-secondary {
+        border: 1px solid rgba(255,255,255,.3);
+        background: rgba(255,255,255,.08);
+        color: white;
+    }
+
+    .welcome-secondary:hover {
+        background: rgba(255,255,255,.16);
+    }
+
+    .welcome-symbol {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 82px;
+        height: 82px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 23px;
+        background: rgba(255,255,255,.09);
+        color: white;
+        font-size: 36px;
+    }
+
+    /* SECTION HEADINGS */
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 32px 0 17px;
+    }
+
+    .section-heading h2 {
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+    .section-heading p {
+        margin-top: 5px;
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    /* OVERVIEW CARDS */
+    .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .overview-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .overview-icon {
+        display: grid;
+        place-items: center;
+        width: 43px;
+        height: 43px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 20px;
+    }
+
+    .overview-card:nth-child(2) .overview-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .overview-card:nth-child(3) .overview-icon {
+        background: var(--saffron-light);
+        color: #a45a12;
+    }
+
+    .overview-label {
+        display: block;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    .overview-value {
+        display: block;
+        margin-top: 6px;
+        overflow-wrap: anywhere;
+        color: var(--blue-950);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 19px;
+        font-weight: 800;
+        line-height: 1.5;
+    }
+
+    .overview-description {
+        display: block;
+        margin-top: 5px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    /* MAIN CONTENT GRID */
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1.35fr .85fr;
+        gap: 19px;
+        align-items: start;
+    }
+
+    .dashboard-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: white;
+        box-shadow: var(--shadow-xs);
+    }
+
+    .card-heading {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        padding: 22px 23px;
+        border-bottom: 1px solid var(--border);
+        background: #fcfdff;
+    }
+
+    .card-heading-icon {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 11px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 19px;
+    }
+
+    .card-heading h3 {
+        color: var(--blue-950);
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .card-heading p {
+        margin-top: 4px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    /* PROFILE DETAILS */
+    .profile-content {
+        padding: 24px;
+    }
+
+    .profile-identity {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .profile-avatar {
+        display: grid;
+        place-items: center;
+        width: 63px;
+        height: 63px;
+        flex-shrink: 0;
+        border: 1px solid #d3e3f3;
+        border-radius: 18px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .profile-identity h4 {
+        overflow-wrap: anywhere;
+        color: var(--blue-950);
+        font-size: 15px;
+        font-weight: 800;
+    }
+
+    .profile-identity p {
+        margin-top: 5px;
+        overflow-wrap: anywhere;
+        color: var(--text-muted);
+        font-size: 11px;
+    }
+
+    .profile-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 9px;
+        padding: 5px 9px;
+        border-radius: 20px;
+        background: var(--green-light);
+        color: #176b2b;
+        font-size: 9px;
+        font-weight: 800;
+    }
+
+    .profile-status span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+    }
+
+    .profile-details {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px 17px;
+        padding-top: 23px;
+    }
+
+    .detail-item {
+        min-width: 0;
+    }
+
+    .detail-item.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+
+    .detail-value {
+        display: block;
+        overflow-wrap: anywhere;
+        color: var(--blue-950);
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.8;
+    }
+
+    .profile-view-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 20px;
+        padding: 10px 13px;
+        border: 1px solid #c8dced;
+        border-radius: 6px;
+        background: white;
+        color: var(--blue-700);
+        font-size: 11px;
+        font-weight: 800;
+        transition: background var(--transition), border-color var(--transition);
+    }
+
+    .profile-view-link:hover {
+        border-color: var(--blue-700);
+        background: var(--blue-50);
+    }
+
+    /* QUICK ACTIONS */
+    .actions-content {
+        display: grid;
+        gap: 12px;
+        padding: 20px;
+    }
+
+    .action-link {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: white;
+        transition: background var(--transition),
+                    border-color var(--transition),
+                    transform var(--transition);
+    }
+
+    .action-link:hover {
+        transform: translateY(-1px);
+        border-color: #c5daef;
+        background: var(--blue-50);
+    }
+
+    .action-link-icon {
+        display: grid;
+        place-items: center;
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        border-radius: 11px;
+        background: var(--blue-100);
+        color: var(--blue-800);
+        font-size: 18px;
+    }
+
+    .action-link:nth-child(2) .action-link-icon {
+        background: var(--green-light);
+        color: var(--green);
+    }
+
+    .action-link:nth-child(3) .action-link-icon {
+        background: var(--saffron-light);
+        color: #a45a12;
+    }
+
+    .action-link h4 {
+        color: var(--blue-950);
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .action-link p {
+        margin-top: 5px;
+        color: var(--text-muted);
+        font-size: 10px;
+        line-height: 1.7;
+    }
+
+    .action-arrow {
+        display: inline-block;
+        margin-top: 8px;
+        color: var(--blue-700);
+        font-size: 10px;
+        font-weight: 800;
+    }
+
+    /* INFORMATION NOTICE */
+    .notice-card {
+        margin-top: 20px;
+        padding: 19px;
+        border: 1px solid #d4e5f6;
+        border-radius: var(--radius-md);
+        background: var(--blue-50);
+    }
+
+    .notice-card h3 {
+        color: var(--blue-900);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .notice-card p {
+        margin-top: 7px;
+        color: var(--text-soft);
+        font-size: 11px;
+        line-height: 1.9;
+    }
+
+    .notice-card .notice-icon {
+        margin-right: 7px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 950px) {
+        .overview-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .officer-home {
+            padding-top: 25px;
+        }
+
+        .dashboard-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .welcome-banner {
+            padding: 23px 20px;
+        }
+
+        .welcome-content h2 {
+            font-size: 24px;
+        }
+
+        .welcome-symbol {
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            font-size: 25px;
+        }
+
+        .overview-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .overview-card {
+            padding: 17px;
+        }
+
+        .profile-content {
+            padding: 19px;
+        }
+
+        .profile-details {
+            grid-template-columns: 1fr;
+            gap: 17px;
+        }
+
+        .detail-item.full-width {
+            grid-column: auto;
+        }
+
+        .section-heading h2 {
+            font-size: 16px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .action-link {
+            transition: none;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<section class="officer-home">
+    <div class="officer-container">
+
+        <!-- PAGE HEADER -->
+        <header class="dashboard-header">
+            <div>
+                <div class="dashboard-eyebrow">
+                    Government officer portal
+                </div>
+
+                <h1>Officer Dashboard</h1>
+
+                <p>
+                    Access your officer profile and the civic-service
+                    tools available through Demokratia.com.
+                </p>
+            </div>
+
+            <div class="officer-badge">
+                <span class="badge-dot"></span>
+                Officer portal
+            </div>
+        </header>
+
+
+        <!-- WELCOME BANNER -->
+        <section class="welcome-banner">
+            <div class="welcome-content">
+                <div class="welcome-label">
+                    Public service • Citizen participation
+                </div>
+
+                <h2>
+                    Welcome, {{ officer.name|default:"Officer" }}!
+                </h2>
+
+                <p>
+                    Your dashboard brings together your official profile,
+                    department, and jurisdiction. Use the available
+                    services to support responsive and accountable
+                    public administration.
+                </p>
+
+                <div class="welcome-actions">
+                    <a class="welcome-primary" href="{% url 'view_officer_profile' officer.pk %}">
+                        View profile
+                        <span aria-hidden="true">→</span>
+                    </a>
+
+                    <a class="welcome-secondary" href="{% url 'view_officeractivity' %}">
+                        My Activities
+                    </a>
+
+                    <a class="welcome-secondary" href="{% url 'index' %}">
+                        Visit public website
+                    </a>
+                </div>
+            </div>
+
+            <div class="welcome-symbol" aria-hidden="true">
+                ◈
+            </div>
+        </section>
+
+
+        <!-- OFFICER OVERVIEW -->
+        <div class="section-heading">
+            <div>
+                <h2>My official assignment</h2>
+                <p>Your department and administrative jurisdiction.</p>
+            </div>
+        </div>
+
+        <div class="overview-grid">
+
+            <article class="overview-card">
+                <div class="overview-icon" aria-hidden="true">▤</div>
+
+                <div>
+                    <span class="overview-label">Department</span>
+
+                    <strong class="overview-value">
+                        {{ officer.department|default:"Not assigned" }}
+                    </strong>
+
+                    <span class="overview-description">
+                        Your assigned government department
+                    </span>
+                </div>
+            </article>
+
+
+            <article class="overview-card">
+                <div class="overview-icon" aria-hidden="true">⌖</div>
+
+                <div>
+                    <span class="overview-label">District</span>
+
+                    <strong class="overview-value">
+                        {{ officer.district|default:"Not assigned" }}
+                    </strong>
+
+                    <span class="overview-description">
+                        Your district jurisdiction
+                    </span>
+                </div>
+            </article>
+
+
+            <article class="overview-card">
+                <div class="overview-icon" aria-hidden="true">◎</div>
+
+                <div>
+                    <span class="overview-label">State / UT</span>
+
+                    <strong class="overview-value">
+                        {{ officer.state|default:"Not assigned" }}
+                    </strong>
+
+                    <span class="overview-description">
+                        Your state or Union Territory
+                    </span>
+                </div>
+            </article>
+
+        </div>
+
+
+        <!-- PROFILE AND SERVICES -->
+        <div class="section-heading">
+            <div>
+                <h2>My workspace</h2>
+                <p>Review your account information and explore portal areas.</p>
+            </div>
+        </div>
+
+        <div class="content-grid">
+
+            <!-- PROFILE -->
+            <section class="dashboard-card" id="officer-profile">
+                <div class="card-heading">
+                    <div class="card-heading-icon" aria-hidden="true">
+                        ♙
+                    </div>
+
+                    <div>
+                        <h3>My officer profile</h3>
+                        <p>Your registered professional contact information.</p>
+                    </div>
+                </div>
+
+                <div class="profile-content">
+
+                    <div class="profile-identity">
+                        <div class="profile-avatar" aria-hidden="true">
+                            {{ officer.name|default:"O"|slice:":1"|upper }}
+                        </div>
+
+                        <div>
+                            <h4>{{ officer.name|default:"Officer" }}</h4>
+
+                            <p>
+                                {{ officer.department|default:"Department not assigned" }}
+                            </p>
+
+                            <span class="profile-status">
+                                <span></span>
+                                Officer record available
+                            </span>
+                        </div>
+                    </div>
+
+
+                    <div class="profile-details">
+
+                        <div class="detail-item">
+                            <span class="detail-label">Full name</span>
+
+                            <span class="detail-value">
+                                {{ officer.name|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Email address</span>
+
+                            <span class="detail-value">
+                                {{ officer.email|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Mobile number</span>
+
+                            <span class="detail-value">
+                                {{ officer.mobile|default:"Not provided" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Department</span>
+
+                            <span class="detail-value">
+                                {{ officer.department|default:"Not assigned" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">District</span>
+
+                            <span class="detail-value">
+                                {{ officer.district|default:"Not assigned" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">State / UT</span>
+
+                            <span class="detail-value">
+                                {{ officer.state|default:"Not assigned" }}
+                            </span>
+                        </div>
+
+                        <div class="detail-item full-width">
+                            <span class="detail-label">Office address</span>
+
+                            <span class="detail-value">
+                                {{ officer.address|default:"No office address provided" }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <a class="profile-view-link" href="{% url 'view_officer_profile' officer.pk %}">
+                        View profile <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            </section>
+
+
+            <!-- QUICK ACTIONS -->
+            <div>
+                <section class="dashboard-card">
+                    <div class="card-heading">
+                        <div class="card-heading-icon" aria-hidden="true">
+                            ↗
+                        </div>
+
+                        <div>
+                            <h3>Quick access</h3>
+                            <p>Navigate to useful portal areas.</p>
+                        </div>
+                    </div>
+
+                    <div class="actions-content">
+
+                        <a class="action-link" href="#citizen-feedback">
+                            <div class="action-link-icon" aria-hidden="true">
+                                ✎
+                            </div>
+
+                            <div>
+                                <h4>Citizen feedback</h4>
+
+                                <p>
+                                    Find the feedback workspace for
+                                    citizen engagement activities.
+                                </p>
+
+                                <span class="action-arrow">
+                                    Explore workspace →
+                                </span>
+                            </div>
+                        </a>
+
+
+                        <a class="action-link" href="{% url 'add_officer_activity' %}">
+                            <div class="action-link-icon" aria-hidden="true">
+                                ☷
+                            </div>
+
+                            <div>
+                                <h4>Public complaints</h4>
+
+                                <p>
+                                    Access the area intended for complaint
+                                    review and public-service concerns.
+                                </p>
+
+                                <span class="action-arrow">
+                                    Explore workspace →
+                                </span>
+                            </div>
+                        </a>
+
+
+                        <a class="action-link" href="{% url 'add_officer_activity' %}">
+                            <div class="action-link-icon" aria-hidden="true">
+                                ⌂
+                            </div>
+
+                            <div>
+                                <h4>Service information</h4>
+
+                                <p>
+                                    View public-service information
+                                    and citizen engagement resources.
+                                </p>
+
+                                <span class="action-arrow">
+                                    Explore resources →
+                                </span>
+                            </div>
+                        </a>
+
+                    </div>
+                </section>
+
+
+                <aside class="notice-card" id="service-information">
+                    <h3>
+                        <span class="notice-icon" aria-hidden="true">ℹ</span>
+                        Officer workspace
+                    </h3>
+
+                    <p>
+                        Your profile details are provided by your registered
+                        officer record. Assigned complaints, citizen
+                        submissions, and service statistics will appear
+                        here once the corresponding backend modules
+                        are implemented.
+                    </p>
+                </aside>
+            </div>
+
+        </div>
+
+
+        <!-- PLACEHOLDERS FOR FUTURE MODULES -->
+        <div id="citizen-feedback"></div>
+        <div id="public-complaints"></div>
+
+    </div>
+</section>
+{% endblock %}
